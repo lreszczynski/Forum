@@ -1,0 +1,6 @@
+spring:
+  datasource:
+    password: dbpassword
+    url: jdbc:postgresql://localhost:5432/test
+    username: dbuser
+#springdoc.packages-to-scan=com.example.demo.controller

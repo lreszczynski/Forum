@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Diagram>
+  <ID>DATABASE</ID>
+  <OriginalElement>6bea8c1e-bf34-40f7-aa6f-a8fd0fc50352.DATABASE:demo</OriginalElement>
+  <nodes>
+    <node x="86.625" y="372.0">6bea8c1e-bf34-40f7-aa6f-a8fd0fc50352.TABLE:demo.public.app_thread</node>
+    <node x="27.875" y="568.0">6bea8c1e-bf34-40f7-aa6f-a8fd0fc50352.TABLE:demo.public.app_post</node>
+    <node x="0.0" y="152.0">6bea8c1e-bf34-40f7-aa6f-a8fd0fc50352.TABLE:demo.public.app_user</node>
+    <node x="186.0" y="174.0">6bea8c1e-bf34-40f7-aa6f-a8fd0fc50352.TABLE:demo.public.app_category</node>
+    <node x="252.625" y="405.5">6bea8c1e-bf34-40f7-aa6f-a8fd0fc50352.TABLE:demo.public.app_category_role</node>
+    <node x="139.75" y="0.0">6bea8c1e-bf34-40f7-aa6f-a8fd0fc50352.TABLE:demo.public.app_role</node>
+  </nodes>
+  <notes />
+  <edges>
+    <edge source="6bea8c1e-bf34-40f7-aa6f-a8fd0fc50352.TABLE:demo.public.app_category_role" target="6bea8c1e-bf34-40f7-aa6f-a8fd0fc50352.TABLE:demo.public.app_role" relationship="REFERENCES">
+      <point x="45.25" y="-38.5" />
+      <point x="388.375" y="345.0" />
+      <point x="381.5" y="345.0" />
+      <point x="381.5" y="126.0" />
+      <point x="232.25" y="126.0" />
+      <point x="0.0" y="50.0" />
+    </edge>
+    <edge source="6bea8c1e-bf34-40f7-aa6f-a8fd0fc50352.TABLE:demo.public.app_post" target="6bea8c1e-bf34-40f7-aa6f-a8fd0fc50352.TABLE:demo.public.app_user" relationship="REFERENCES">
+      <point x="-49.875" y="-72.0" />
+      <point x="-15.0" y="83.0" />
+    </edge>
+    <edge source="6bea8c1e-bf34-40f7-aa6f-a8fd0fc50352.TABLE:demo.public.app_thread" target="6bea8c1e-bf34-40f7-aa6f-a8fd0fc50352.TABLE:demo.public.app_user" relationship="REFERENCES">
+      <point x="-36.5" y="-72.0" />
+      <point x="123.125" y="345.0" />
+      <point x="83.0" y="345.0" />
+      <point x="0.0" y="83.0" />
+    </edge>
+    <edge source="6bea8c1e-bf34-40f7-aa6f-a8fd0fc50352.TABLE:demo.public.app_category_role" target="6bea8c1e-bf34-40f7-aa6f-a8fd0fc50352.TABLE:demo.public.app_category" relationship="REFERENCES">
+      <point x="-45.25" y="-38.5" />
+      <point x="297.875" y="345.0" />
+      <point x="278.5" y="345.0" />
+      <point x="0.0" y="61.0" />
+    </edge>
+    <edge source="6bea8c1e-bf34-40f7-aa6f-a8fd0fc50352.TABLE:demo.public.app_post" target="6bea8c1e-bf34-40f7-aa6f-a8fd0fc50352.TABLE:demo.public.app_thread" relationship="REFERENCES">
+      <point x="41.75" y="-72.0" />
+      <point x="0.0" y="72.0" />
+    </edge>
+    <edge source="6bea8c1e-bf34-40f7-aa6f-a8fd0fc50352.TABLE:demo.public.app_thread" target="6bea8c1e-bf34-40f7-aa6f-a8fd0fc50352.TABLE:demo.public.app_category" relationship="REFERENCES">
+      <point x="36.5" y="-72.0" />
+      <point x="196.125" y="345.0" />
+      <point x="278.5" y="345.0" />
+      <point x="0.0" y="61.0" />
+    </edge>
+    <edge source="6bea8c1e-bf34-40f7-aa6f-a8fd0fc50352.TABLE:demo.public.app_user" target="6bea8c1e-bf34-40f7-aa6f-a8fd0fc50352.TABLE:demo.public.app_role" relationship="REFERENCES">
+      <point x="0.0" y="-83.0" />
+      <point x="83.0" y="126.0" />
+      <point x="232.25" y="126.0" />
+      <point x="0.0" y="50.0" />
+    </edge>
+  </edges>
+  <settings layout="Hierarchic" zoom="0.837431693989071" showDependencies="false" x="220.0" y="356.0" />
+  <SelectedNodes>
+    <node>6bea8c1e-bf34-40f7-aa6f-a8fd0fc50352.TABLE:demo.public.app_post</node>
+  </SelectedNodes>
+  <Categories>
+    <Category>Columns</Category>
+    <Category>Comments</Category>
+    <Category>Key columns</Category>
+    <Category>Virtual foreign keys</Category>
+  </Categories>
+</Diagram>
+
