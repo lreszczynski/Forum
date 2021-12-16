@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.lang.reflect.Type;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -45,12 +46,11 @@ public class CategoryService {
 	public CategoryDTO create(CategoryDTO categoryDTO, String username) {
 		Category category = modelMapper.map(categoryDTO, Category.class);
 		Category saved = categoryRepository.save(category);
+		CategoryDTO savedDto = modelMapper.map(saved, CategoryDTO.class);
 		Optional<User> optionalUser = userRepository.findByUsername(username);
-		if (optionalUser.isPresent()) {
-			addRolesToCategoryByIds(modelMapper.map(saved, CategoryDTO.class), optionalUser.get().getRole().getId());
-		}
+		optionalUser.ifPresent(user -> addRolesToCategoryByIds(savedDto, user.getRole().getId()));
 		
-		return modelMapper.map(saved, CategoryDTO.class);
+		return savedDto;
 	}
 	
 	public void deleteById(Long id) {
@@ -75,21 +75,21 @@ public class CategoryService {
 		return categoryRepository.existsCategoryByNameAndIdIsNot(name, id);
 	}
 	
-	public Set<Role> getRolesForCategory(CategoryDTO categoryDTO) {
+	public Set<RoleDTO> getRolesForCategory(CategoryDTO categoryDTO) {
 		return getRolesForCategoryById(categoryDTO.getId());
 	}
-	public Set<Role> getRolesForCategoryById(Long id) {
+	
+	public Set<RoleDTO> getRolesForCategoryById(Long id) {
 		Category byId = categoryRepository.getById(id);
 		Hibernate.initialize(byId.getRoles());
-		return byId.getRoles();
+		Set<Role> roles = byId.getRoles();
+		Type listType = new TypeToken<Set<RoleDTO>>() {
+		}.getType();
+		return modelMapper.map(roles, listType);
 	}
 	
 	public void addRolesToCategory(CategoryDTO categoryDTO, RoleDTO... roles) {
-		Category byId = categoryRepository.getById(categoryDTO.getId());
-		for (RoleDTO roleDTO : roles) {
-			byId.getRoles().add(roleRepository.getById(roleDTO.getId()));
-		}
-		categoryRepository.save(byId);
+		addRolesToCategoryByIds(categoryDTO, Arrays.stream(roles).map(RoleDTO::getId).toArray(Long[]::new));
 	}
 	
 	public void addRolesToCategoryByIds(CategoryDTO categoryDTO, Long... ids) {

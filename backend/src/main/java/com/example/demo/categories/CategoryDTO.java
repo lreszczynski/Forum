@@ -26,6 +26,7 @@ public class CategoryDTO {
 	private Long id;
 	
 	@NotEmpty
+	@NotNull
 	@Length(max = 50)
 	@JsonProperty("name")
 	private String name;

@@ -1,6 +1,6 @@
 package com.example.demo.controller;
 
-public class Constants {
+public class HttpResponse {
 	public static final String HTTP_OK = "200";
 	public static final String HTTP_OK_MESSAGE = "OK.";
 	

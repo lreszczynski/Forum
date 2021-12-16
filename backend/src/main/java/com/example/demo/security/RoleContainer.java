@@ -1,7 +1,7 @@
 package com.example.demo.security;
 
 import com.example.demo.categories.CategoryService;
-import com.example.demo.roles.Role;
+import com.example.demo.roles.RoleDTO;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -35,7 +35,7 @@ public class RoleContainer {
 	
 	public boolean canEditCategory(UserDetails userDetails, Long id) {
 		List<String> authorities = userDetails.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList());
-		List<String> allowedRoles = categoryService.getRolesForCategoryById(id).stream().map(Role::getName).map(String::toUpperCase).collect(Collectors.toList());
+		List<String> allowedRoles = categoryService.getRolesForCategoryById(id).stream().map(RoleDTO::getName).map(String::toUpperCase).collect(Collectors.toList());
 		
 		return CollectionUtils.containsAny(allowedRoles, authorities);
 	}
