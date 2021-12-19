@@ -24,15 +24,12 @@ public class Category {
 	//@JsonProperty(access = READ_ONLY)
 	private Long id;
 	
-	@Basic
 	@Column(name = "name", unique = true)
 	private String name;
 	
-	@Basic
 	@Column(name = "description")
 	private String description;
 	
-	@Basic
 	@Column(name = "active")
 	private boolean active;
 	

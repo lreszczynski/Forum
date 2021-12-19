@@ -1,8 +1,8 @@
 package com.example.demo.users;
 
 import com.example.demo.users.validation.UpdateUser;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -11,12 +11,16 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.groups.Default;
-import java.util.*;
+import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
 
+import static com.example.demo.controller.HttpResponse.*;
 import static org.springframework.util.MimeTypeUtils.APPLICATION_JSON_VALUE;
 
 @RestController
@@ -29,21 +33,25 @@ public class UserController {
 	private final UserService userService;
 	
 	@Autowired
-	public UserController(UserService userService, ObjectMapper objectMapper) {
+	public UserController(UserService userService) {
 		this.userService = userService;
 	}
 	
-	@Operation(summary = "Returns a list of users sorted/filtered based on the query parameters")
-	@ApiResponse(responseCode = "200", description = "List was returned", content = {@Content(mediaType = APPLICATION_JSON_VALUE, schema = @Schema(implementation = User.class))})
-	@GetMapping("/")
+	@Operation(summary = "Returns a list of users")
+	@ApiResponse(responseCode = HTTP_OK, description = HTTP_OK_MESSAGE, content = {
+			@Content(mediaType = APPLICATION_JSON_VALUE, array =
+			@ArraySchema(schema = @Schema(implementation = UserDTO.class)))})
+	@GetMapping
 	ResponseEntity<Collection<UserDTO>> getAll() {
 		List<UserDTO> users = userService.getAll();
 		return ResponseEntity.ok(users);
 	}
 	
 	@Operation(summary = "Get a user by its id")
-	@ApiResponses(value = {@ApiResponse(responseCode = "200", description = "Found the user", content = {@Content(mediaType = APPLICATION_JSON_VALUE, schema = @Schema(implementation = User.class))}),
-			@ApiResponse(responseCode = "404", description = "User not found", content = @Content)})
+	@ApiResponses(value = {
+			@ApiResponse(responseCode = HTTP_OK, description = HTTP_OK_MESSAGE, content = {
+					@Content(mediaType = APPLICATION_JSON_VALUE, schema = @Schema(implementation = UserDTO.class))}),
+			@ApiResponse(responseCode = HTTP_NOT_FOUND, description = HTTP_NOT_FOUND_MESSAGE)})
 	@GetMapping("/{id}")
 	ResponseEntity<UserDTO> getById(@PathVariable long id) {
 		Optional<UserDTO> userDTO = userService.getById(id);
@@ -54,9 +62,15 @@ public class UserController {
 	}
 	
 	@Operation(summary = "Update a user by its id")
-	@ApiResponses(value = {@ApiResponse(responseCode = "200", description = "User was updated", content = {@Content(mediaType = APPLICATION_JSON_VALUE, schema = @Schema(implementation = User.class))}),
-			@ApiResponse(responseCode = "404", description = "User not found", content = @Content)})
+	@ApiResponses(value = {
+			@ApiResponse(responseCode = HTTP_OK, description = HTTP_OK_MESSAGE, content = {
+					@Content(mediaType = APPLICATION_JSON_VALUE, schema = @Schema(implementation = UserDTO.class))}),
+			@ApiResponse(responseCode = HTTP_NOT_FOUND, description = HTTP_NOT_FOUND_MESSAGE, content = @Content),
+			@ApiResponse(responseCode = HTTP_BAD_REQUEST, description = HTTP_BAD_REQUEST_MESSAGE),
+			@ApiResponse(responseCode = HTTP_FORBIDDEN, description = HTTP_FORBIDDEN_MESSAGE),
+			@ApiResponse(responseCode = HTTP_UNAUTHORIZED, description = HTTP_UNAUTHORIZED_MESSAGE)})
 	@PutMapping(value = "/{id}", consumes = APPLICATION_JSON_VALUE)
+	@PreAuthorize("@roleContainer.isAdmin(principal)")
 	ResponseEntity<UserDTO> update(@Validated({Default.class, UpdateUser.class}) @RequestBody UserDTO userDTO, @PathVariable Long id) {
 		Optional<UserDTO> updatedUser = userService.update(id, userDTO);
 		if (updatedUser.isEmpty()) {
@@ -67,7 +81,10 @@ public class UserController {
 	}
 	
 	@Operation(summary = "Delete a user")
-	@ApiResponse(responseCode = "204", description = "User was deleted", content = {@Content(mediaType = APPLICATION_JSON_VALUE, schema = @Schema(implementation = User.class))})
+	@ApiResponses(value = {
+			@ApiResponse(responseCode = HTTP_NO_CONTENT, description = HTTP_NO_CONTENT_MESSAGE),
+			@ApiResponse(responseCode = HTTP_FORBIDDEN, description = HTTP_FORBIDDEN_MESSAGE),
+			@ApiResponse(responseCode = HTTP_UNAUTHORIZED, description = HTTP_UNAUTHORIZED_MESSAGE)})
 	@DeleteMapping("/{id}")
 	public ResponseEntity<?> delete(@PathVariable Long id) {
 		userService.deleteById(id);
@@ -75,7 +92,10 @@ public class UserController {
 	}
 	
 	@Operation(summary = "Register a new user")
-	@ApiResponse(responseCode = "201", description = "User was registered", content = {@Content(mediaType = APPLICATION_JSON_VALUE, schema = @Schema(implementation = User.class))})
+	@ApiResponses(value = {
+			@ApiResponse(responseCode = HTTP_OK, description = HTTP_OK_MESSAGE, content = {
+					@Content(mediaType = APPLICATION_JSON_VALUE, schema = @Schema(implementation = UserDTO.class))}),
+			@ApiResponse(responseCode = HTTP_BAD_REQUEST, description = HTTP_BAD_REQUEST_MESSAGE)})	
 	@PostMapping(value = "/register", consumes = APPLICATION_JSON_VALUE)
 	ResponseEntity<UserDTO> register(@Validated @RequestBody UserRegistrationDTO userRegistrationDTO) {
 		UserDTO createdUser = userService.register(userRegistrationDTO);

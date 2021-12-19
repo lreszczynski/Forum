@@ -4,10 +4,26 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
 
+import java.io.IOException;
+import java.nio.file.*;
+import java.util.stream.Stream;
+
 @SpringBootApplication
 public class DemoApplication {
 	public static void main(String[] args) {
 		ConfigurableApplicationContext run = SpringApplication.run(DemoApplication.class, args);
+		
+		Path path = Paths.get(System.getProperty("user.dir")).getParent().resolve("database-scripts");
+		PathMatcher matcher = FileSystems.getDefault().getPathMatcher("glob:**.sql");
+		System.out.println(path.toAbsolutePath());
+		try (Stream<Path> paths = Files.walk(Paths.get(path.toString()))) {
+			paths.filter(matcher::matches).forEach(System.out::println);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		//File projectDir = new File(System.getProperty("user.dir"));
+		//File databaseFiles =projectDir.getParentFile().listFiles((file, s) -> );
+		//System.out.println();
 		/*CategoryRepository categoryRepository = (CategoryRepository) run.getBean("categoryRepository");
 		RoleRepository roleRepository = (RoleRepository) run.getBean("roleRepository");
 		CategoryService categoryService = (CategoryService) run.getBean("categoryService");

@@ -3,6 +3,7 @@ package com.example.demo.controller;
 import com.nimbusds.oauth2.sdk.util.CollectionUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -41,6 +42,12 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 	private static final String MESSAGE = "message";
 	private static final String TIMESTAMP = "timestamp";
 	private static final String TYPE = "type";
+	
+	@ExceptionHandler(EmptyResultDataAccessException.class)
+	public ResponseEntity<Object> handleRecordNotFound(EmptyResultDataAccessException exception, WebRequest request) {
+		log.info(exception.getMessage());
+		return getExceptionResponseEntity(exception, HttpStatus.BAD_REQUEST, request, Collections.singletonList("Record not found"));
+	}
 	
 	@ExceptionHandler({AccessDeniedException.class})
 	public ResponseEntity<Object> accessDeniedException(AccessDeniedException exception, WebRequest request) {

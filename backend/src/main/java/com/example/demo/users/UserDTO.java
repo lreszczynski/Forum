@@ -35,6 +35,9 @@ public class UserDTO {
 	@JsonProperty("active")
 	private boolean active;
 	
+	@JsonProperty("banned")
+	private boolean banned;
+	
 	//@EqualsAndHashCode.Exclude
 	@JsonProperty(value = "role", access = JsonProperty.Access.READ_ONLY)
 	private RoleDTO role;

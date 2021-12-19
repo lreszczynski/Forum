@@ -1,13 +1,16 @@
 package com.example.demo.threads;
 
 import com.example.demo.categories.Category;
+import com.example.demo.posts.Post;
 import com.example.demo.users.User;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 import org.hibernate.Hibernate;
 
 import javax.persistence.*;
+import java.util.LinkedHashSet;
 import java.util.Objects;
+import java.util.Set;
 
 import static com.fasterxml.jackson.annotation.JsonProperty.Access.READ_ONLY;
 
@@ -26,11 +29,9 @@ public class Thread {
 	@JsonProperty(access = READ_ONLY)
 	private Long id;
 	
-	@Basic
 	@Column(name = "title")
 	private String title;
 	
-	@Basic
 	@Column(name = "active")
 	private boolean active;
 	
@@ -42,16 +43,19 @@ public class Thread {
 	@JoinColumn(name = "user_id", nullable = false)
 	private User user;
 	
+	@OneToMany(mappedBy = "thread", cascade = CascadeType.REMOVE, orphanRemoval = true)
+	private Set<Post> posts = new LinkedHashSet<>();
+	
 	@Override
 	public boolean equals(Object o) {
 		if (this == o) return true;
 		if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
 		Thread thread = (Thread) o;
-		return Objects.equals(id, thread.id);
+		return id != null && Objects.equals(id, thread.id);
 	}
 	
 	@Override
 	public int hashCode() {
-		return 0;
+		return getClass().hashCode();
 	}
 }

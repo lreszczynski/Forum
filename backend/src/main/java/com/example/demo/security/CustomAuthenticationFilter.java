@@ -9,7 +9,6 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import javax.servlet.FilterChain;
@@ -37,7 +36,7 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
 	
 	@Override
 	protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authentication) throws IOException, ServletException {
-		User user = (User) authentication.getPrincipal();
+		MyUserDetails user = (MyUserDetails) authentication.getPrincipal();
 		String accessToken = JWTUtility.generateToken(request.getRequestURI(), user.getUsername(), user.getAuthorities(), JWTUtility.TOKEN_TYPE.ACCESS);
 		String refreshToken = JWTUtility.generateToken(request.getRequestURI(), user.getUsername(), user.getAuthorities(), JWTUtility.TOKEN_TYPE.REFRESH);
 		/*response.setHeader("access_token", accessToken);

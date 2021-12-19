@@ -20,6 +20,8 @@ import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 
+import static com.example.demo.security.SecurityUtility.LOGIN_PATH;
+import static com.example.demo.security.SecurityUtility.TOKEN_REFRESH_PATH;
 import static com.example.demo.utility.JWTUtility.parseToken;
 
 @Slf4j
@@ -29,9 +31,10 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
 	
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-		/*if (request.getServletPath().equals(LOGIN_PATH) || request.getServletPath().equals("/token/refresh")) {
+		if (request.getServletPath().equals(LOGIN_PATH) || request.getServletPath().equals(TOKEN_REFRESH_PATH)) {
 			filterChain.doFilter(request, response);
-		} else {*/
+			return;
+		}
 		Jws<Claims> jws = parseToken(request, response);
 		if (jws != null) {
 			Claims body = jws.getBody();

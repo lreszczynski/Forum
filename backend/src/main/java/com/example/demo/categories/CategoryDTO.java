@@ -14,6 +14,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Null;
 
 @Data
+@With
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
@@ -25,8 +26,8 @@ public class CategoryDTO {
 	@JsonProperty("id")
 	private Long id;
 	
-	@NotEmpty
 	@NotNull
+	@NotEmpty
 	@Length(max = 50)
 	@JsonProperty("name")
 	private String name;

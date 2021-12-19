@@ -44,6 +44,4 @@ public class PostDTO {
 	
 	@JsonProperty(value = "user", access = JsonProperty.Access.READ_ONLY)
 	private UserDTO user;
-	
-	
 }

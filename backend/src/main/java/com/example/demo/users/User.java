@@ -8,7 +8,7 @@ import org.hibernate.Hibernate;
 import javax.persistence.*;
 import java.util.Objects;
 
-import static com.fasterxml.jackson.annotation.JsonProperty.Access.*;
+import static com.fasterxml.jackson.annotation.JsonProperty.Access.READ_ONLY;
 
 @ToString
 @Setter
@@ -25,21 +25,20 @@ public class User {
 	@JsonProperty(access = READ_ONLY)
 	private Long id;
 	
-	@Basic
 	@Column(name = "username", unique = true)
 	private String username;
 	
-	@Basic
 	@Column(name = "password")
 	private String password;
 	
-	@Basic
 	@Column(name = "email", unique = true)
 	private String email;
 	
-	@Basic
 	@Column(name = "active")
 	private boolean active;
+	
+	@Column(name = "banned", nullable = false)
+	private boolean banned = false;
 	
 	@ManyToOne(optional = false)
 	@JoinColumn(name = "role_id", nullable = false)
@@ -50,11 +49,11 @@ public class User {
 		if (this == o) return true;
 		if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
 		User user = (User) o;
-		return Objects.equals(id, user.id);
+		return id != null && Objects.equals(id, user.id);
 	}
 	
 	@Override
 	public int hashCode() {
-		return 0;
+		return getClass().hashCode();
 	}
 }

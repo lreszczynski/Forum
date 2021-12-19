@@ -5,7 +5,6 @@ import com.example.demo.roles.RoleDTO;
 import com.example.demo.roles.RoleRepository;
 import com.example.demo.users.User;
 import com.example.demo.users.UserRepository;
-import org.hibernate.Hibernate;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.stereotype.Service;
@@ -80,9 +79,9 @@ public class CategoryService {
 	}
 	
 	public Set<RoleDTO> getRolesForCategoryById(Long id) {
-		Category byId = categoryRepository.getById(id);
-		Hibernate.initialize(byId.getRoles());
-		Set<Role> roles = byId.getRoles();
+		Category category = categoryRepository.getById(id);
+		//Hibernate.initialize(category.getRoles());
+		Set<Role> roles = category.getRoles();
 		Type listType = new TypeToken<Set<RoleDTO>>() {
 		}.getType();
 		return modelMapper.map(roles, listType);
@@ -93,19 +92,23 @@ public class CategoryService {
 	}
 	
 	public void addRolesToCategoryByIds(CategoryDTO categoryDTO, Long... ids) {
-		Category byId = categoryRepository.getById(categoryDTO.getId());
+		Category category = categoryRepository.getById(categoryDTO.getId());
 		for (Long id : ids) {
-			byId.getRoles().add(roleRepository.getById(id));
+			category.getRoles().add(roleRepository.getById(id));
 		}
-		categoryRepository.save(byId);
+		categoryRepository.save(category);
 	}
 	
 	public void deleteRolesFromCategory(CategoryDTO categoryDTO, RoleDTO... roles) {
-		Category byId = categoryRepository.getById(categoryDTO.getId());
-		for (RoleDTO roleDTO : roles) {
-			byId.getRoles().remove(roleRepository.getById(roleDTO.getId()));
+		deleteRolesFromCategoryByIds(categoryDTO, Arrays.stream(roles).map(RoleDTO::getId).toArray(Long[]::new));
+	}
+	
+	public void deleteRolesFromCategoryByIds(CategoryDTO categoryDTO, Long... ids) {
+		Category category = categoryRepository.getById(categoryDTO.getId());
+		for (Long id : ids) {
+			category.getRoles().remove(roleRepository.getById(id));
 		}
-		categoryRepository.save(byId);
+		categoryRepository.save(category);
 	}
 	
 }

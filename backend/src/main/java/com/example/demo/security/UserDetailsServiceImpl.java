@@ -26,11 +26,14 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 		if (user == null) {
 			log.error("User not found in the database");
 			throw new UsernameNotFoundException("User not found in the database");
-		} else {
-			log.info("User found in the database: {}", user.getUsername());
+		} else if (user.isBanned()) {
+			log.error("User is banned");
+			throw new UsernameNotFoundException("User is banned");
 		}
+		log.info("User found in the database: {}", user.getUsername());
 		Collection<GrantedAuthority> authorities = new ArrayList<>();
 		authorities.add(new SimpleGrantedAuthority(user.getRole().getName().toUpperCase()));
-		return new org.springframework.security.core.userdetails.User(user.getUsername(), user.getPassword(), authorities);
+		return new MyUserDetails(user.getUsername(), user.getPassword(), authorities, user.isActive(), user.isBanned());
+		//return new org.springframework.security.core.userdetails.User(user.getUsername(), user.getPassword(), authorities);
 	}
 }

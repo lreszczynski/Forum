@@ -1,5 +1,7 @@
 package com.example.demo.users;
 
+import com.example.demo.roles.RoleRepository;
+import com.example.demo.security.RoleContainer;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.security.crypto.bcrypt.BCrypt;
@@ -17,10 +19,12 @@ public class UserService {
 	private final UserRepository userRepository;
 	private final PasswordEncoder passwordEncoder;
 	private final ModelMapper modelMapper;
+	private final RoleRepository roleRepository;
 	
-	public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+	public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, RoleRepository roleRepository) {
 		this.userRepository = userRepository;
 		this.passwordEncoder = passwordEncoder;
+		this.roleRepository = roleRepository;
 		this.modelMapper = new ModelMapper();
 	}
 	
@@ -83,6 +87,9 @@ public class UserService {
 	public UserDTO register(UserRegistrationDTO userRegistrationDTO) {
 		User user = modelMapper.map(userRegistrationDTO, User.class);
 		user.setPassword(passwordEncoder.encode(userRegistrationDTO.getPassword()));
+		user.setActive(false);
+		user.setBanned(false);
+		roleRepository.findRoleByNameIgnoreCase(RoleContainer.USER).ifPresent(user::setRole);
 		User saved = userRepository.save(user);
 		return modelMapper.map(saved, UserDTO.class);
 	}

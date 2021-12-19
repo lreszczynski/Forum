@@ -27,11 +27,9 @@ public class Post {
 	@JsonProperty(access = READ_ONLY)
 	private Long id;
 	
-	@Basic
 	@Column(name = "content")
 	private String content;
 	
-	@Basic
 	@Column(name = "create_date")
 	private Timestamp createDate;
 	
@@ -48,11 +46,11 @@ public class Post {
 		if (this == o) return true;
 		if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
 		Post post = (Post) o;
-		return Objects.equals(id, post.id);
+		return id != null && Objects.equals(id, post.id);
 	}
 	
 	@Override
 	public int hashCode() {
-		return 0;
+		return getClass().hashCode();
 	}
 }

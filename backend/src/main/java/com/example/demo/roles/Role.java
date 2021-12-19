@@ -27,11 +27,9 @@ public class Role {
 	@JsonProperty(access = READ_ONLY)
 	private Long id;
 	
-	@Basic
 	@Column(name = "name", unique = true)
 	private String name;
 	
-	@Basic
 	@Column(name = "description")
 	private String description;
 	
@@ -44,11 +42,11 @@ public class Role {
 		if (this == o) return true;
 		if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
 		Role role = (Role) o;
-		return Objects.equals(id, role.id);
+		return id != null && Objects.equals(id, role.id);
 	}
 	
 	@Override
 	public int hashCode() {
-		return 0;
+		return getClass().hashCode();
 	}
 }

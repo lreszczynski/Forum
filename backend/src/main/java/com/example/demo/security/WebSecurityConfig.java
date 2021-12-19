@@ -32,18 +32,23 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	protected void configure(HttpSecurity http) throws Exception {
 		CustomAuthenticationFilter customAuthenticationFilter = new CustomAuthenticationFilter(authenticationManagerBean(), objectMapper);
 		customAuthenticationFilter.setFilterProcessesUrl(LOGIN_PATH);
-		
-		http.csrf().disable();
-		http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-		http.authorizeRequests().antMatchers(LOGIN_PATH).permitAll();
-		http.authorizeRequests().antMatchers("/token/refresh/**").permitAll();
-		http.authorizeRequests().antMatchers("/swagger-ui/**", "/swagger-ui.html", "/api-docs/**").permitAll();
-		http.authorizeRequests().antMatchers(GET, CATEGORIES_PATH + "**").permitAll();
-		http.authorizeRequests().anyRequest().authenticated();
-		http.addFilter(customAuthenticationFilter);
 		CustomAuthorizationFilter customAuthorizationFilter = new CustomAuthorizationFilter(userDetailsService);
-		http.addFilterBefore(customAuthorizationFilter, UsernamePasswordAuthenticationFilter.class);
-		http.exceptionHandling().authenticationEntryPoint(http401UnauthorizedEntryPoint);
+		
+		//@formatter:off
+		http
+				.csrf().disable()
+				.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
+				.authorizeRequests()
+					.antMatchers(LOGIN_PATH).permitAll()
+					.antMatchers("/token/refresh/**").permitAll()
+					.antMatchers("/swagger-ui/**", "/swagger-ui.html", "/api-docs/**").permitAll()
+					.antMatchers(GET, CATEGORIES_PATH + "/**").permitAll()
+					//.antMatchers(PUT, CATEGORIES_PATH + "/**").hasAnyRole(MODERATOR, ADMIN)
+					.anyRequest().authenticated().and()
+				.addFilter(customAuthenticationFilter)
+				.addFilterBefore(customAuthorizationFilter, UsernamePasswordAuthenticationFilter.class)
+				.exceptionHandling().authenticationEntryPoint(http401UnauthorizedEntryPoint);
+		//@formatter:off
 		//http.addFilterAfter(new AccessDeniedExceptionFilter(), customAuthorizationFilter.getClass());
 	}
 	

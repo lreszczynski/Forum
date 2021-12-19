@@ -4,6 +4,7 @@ import com.example.demo.security.SecurityUtility;
 import com.example.demo.threads.validation.CreateThread;
 import com.example.demo.threads.validation.UpdateThread;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -20,13 +21,13 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
+import static com.example.demo.controller.HttpResponse.*;
 import static org.springframework.util.MimeTypeUtils.APPLICATION_JSON_VALUE;
 
 @RestController
 @RequestMapping(SecurityUtility.THREADS_PATH)
 @Slf4j
 public class ThreadController {
-	// TODO @ApiResponse @Schema DTO
 	private static final String THREAD_CREATED_LOG = "New thread was created: {}";
 	private static final String THREAD_UPDATED_LOG = "Thread was updated: {}";
 	
@@ -38,16 +39,20 @@ public class ThreadController {
 	}
 	
 	@Operation(summary = "Returns a list of threads")
-	@ApiResponse(responseCode = "200", description = "List was returned", content = {@Content(mediaType = APPLICATION_JSON_VALUE, schema = @Schema(implementation = Thread.class))})
-	@GetMapping("/")
+	@ApiResponse(responseCode = HTTP_OK, description = HTTP_OK_MESSAGE, content = {
+			@Content(mediaType = APPLICATION_JSON_VALUE, array =
+			@ArraySchema(schema = @Schema(implementation = ThreadDTO.class)))})
+	@GetMapping
 	ResponseEntity<Collection<ThreadDTO>> getAll() {
 		List<ThreadDTO> threads = threadService.getAll();
 		return ResponseEntity.ok(threads);
 	}
 	
 	@Operation(summary = "Get a thread by its id")
-	@ApiResponses(value = {@ApiResponse(responseCode = "200", description = "Found the thread", content = {@Content(mediaType = APPLICATION_JSON_VALUE, schema = @Schema(implementation = Thread.class))}),
-			@ApiResponse(responseCode = "404", description = "Thread not found", content = @Content)})
+	@ApiResponses(value = {
+			@ApiResponse(responseCode = HTTP_OK, description = HTTP_OK_MESSAGE, content = {
+					@Content(mediaType = APPLICATION_JSON_VALUE, schema = @Schema(implementation = ThreadDTO.class))}),
+			@ApiResponse(responseCode = HTTP_NOT_FOUND, description = HTTP_NOT_FOUND_MESSAGE)})
 	@GetMapping("/{id}")
 	//@PreAuthorize("@roleContainer.isAtLeastModerator(principal)")
 	ResponseEntity<ThreadDTO> getById(@PathVariable long id) {
@@ -59,8 +64,13 @@ public class ThreadController {
 	}
 	
 	@Operation(summary = "Create a new thread")
-	@ApiResponse(responseCode = "201", description = "Thread is created", content = {@Content(mediaType = APPLICATION_JSON_VALUE, schema = @Schema(implementation = Thread.class))})
-	@PostMapping(value = "/", consumes = APPLICATION_JSON_VALUE)
+	@ApiResponses(value = {
+			@ApiResponse(responseCode = HTTP_CREATED, description = HTTP_CREATED_MESSAGE, content = {
+					@Content(mediaType = APPLICATION_JSON_VALUE, schema = @Schema(implementation = ThreadDTO.class))}),
+			@ApiResponse(responseCode = HTTP_BAD_REQUEST, description = HTTP_BAD_REQUEST_MESSAGE),
+			@ApiResponse(responseCode = HTTP_FORBIDDEN, description = HTTP_FORBIDDEN_MESSAGE),
+			@ApiResponse(responseCode = HTTP_UNAUTHORIZED, description = HTTP_UNAUTHORIZED_MESSAGE)})
+	@PostMapping(consumes = APPLICATION_JSON_VALUE)
 	//@PreAuthorize("@roleContainer.isAtLeastModerator(principal)")
 	ResponseEntity<ThreadDTO> create(@Validated({Default.class, CreateThread.class}) @RequestBody ThreadDTO threadDTO) {
 		ThreadDTO createdThread = threadService.create(threadDTO);
@@ -69,8 +79,13 @@ public class ThreadController {
 	}
 	
 	@Operation(summary = "Update a thread by its id")
-	@ApiResponses(value = {@ApiResponse(responseCode = "200", description = "Thread was updated", content = {@Content(mediaType = APPLICATION_JSON_VALUE, schema = @Schema(implementation = Thread.class))}),
-			@ApiResponse(responseCode = "404", description = "Thread not found", content = @Content)})
+	@ApiResponses(value = {
+			@ApiResponse(responseCode = HTTP_OK, description = HTTP_OK_MESSAGE, content = {
+					@Content(mediaType = APPLICATION_JSON_VALUE, schema = @Schema(implementation = ThreadDTO.class))}),
+			@ApiResponse(responseCode = HTTP_NOT_FOUND, description = HTTP_NOT_FOUND_MESSAGE, content = @Content),
+			@ApiResponse(responseCode = HTTP_BAD_REQUEST, description = HTTP_BAD_REQUEST_MESSAGE),
+			@ApiResponse(responseCode = HTTP_FORBIDDEN, description = HTTP_FORBIDDEN_MESSAGE),
+			@ApiResponse(responseCode = HTTP_UNAUTHORIZED, description = HTTP_UNAUTHORIZED_MESSAGE)})
 	@PutMapping(value = "/{id}", consumes = APPLICATION_JSON_VALUE)
 	//@PreAuthorize("@roleContainer.isAtLeastModerator(principal)")
 	ResponseEntity<ThreadDTO> update(@Validated({Default.class, UpdateThread.class}) @RequestBody ThreadDTO threadDTO, @PathVariable Long id) {
@@ -83,7 +98,10 @@ public class ThreadController {
 	}
 	
 	@Operation(summary = "Delete a thread")
-	@ApiResponse(responseCode = "204", description = "Thread was deleted", content = {@Content(mediaType = APPLICATION_JSON_VALUE, schema = @Schema(implementation = Thread.class))})
+	@ApiResponses(value = {
+			@ApiResponse(responseCode = HTTP_NO_CONTENT, description = HTTP_NO_CONTENT_MESSAGE),
+			@ApiResponse(responseCode = HTTP_FORBIDDEN, description = HTTP_FORBIDDEN_MESSAGE),
+			@ApiResponse(responseCode = HTTP_UNAUTHORIZED, description = HTTP_UNAUTHORIZED_MESSAGE)})
 	@DeleteMapping("/{id}")
 	//@PreAuthorize("@roleContainer.isAtLeastModerator(principal)")
 	public ResponseEntity<?> delete(@PathVariable Long id) {
