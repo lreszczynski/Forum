@@ -2,6 +2,8 @@ package com.example.demo.integration.controller.categories;
 
 import com.example.demo.categories.CategoryDTO;
 import com.example.demo.categories.CategoryService;
+import com.example.demo.roles.RoleDTO;
+import com.example.demo.roles.RoleService;
 import com.example.demo.security.RoleContainer;
 import com.example.demo.security.SecurityUtility;
 import io.restassured.RestAssured;
@@ -20,7 +22,10 @@ import org.springframework.jdbc.datasource.init.ScriptUtils;
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -35,6 +40,10 @@ class CategoryControllerTest {
 	
 	@Autowired
 	private CategoryService categoryService;
+	
+	@Autowired
+	private RoleService roleService;
+	
 	private CategoryDTO uniqueCategory;
 	
 	private String token;
@@ -93,7 +102,7 @@ class CategoryControllerTest {
 	class GuestTests {
 		@Test
 		void getAllShouldReturnAllEntities() {
-			List<CategoryDTO> categoryDTOList = categoryService.getAll();
+			List<CategoryDTO> categoryDTOList = categoryService.findAll();
 			
 			//@formatter:off
 			List<CategoryDTO> categoryDTOS = List.of(RestAssured
@@ -110,7 +119,7 @@ class CategoryControllerTest {
 		
 		@Test
 		void getByIdShouldReturnEntityIfItExists() {
-			CategoryDTO category = categoryService.getAll().get(0);
+			CategoryDTO category = categoryService.findAll().get(0);
 			
 			//@formatter:off
 			CategoryDTO categoryDTO = RestAssured
@@ -153,13 +162,13 @@ class CategoryControllerTest {
 		
 		@Test
 		void updateShouldReturnUnauthorized() {
-			CategoryDTO category = uniqueCategory.withId(categoryService.getAll().get(0).getId());
+			CategoryDTO category = uniqueCategory.withId(categoryService.findAll().get(0).getId());
 			//@formatter:off
 			RestAssured
 					.given()
 						.body(category)
 					.when()
-						.put(SecurityUtility.CATEGORIES_PATH+ "/"+category.getId())
+						.put(SecurityUtility.CATEGORIES_PATH+"/"+category.getId())
 					.then()
 						.statusCode(HttpStatus.UNAUTHORIZED.value());
 			//@formatter:on
@@ -167,15 +176,69 @@ class CategoryControllerTest {
 		
 		@Test
 		void deleteShouldReturnUnauthorized() {
-			CategoryDTO saved = categoryService.getAll().get(0);
+			CategoryDTO saved = categoryService.findAll().get(0);
 			//@formatter:off
 			RestAssured
 					.given()
 					.when()
-						.delete(SecurityUtility.CATEGORIES_PATH+ "/"+saved.getId())
+						.delete(SecurityUtility.CATEGORIES_PATH+"/"+saved.getId())
 					.then()
 						.statusCode(HttpStatus.UNAUTHORIZED.value());
 			//@formatter:on
+		}
+		
+		@Nested
+		@DisplayName("Nested tests of categoryRoles eg. categories/{id}/roles")
+		class CategoriesRolesTests {
+			@Test
+			void getAllRolesOfCategoryShouldReturnUnauthorized() {
+				Long id = 1L;
+				
+				//@formatter:off
+				RestAssured
+						.given()
+						.when()
+							.get(SecurityUtility.CATEGORIES_PATH+"/"+id+"/roles")
+						.then()
+							.statusCode(HttpStatus.UNAUTHORIZED.value());
+				//@formatter:on
+			}
+			
+			@Test
+			void addRoleToCategoryShouldReturnUnauthorized() {
+				Long categoryId = 1L;
+				Long roleId = 1L;
+				Optional<RoleDTO> roleToSave = roleService.getById(roleId);
+				assertThat(roleToSave).isNotEmpty();
+				
+				//@formatter:off
+				RestAssured
+						.given()
+							.body(roleToSave.get()).contentType(ContentType.JSON)
+						.when()
+							.post(SecurityUtility.CATEGORIES_PATH+"/"+categoryId+"/roles")
+						.then()
+							.statusCode(HttpStatus.UNAUTHORIZED.value());
+				//@formatter:on
+			}
+			
+			@Test
+			void deleteRoleFromExistingCategoryShouldReturnUnauthorized() {
+				Long categoryId = 2L;
+				Long roleId = 2L;
+				Optional<RoleDTO> roleToDelete = roleService.getById(roleId);
+				assertThat(roleToDelete).isNotEmpty();
+				
+				//@formatter:off
+				RestAssured
+						.given()
+							.body(roleToDelete.get()).contentType(ContentType.JSON)
+						.when()
+							.delete(SecurityUtility.CATEGORIES_PATH+"/"+categoryId+"/roles/"+roleId)
+						.then()
+							.statusCode(HttpStatus.UNAUTHORIZED.value());
+				//@formatter:on
+			}
 		}
 	}
 	
@@ -189,7 +252,7 @@ class CategoryControllerTest {
 		
 		@Test
 		void getAllShouldReturnAllEntities() {
-			List<CategoryDTO> categoryDTOList = categoryService.getAll();
+			List<CategoryDTO> categoryDTOList = categoryService.findAll();
 			
 			//@formatter:off
 			List<CategoryDTO> categoryDTOS = List.of(RestAssured
@@ -207,7 +270,7 @@ class CategoryControllerTest {
 		
 		@Test
 		void getByIdShouldReturnEntityIfItExists() {
-			CategoryDTO category = categoryService.getAll().get(0);
+			CategoryDTO category = categoryService.findAll().get(0);
 			
 			//@formatter:off
 			CategoryDTO categoryDTO = RestAssured
@@ -253,7 +316,7 @@ class CategoryControllerTest {
 		
 		@Test
 		void updateShouldReturnForbidden() {
-			CategoryDTO saved = categoryService.getAll().get(0);
+			CategoryDTO saved = categoryService.findAll().get(0);
 			CategoryDTO updated = saved.withDescription("new description");
 			//@formatter:off
 			RestAssured
@@ -261,7 +324,7 @@ class CategoryControllerTest {
 						.auth().oauth2(token)
 						.body(updated).contentType(ContentType.JSON)
 					.when()
-						.put(SecurityUtility.CATEGORIES_PATH+ "/"+saved.getId())
+						.put(SecurityUtility.CATEGORIES_PATH+"/"+saved.getId())
 					.then()
 						.statusCode(HttpStatus.FORBIDDEN.value());
 			//@formatter:on
@@ -269,15 +332,657 @@ class CategoryControllerTest {
 		
 		@Test
 		void deleteShouldReturnForbidden() {
-			CategoryDTO saved = categoryService.getAll().get(0);
+			CategoryDTO saved = categoryService.findAll().get(0);
 			//@formatter:off
 			RestAssured
 					.given()
+						.auth().oauth2(token)
 					.when()
-						.delete(SecurityUtility.CATEGORIES_PATH+ "/"+saved.getId())
+						.delete(SecurityUtility.CATEGORIES_PATH+"/"+saved.getId())
 					.then()
-						.statusCode(HttpStatus.UNAUTHORIZED.value());
+						.statusCode(HttpStatus.FORBIDDEN.value());
 			//@formatter:on
+		}
+		
+		@Nested
+		@DisplayName("Nested tests of categoryRoles eg. categories/{id}/roles")
+		class CategoriesRolesTests {
+			@Test
+			void getAllRolesOfCategoryShouldReturnForbidden() {
+				Long id = 1L;
+				
+				//@formatter:off
+				RestAssured
+						.given()
+							.auth().oauth2(token)
+						.when()
+							.get(SecurityUtility.CATEGORIES_PATH+"/"+id+"/roles")
+						.then()
+							.statusCode(HttpStatus.FORBIDDEN.value());
+				//@formatter:on
+			}
+			
+			@Test
+			void addRoleToCategoryShouldReturnForbidden() {
+				Long categoryId = 1L;
+				Long roleId = 1L;
+				Optional<RoleDTO> roleToSave = roleService.getById(roleId);
+				assertThat(roleToSave).isNotEmpty();
+				
+				//@formatter:off
+				RestAssured
+						.given()
+							.auth().oauth2(token)
+							.body(roleToSave.get()).contentType(ContentType.JSON)
+						.when()
+							.post(SecurityUtility.CATEGORIES_PATH+"/"+categoryId+"/roles")
+						.then()
+							.statusCode(HttpStatus.FORBIDDEN.value());
+				//@formatter:on
+			}
+			
+			@Test
+			void deleteRoleFromExistingCategoryShouldReturnForbidden() {
+				Long categoryId = 2L;
+				Long roleId = 2L;
+				Optional<RoleDTO> roleToDelete = roleService.getById(roleId);
+				assertThat(roleToDelete).isNotEmpty();
+				
+				//@formatter:off
+				RestAssured
+						.given()
+						.auth().oauth2(token)
+						.body(roleToDelete.get()).contentType(ContentType.JSON)
+						.when()
+						.delete(SecurityUtility.CATEGORIES_PATH+"/"+categoryId+"/roles/"+roleId)
+						.then()
+						.statusCode(HttpStatus.FORBIDDEN.value());
+				//@formatter:on
+			}
+		}
+	}
+	
+	@Nested
+	@DisplayName("If user has a role MODERATOR")
+	class ModeratorTests {
+		Long categoryIdWhereModHasRights = 2L;
+		Long categoryIdWhereModHDoesNotHaveRights = 1L;
+		
+		@BeforeEach
+		public void setUp() {
+			token = getJwtToken(RoleContainer.MODERATOR);
+		}
+		
+		@Test
+		void getAllShouldReturnAllEntities() {
+			List<CategoryDTO> categoryDTOList = categoryService.findAll();
+			
+			//@formatter:off
+			List<CategoryDTO> categoryDTOS = List.of(RestAssured
+					.given()
+						.auth().oauth2(token)
+					.when()
+						.get(SecurityUtility.CATEGORIES_PATH)
+					.then()
+						.statusCode(HttpStatus.OK.value())
+						.extract().as(CategoryDTO[].class));
+			//@formatter:on
+			
+			assertThat(categoryDTOS).isEqualTo(categoryDTOList);
+		}
+		
+		@Test
+		void getByIdShouldReturnEntityIfItExists() {
+			CategoryDTO category = categoryService.findAll().get(0);
+			
+			//@formatter:off
+			CategoryDTO categoryDTO = RestAssured
+					.given()
+						.auth().oauth2(token)
+					.when()
+						.get(SecurityUtility.CATEGORIES_PATH+"/"+category.getId())
+					.then()
+						.statusCode(HttpStatus.OK.value())
+						.extract().as(CategoryDTO.class);
+			//@formatter:on
+			
+			assertThat(category).isEqualTo(categoryDTO);
+		}
+		
+		@Test
+		void getByIdShouldReturnNotFoundIfEntityDoesNotExist() {
+			//@formatter:off
+			RestAssured
+					.given()
+						.auth().oauth2(token)
+					.when()
+						.get(SecurityUtility.CATEGORIES_PATH+"/"+Long.MAX_VALUE)
+					.then()
+						.statusCode(HttpStatus.NOT_FOUND.value());
+			//@formatter:on
+		}
+		
+		@Test
+		void createShouldSucceedIfDataIsValid() {
+			CategoryDTO category = uniqueCategory;
+			//@formatter:off
+			CategoryDTO categoryDTO = RestAssured
+					.given()
+						.auth().oauth2(token)
+						.body(category).contentType(ContentType.JSON)
+					.when()
+						.post(SecurityUtility.CATEGORIES_PATH)
+					.then()
+						.statusCode(HttpStatus.CREATED.value())
+						.extract().as(CategoryDTO.class);
+			//@formatter:on
+			assertThat(categoryDTO).isEqualTo(category.withId(categoryDTO.getId()));
+		}
+		
+		@Test
+		void createShouldReturnBadRequestIfIdIsNotNull() {
+			CategoryDTO category = uniqueCategory.withId(Long.MAX_VALUE);
+			//@formatter:off
+			RestAssured
+					.given()
+						.auth().oauth2(token)
+						.body(category).contentType(ContentType.JSON)
+					.when()
+						.post(SecurityUtility.CATEGORIES_PATH)
+					.then()
+						.statusCode(HttpStatus.BAD_REQUEST.value());
+			//@formatter:on
+		}
+		
+		@Test
+		void createShouldReturnBadRequestIfNameIsNotUnique() {
+			CategoryDTO category = uniqueCategory.withName(categoryService.findAll().get(0).getName());
+			//@formatter:off
+			RestAssured
+					.given()
+						.auth().oauth2(token)
+						.body(category).contentType(ContentType.JSON)
+					.when()
+						.post(SecurityUtility.CATEGORIES_PATH)
+					.then()
+						.statusCode(HttpStatus.BAD_REQUEST.value());
+			//@formatter:on
+		}
+		
+		@Test
+		void createShouldReturnBadRequestIfNameIsNull() {
+			CategoryDTO category = uniqueCategory.withName(null);
+			//@formatter:off
+			RestAssured
+					.given()
+						.auth().oauth2(token)
+						.body(category).contentType(ContentType.JSON)
+					.when()
+						.post(SecurityUtility.CATEGORIES_PATH)
+					.then()
+						.statusCode(HttpStatus.BAD_REQUEST.value());
+			//@formatter:on
+		}
+		
+		@Test
+		void createShouldReturnBadRequestIfNameIsEmpty() {
+			CategoryDTO category = uniqueCategory.withName("");
+			//@formatter:off
+			RestAssured
+					.given()
+						.auth().oauth2(token)
+						.body(category).contentType(ContentType.JSON)
+					.when()
+						.post(SecurityUtility.CATEGORIES_PATH)
+					.then()
+						.statusCode(HttpStatus.BAD_REQUEST.value());
+			//@formatter:on
+		}
+		
+		@Test
+		void createShouldReturnBadRequestIfNameIsTooLong() {
+			CategoryDTO category = uniqueCategory.withName(StringUtils.repeat(' ', 51));
+			//@formatter:off
+			RestAssured
+					.given()
+						.auth().oauth2(token)
+						.body(category).contentType(ContentType.JSON)
+					.when()
+						.post(SecurityUtility.CATEGORIES_PATH)
+					.then()
+						.statusCode(HttpStatus.BAD_REQUEST.value());
+			//@formatter:on
+		}
+		
+		@Test
+		void createShouldReturnBadRequestIfDescriptionIsNull() {
+			CategoryDTO category = uniqueCategory.withDescription(null);
+			//@formatter:off
+			RestAssured
+					.given()
+						.auth().oauth2(token)
+						.body(category).contentType(ContentType.JSON)
+					.when()
+						.post(SecurityUtility.CATEGORIES_PATH)
+					.then()
+						.statusCode(HttpStatus.BAD_REQUEST.value());
+			//@formatter:on
+		}
+		
+		@Test
+		void createShouldReturnBadRequestIfDescriptionIsEmpty() {
+			CategoryDTO category = uniqueCategory.withDescription("");
+			//@formatter:off
+			RestAssured
+					.given()
+						.auth().oauth2(token)
+						.body(category).contentType(ContentType.JSON)
+					.when()
+						.post(SecurityUtility.CATEGORIES_PATH)
+					.then()
+						.statusCode(HttpStatus.BAD_REQUEST.value());
+			//@formatter:on
+		}
+		
+		@Test
+		void createShouldReturnBadRequestIfDescriptionIsTooShort() {
+			CategoryDTO category = uniqueCategory.withDescription(StringUtils.repeat(' ', 4));
+			//@formatter:off
+			RestAssured
+					.given()
+						.auth().oauth2(token)
+						.body(category).contentType(ContentType.JSON)
+					.when()
+						.post(SecurityUtility.CATEGORIES_PATH)
+					.then()
+						.statusCode(HttpStatus.BAD_REQUEST.value());
+			//@formatter:on
+		}
+		
+		@Test
+		void createShouldReturnBadRequestIfDescriptionIsTooLong() {
+			CategoryDTO category = uniqueCategory.withDescription(StringUtils.repeat(' ', 251));
+			//@formatter:off
+			RestAssured
+					.given()
+						.auth().oauth2(token)
+						.body(category).contentType(ContentType.JSON)
+					.when()
+						.post(SecurityUtility.CATEGORIES_PATH)
+					.then()
+						.statusCode(HttpStatus.BAD_REQUEST.value());
+			//@formatter:on
+		}
+		
+		@Test
+		void updateShouldSucceedIfDataIsValidAndModeratorHasRights() {
+			Optional<CategoryDTO> savedCategory = categoryService.findById(categoryIdWhereModHasRights);
+			assertThat(savedCategory).isNotEmpty();
+			CategoryDTO updatedCategory = savedCategory.get().withName("New name that's unique");
+			//@formatter:off
+			CategoryDTO returnedCategory = RestAssured
+					.given()
+						.auth().oauth2(token)
+						.body(updatedCategory).contentType(ContentType.JSON)
+					.when()
+						.put(SecurityUtility.CATEGORIES_PATH+"/"+savedCategory.get().getId())
+					.then()
+						.statusCode(HttpStatus.OK.value())
+						.extract().as(CategoryDTO.class);
+			//@formatter:on
+			assertThat(returnedCategory).isEqualTo(updatedCategory);
+		}
+		
+		@Test
+		void updateShouldReturnForbiddenIfModeratorDoesNotHaveRights() {
+			Optional<CategoryDTO> savedCategory = categoryService.findById(categoryIdWhereModHDoesNotHaveRights);
+			assertThat(savedCategory).isNotEmpty();
+			CategoryDTO updatedCategory = savedCategory.get().withName("New name that's unique");
+			//@formatter:off
+			RestAssured
+					.given()
+						.auth().oauth2(token)
+						.body(updatedCategory).contentType(ContentType.JSON)
+					.when()
+						.put(SecurityUtility.CATEGORIES_PATH+"/"+savedCategory.get().getId())
+					.then()
+						.statusCode(HttpStatus.FORBIDDEN.value());
+			//@formatter:on
+		}
+		
+		@Test
+		void updateShouldReturnForbiddenIfEntityWasNotFound() {
+			CategoryDTO category = uniqueCategory.withId(Long.MAX_VALUE);
+			//@formatter:off
+			RestAssured
+					.given()
+						.auth().oauth2(token)
+						.body(category).contentType(ContentType.JSON)
+					.when()
+						.put(SecurityUtility.CATEGORIES_PATH+"/"+category.getId())
+					.then()
+						.statusCode(HttpStatus.FORBIDDEN.value());
+			//@formatter:on
+		}
+		
+		@Test
+		void updateShouldReturnBadRequestIfIdIsNull() {
+			Optional<CategoryDTO> savedCategory = categoryService.findById(categoryIdWhereModHasRights);
+			assertThat(savedCategory).isNotEmpty();
+			CategoryDTO updatedCategory = savedCategory.get().withId(null);
+			//@formatter:off
+			RestAssured
+					.given()
+						.auth().oauth2(token)
+						.body(updatedCategory).contentType(ContentType.JSON)
+					.when()
+						.put(SecurityUtility.CATEGORIES_PATH+"/"+savedCategory.get().getId())
+					.then()
+						.statusCode(HttpStatus.BAD_REQUEST.value());
+			//@formatter:on
+		}
+		
+		@Test
+		void updateShouldReturnBadRequestIfNameIsNotUnique() {
+			Optional<CategoryDTO> savedCategory = categoryService.findById(categoryIdWhereModHasRights);
+			Optional<CategoryDTO> adminCategory = categoryService.findById(categoryIdWhereModHDoesNotHaveRights);
+			assertThat(savedCategory).isNotEmpty();
+			assertThat(adminCategory).isNotEmpty();
+			CategoryDTO updatedCategory = savedCategory.get().withName(adminCategory.get().getName());
+			//@formatter:off
+			RestAssured
+					.given()
+						.auth().oauth2(token)
+						.body(updatedCategory).contentType(ContentType.JSON)
+					.when()
+						.put(SecurityUtility.CATEGORIES_PATH+"/"+savedCategory.get().getId())
+					.then()
+						.statusCode(HttpStatus.BAD_REQUEST.value());
+			//@formatter:on
+		}
+		
+		@Test
+		void updateShouldReturnBadRequestIfNameIsNull() {
+			Optional<CategoryDTO> savedCategory = categoryService.findById(categoryIdWhereModHasRights);
+			assertThat(savedCategory).isNotEmpty();
+			CategoryDTO updatedCategory = savedCategory.get().withName(null);
+			//@formatter:off
+			RestAssured
+					.given()
+						.auth().oauth2(token)
+						.body(updatedCategory).contentType(ContentType.JSON)
+					.when()
+						.put(SecurityUtility.CATEGORIES_PATH+"/"+savedCategory.get().getId())
+					.then()
+						.statusCode(HttpStatus.BAD_REQUEST.value());
+			//@formatter:on
+		}
+		
+		@Test
+		void updateShouldReturnBadRequestIfNameIsEmpty() {
+			Optional<CategoryDTO> savedCategory = categoryService.findById(categoryIdWhereModHasRights);
+			assertThat(savedCategory).isNotEmpty();
+			CategoryDTO updatedCategory = savedCategory.get().withName("");
+			//@formatter:off
+			RestAssured
+					.given()
+						.auth().oauth2(token)
+						.body(updatedCategory).contentType(ContentType.JSON)
+					.when()
+						.put(SecurityUtility.CATEGORIES_PATH+"/"+savedCategory.get().getId())
+					.then()
+						.statusCode(HttpStatus.BAD_REQUEST.value());
+			//@formatter:on
+		}
+		
+		@Test
+		void updateShouldReturnBadRequestIfNameIsTooLong() {
+			Optional<CategoryDTO> savedCategory = categoryService.findById(categoryIdWhereModHasRights);
+			assertThat(savedCategory).isNotEmpty();
+			CategoryDTO updatedCategory = savedCategory.get().withName(StringUtils.repeat(' ', 51));
+			//@formatter:off
+			RestAssured
+					.given()
+						.auth().oauth2(token)
+						.body(updatedCategory).contentType(ContentType.JSON)
+					.when()
+						.put(SecurityUtility.CATEGORIES_PATH+"/"+savedCategory.get().getId())
+					.then()
+						.statusCode(HttpStatus.BAD_REQUEST.value());
+			//@formatter:on
+		}
+		
+		@Test
+		void updateShouldReturnBadRequestIfDescriptionIsNull() {
+			Optional<CategoryDTO> savedCategory = categoryService.findById(categoryIdWhereModHasRights);
+			assertThat(savedCategory).isNotEmpty();
+			CategoryDTO updatedCategory = savedCategory.get().withDescription(null);
+			//@formatter:off
+			RestAssured
+					.given()
+						.auth().oauth2(token)
+						.body(updatedCategory).contentType(ContentType.JSON)
+					.when()
+						.put(SecurityUtility.CATEGORIES_PATH+"/"+savedCategory.get().getId())
+					.then()
+						.statusCode(HttpStatus.BAD_REQUEST.value());
+			//@formatter:on
+		}
+		
+		@Test
+		void updateShouldReturnBadRequestIfDescriptionIsEmpty() {
+			Optional<CategoryDTO> savedCategory = categoryService.findById(categoryIdWhereModHasRights);
+			assertThat(savedCategory).isNotEmpty();
+			CategoryDTO updatedCategory = savedCategory.get().withDescription("");
+			//@formatter:off
+			RestAssured
+					.given()
+						.auth().oauth2(token)
+						.body(updatedCategory).contentType(ContentType.JSON)
+					.when()
+						.put(SecurityUtility.CATEGORIES_PATH+"/"+savedCategory.get().getId())
+					.then()
+						.statusCode(HttpStatus.BAD_REQUEST.value());
+			//@formatter:on
+		}
+		
+		@Test
+		void updateShouldReturnBadRequestIfDescriptionIsTooShort() {
+			Optional<CategoryDTO> savedCategory = categoryService.findById(categoryIdWhereModHasRights);
+			assertThat(savedCategory).isNotEmpty();
+			CategoryDTO updatedCategory = savedCategory.get().withDescription(StringUtils.repeat(' ', 4));
+			//@formatter:off
+			RestAssured
+					.given()
+						.auth().oauth2(token)
+						.body(updatedCategory).contentType(ContentType.JSON)
+					.when()
+						.put(SecurityUtility.CATEGORIES_PATH+"/"+savedCategory.get().getId())
+					.then()
+						.statusCode(HttpStatus.BAD_REQUEST.value());
+			//@formatter:on
+		}
+		
+		@Test
+		void updateShouldReturnBadRequestIfDescriptionIsTooLong() {
+			Optional<CategoryDTO> savedCategory = categoryService.findById(categoryIdWhereModHasRights);
+			assertThat(savedCategory).isNotEmpty();
+			CategoryDTO updatedCategory = savedCategory.get().withDescription(StringUtils.repeat(' ', 251));
+			//@formatter:off
+			RestAssured
+					.given()
+						.auth().oauth2(token)
+						.body(updatedCategory).contentType(ContentType.JSON)
+					.when()
+						.put(SecurityUtility.CATEGORIES_PATH+"/"+savedCategory.get().getId())
+					.then()
+						.statusCode(HttpStatus.BAD_REQUEST.value());
+			//@formatter:on
+		}
+		
+		@Test
+		void deleteShouldSucceedIfEntityExistsAndModHasRights() {
+			Optional<CategoryDTO> savedCategory = categoryService.findById(categoryIdWhereModHasRights);
+			assertThat(savedCategory).isNotEmpty();
+			//@formatter:off
+			RestAssured
+					.given()
+						.auth().oauth2(token)
+					.when()
+						.delete(SecurityUtility.CATEGORIES_PATH+"/"+savedCategory.get().getId())
+					.then()
+						.statusCode(HttpStatus.NO_CONTENT.value());
+			//@formatter:on
+		}
+		
+		@Test
+		void deleteShouldReturnForbiddenIfEntityExistsAndModDoesNotHaveRights() {
+			Optional<CategoryDTO> savedCategory = categoryService.findById(categoryIdWhereModHDoesNotHaveRights);
+			assertThat(savedCategory).isNotEmpty();
+			assertThat(savedCategory).isNotEmpty();
+			//@formatter:off
+			RestAssured
+					.given()
+						.auth().oauth2(token)
+					.when()
+						.delete(SecurityUtility.CATEGORIES_PATH+"/"+savedCategory.get().getId())
+					.then()
+						.statusCode(HttpStatus.FORBIDDEN.value());
+			//@formatter:on
+		}
+		
+		@Test
+		void deleteShouldReturnForbiddenIfEntityDoesNotExist() {
+			//@formatter:off
+			RestAssured
+					.given()
+						.auth().oauth2(token)
+					.when()
+						.delete(SecurityUtility.CATEGORIES_PATH+"/"+Long.MAX_VALUE)
+					.then()
+						.statusCode(HttpStatus.FORBIDDEN.value());
+			//@formatter:on
+		}
+		
+		@Nested
+		@DisplayName("Nested tests of categoryRoles eg. categories/{id}/roles")
+		class CategoriesRolesTests {
+			@Test
+			void getAllRolesOfAnExistingCategoryShouldSucceed() {
+				Long id = 1L;
+				Optional<Set<RoleDTO>> savedRoles = categoryService.findById(id).map(categoryDTO -> {
+					Optional<Set<RoleDTO>> rolesForCategory = categoryService.findRolesForCategory(categoryDTO);
+					return rolesForCategory.orElse(Collections.emptySet());
+				});
+				assertThat(savedRoles).isNotEmpty();
+				
+				//@formatter:off
+				Set<RoleDTO> roleDTOS = Set.of(RestAssured
+						.given()
+							.auth().oauth2(token)
+						.when()
+							.get(SecurityUtility.CATEGORIES_PATH+"/"+id+"/roles")
+						.then()
+							.statusCode(HttpStatus.OK.value())
+							.extract().as(RoleDTO[].class));
+				//@formatter:on
+				
+				assertThat(roleDTOS).isEqualTo(savedRoles.get());
+			}
+			
+			@Test
+			void getAllRolesOfNonExistingCategoryShouldReturnNotFound() {
+				Long id = Long.MAX_VALUE;
+				Optional<Set<RoleDTO>> savedRoles = categoryService.findById(id).map(categoryDTO -> {
+					Optional<Set<RoleDTO>> rolesForCategory = categoryService.findRolesForCategory(categoryDTO);
+					return rolesForCategory.orElse(Collections.emptySet());
+				});
+				assertThat(savedRoles).isEmpty();
+				
+				//@formatter:off
+				RestAssured
+						.given()
+							.auth().oauth2(token)
+						.when()
+							.get(SecurityUtility.CATEGORIES_PATH+"/"+id+"/roles")
+						.then()
+							.statusCode(HttpStatus.NOT_FOUND.value());
+				//@formatter:on
+			}
+			
+			@Test
+			void addRoleToExistingCategoryShouldSucceed() {
+				Long categoryId = categoryIdWhereModHasRights;
+				Long roleId = 1L;
+				Optional<Set<RoleDTO>> savedRoles = categoryService.findRolesForCategoryById(categoryId);
+				Optional<RoleDTO> roleToSave = roleService.getById(roleId);
+				
+				assertThat(savedRoles).isNotEmpty();
+				assertThat(roleToSave).isNotEmpty();
+				assertThat(savedRoles.get()).doesNotContain(roleToSave.get());
+				
+				//@formatter:off
+				RestAssured
+						.given()
+							.auth().oauth2(token)
+							.body(roleToSave.get()).contentType(ContentType.JSON)
+						.when()
+							.post(SecurityUtility.CATEGORIES_PATH+"/"+categoryId+"/roles")
+						.then()
+							.statusCode(HttpStatus.CREATED.value());
+				//@formatter:on
+				
+				savedRoles = categoryService.findById(categoryId).map(categoryDTO ->
+						categoryService.findRolesForCategory(categoryDTO).orElse(Collections.emptySet()));
+				assertThat(savedRoles).isNotEmpty();
+				assertThat(savedRoles.get()).contains(roleToSave.get());
+			}
+			
+			@Test
+			void addRoleToNonExistingCategoryShouldReturnForbidden() {
+				Long categoryId = Long.MAX_VALUE;
+				Long roleId = 1L;
+				Optional<RoleDTO> roleToSave = roleService.getById(roleId);
+				assertThat(roleToSave).isNotEmpty();
+				
+				//@formatter:off
+				RestAssured
+						.given()
+							.auth().oauth2(token)
+							.body(roleToSave.get()).contentType(ContentType.JSON)
+						.when()
+							.post(SecurityUtility.CATEGORIES_PATH+"/"+categoryId+"/roles")
+						.then()
+							.statusCode(HttpStatus.FORBIDDEN.value());
+				//@formatter:on
+			}
+			
+			@Test
+			void deleteRoleFromExistingCategoryShouldSucceed() {
+				Long categoryId = 2L;
+				Long roleId = 2L;
+				Optional<Set<RoleDTO>> savedRoles = categoryService.findById(categoryId).map(categoryDTO ->
+						categoryService.findRolesForCategory(categoryDTO).orElse(Collections.emptySet()));
+				Optional<RoleDTO> roleToDelete = roleService.getById(roleId);
+				
+				assertThat(savedRoles).isNotEmpty();
+				assertThat(roleToDelete).isNotEmpty();
+				assertThat(savedRoles.get()).contains(roleToDelete.get());
+				//@formatter:off
+				RestAssured
+						.given()
+							.auth().oauth2(token)
+							.body(roleToDelete.get()).contentType(ContentType.JSON)
+						.when()
+							.delete(SecurityUtility.CATEGORIES_PATH+"/"+categoryId+"/roles/"+roleId)
+						.then()
+							.statusCode(HttpStatus.NO_CONTENT.value());
+				//@formatter:on
+				savedRoles = categoryService.findById(categoryId).map(categoryDTO ->
+						categoryService.findRolesForCategory(categoryDTO).orElse(Collections.emptySet()));
+				assertThat(savedRoles).isNotEmpty();
+				assertThat(savedRoles.get()).doesNotContain(roleToDelete.get());
+			}
 		}
 	}
 	
@@ -291,7 +996,7 @@ class CategoryControllerTest {
 		
 		@Test
 		void getAllShouldReturnAllEntities() {
-			List<CategoryDTO> categoryDTOList = categoryService.getAll();
+			List<CategoryDTO> categoryDTOList = categoryService.findAll();
 			
 			//@formatter:off
 			List<CategoryDTO> categoryDTOS = List.of(RestAssured
@@ -309,7 +1014,7 @@ class CategoryControllerTest {
 		
 		@Test
 		void getByIdShouldReturnEntityIfItExists() {
-			CategoryDTO category = categoryService.getAll().get(0);
+			CategoryDTO category = categoryService.findAll().get(0);
 			
 			//@formatter:off
 			CategoryDTO categoryDTO = RestAssured
@@ -356,7 +1061,7 @@ class CategoryControllerTest {
 		}
 		
 		@Test
-		void createShouldFailIfIdIsNotNull() {
+		void createShouldReturnBadRequestIfIdIsNotNull() {
 			CategoryDTO category = uniqueCategory.withId(Long.MAX_VALUE);
 			//@formatter:off
 			RestAssured
@@ -371,8 +1076,8 @@ class CategoryControllerTest {
 		}
 		
 		@Test
-		void createShouldFailIfNameIsNotUnique() {
-			CategoryDTO category = uniqueCategory.withName(categoryService.getAll().get(0).getName());
+		void createShouldReturnBadRequestIfNameIsNotUnique() {
+			CategoryDTO category = uniqueCategory.withName(categoryService.findAll().get(0).getName());
 			//@formatter:off
 			RestAssured
 					.given()
@@ -386,7 +1091,7 @@ class CategoryControllerTest {
 		}
 		
 		@Test
-		void createShouldFailIfNameIsNull() {
+		void createShouldReturnBadRequestIfNameIsNull() {
 			CategoryDTO category = uniqueCategory.withName(null);
 			//@formatter:off
 			RestAssured
@@ -401,7 +1106,7 @@ class CategoryControllerTest {
 		}
 		
 		@Test
-		void createShouldFailIfNameIsEmpty() {
+		void createShouldReturnBadRequestIfNameIsEmpty() {
 			CategoryDTO category = uniqueCategory.withName("");
 			//@formatter:off
 			RestAssured
@@ -416,7 +1121,7 @@ class CategoryControllerTest {
 		}
 		
 		@Test
-		void createShouldFailIfNameIsTooLong() {
+		void createShouldReturnBadRequestIfNameIsTooLong() {
 			CategoryDTO category = uniqueCategory.withName(StringUtils.repeat(' ', 51));
 			//@formatter:off
 			RestAssured
@@ -431,7 +1136,7 @@ class CategoryControllerTest {
 		}
 		
 		@Test
-		void createShouldFailIfDescriptionIsNull() {
+		void createShouldReturnBadRequestIfDescriptionIsNull() {
 			CategoryDTO category = uniqueCategory.withDescription(null);
 			//@formatter:off
 			RestAssured
@@ -446,7 +1151,7 @@ class CategoryControllerTest {
 		}
 		
 		@Test
-		void createShouldFailIfDescriptionIsEmpty() {
+		void createShouldReturnBadRequestIfDescriptionIsEmpty() {
 			CategoryDTO category = uniqueCategory.withDescription("");
 			//@formatter:off
 			RestAssured
@@ -461,7 +1166,7 @@ class CategoryControllerTest {
 		}
 		
 		@Test
-		void createShouldFailIfDescriptionIsTooShort() {
+		void createShouldReturnBadRequestIfDescriptionIsTooShort() {
 			CategoryDTO category = uniqueCategory.withDescription(StringUtils.repeat(' ', 4));
 			//@formatter:off
 			RestAssured
@@ -476,7 +1181,7 @@ class CategoryControllerTest {
 		}
 		
 		@Test
-		void createShouldFailIfDescriptionIsTooLong() {
+		void createShouldReturnBadRequestIfDescriptionIsTooLong() {
 			CategoryDTO category = uniqueCategory.withDescription(StringUtils.repeat(' ', 251));
 			//@formatter:off
 			RestAssured
@@ -492,7 +1197,7 @@ class CategoryControllerTest {
 		
 		@Test
 		void updateShouldSucceedIfDataIsValid() {
-			CategoryDTO savedCategory = categoryService.getAll().get(0);
+			CategoryDTO savedCategory = categoryService.findAll().get(0);
 			CategoryDTO updatedCategory = savedCategory.withName("New name that's unique");
 			//@formatter:off
 			CategoryDTO returnedCategory = RestAssured
@@ -500,7 +1205,7 @@ class CategoryControllerTest {
 						.auth().oauth2(token)
 						.body(updatedCategory).contentType(ContentType.JSON)
 					.when()
-						.put(SecurityUtility.CATEGORIES_PATH+ "/"+savedCategory.getId())
+						.put(SecurityUtility.CATEGORIES_PATH+"/"+savedCategory.getId())
 					.then()
 						.statusCode(HttpStatus.OK.value())
 						.extract().as(CategoryDTO.class);
@@ -509,7 +1214,7 @@ class CategoryControllerTest {
 		}
 		
 		@Test
-		void updateShouldFailIfEntityWasNotFound() {
+		void updateShouldReturnNotFoundIfEntityWasNotFound() {
 			CategoryDTO category = uniqueCategory.withId(Long.MAX_VALUE);
 			//@formatter:off
 			RestAssured
@@ -517,445 +1222,15 @@ class CategoryControllerTest {
 						.auth().oauth2(token)
 						.body(category).contentType(ContentType.JSON)
 					.when()
-						.put(SecurityUtility.CATEGORIES_PATH+ "/"+uniqueCategory.getId())
-					.then()
-						.statusCode(HttpStatus.BAD_REQUEST.value());
-			//@formatter:on
-		}
-		
-		@Test
-		void updateShouldFailIfIdIsNull() {
-			CategoryDTO savedCategory = categoryService.getAll().get(0);
-			CategoryDTO updatedCategory = savedCategory.withId(null);
-			//@formatter:off
-			RestAssured
-					.given()
-						.auth().oauth2(token)
-						.body(updatedCategory).contentType(ContentType.JSON)
-					.when()
-						.put(SecurityUtility.CATEGORIES_PATH+ "/"+savedCategory.getId())
-					.then()
-						.statusCode(HttpStatus.BAD_REQUEST.value());
-			//@formatter:on
-		}
-		
-		@Test
-		void updateShouldFailIfIdMismatch() {
-			CategoryDTO savedCategory = categoryService.getAll().get(0);
-			CategoryDTO updatedCategory = savedCategory.withId(Long.MAX_VALUE);
-			//@formatter:off
-			RestAssured
-					.given()
-						.auth().oauth2(token)
-						.body(updatedCategory).contentType(ContentType.JSON)
-					.when()
-						.put(SecurityUtility.CATEGORIES_PATH+ "/"+savedCategory.getId())
-					.then()
-						.statusCode(HttpStatus.BAD_REQUEST.value());
-			//@formatter:on
-		}
-		
-		@Test
-		void updateShouldFailIfNameIsNotUnique() {
-			CategoryDTO savedCategory = categoryService.getAll().get(0);
-			CategoryDTO updatedCategory = savedCategory.withName(categoryService.getAll().get(1).getName());
-			//@formatter:off
-			RestAssured
-					.given()
-						.auth().oauth2(token)
-						.body(updatedCategory).contentType(ContentType.JSON)
-					.when()
-						.put(SecurityUtility.CATEGORIES_PATH+ "/"+savedCategory.getId())
-					.then()
-						.statusCode(HttpStatus.BAD_REQUEST.value());
-			//@formatter:on
-		}
-		
-		@Test
-		void updateShouldFailIfNameIsNull() {
-			CategoryDTO savedCategory = categoryService.getAll().get(0);
-			CategoryDTO updatedCategory = savedCategory.withName(null);
-			//@formatter:off
-			RestAssured
-					.given()
-						.auth().oauth2(token)
-						.body(updatedCategory).contentType(ContentType.JSON)
-					.when()
-						.put(SecurityUtility.CATEGORIES_PATH+ "/"+savedCategory.getId())
-					.then()
-						.statusCode(HttpStatus.BAD_REQUEST.value());
-			//@formatter:on
-		}
-		
-		@Test
-		void updateShouldFailIfNameIsEmpty() {
-			CategoryDTO savedCategory = categoryService.getAll().get(0);
-			CategoryDTO updatedCategory = savedCategory.withName("");
-			//@formatter:off
-			RestAssured
-					.given()
-						.auth().oauth2(token)
-						.body(updatedCategory).contentType(ContentType.JSON)
-					.when()
-						.put(SecurityUtility.CATEGORIES_PATH+ "/"+savedCategory.getId())
-					.then()
-						.statusCode(HttpStatus.BAD_REQUEST.value());
-			//@formatter:on
-		}
-		
-		@Test
-		void updateShouldFailIfNameIsTooLong() {
-			CategoryDTO savedCategory = categoryService.getAll().get(0);
-			CategoryDTO updatedCategory = savedCategory.withName(StringUtils.repeat(' ', 51));
-			//@formatter:off
-			RestAssured
-					.given()
-						.auth().oauth2(token)
-						.body(updatedCategory).contentType(ContentType.JSON)
-					.when()
-						.put(SecurityUtility.CATEGORIES_PATH+ "/"+savedCategory.getId())
-					.then()
-						.statusCode(HttpStatus.BAD_REQUEST.value());
-			//@formatter:on
-		}
-		
-		@Test
-		void updateShouldFailIfDescriptionIsNull() {
-			CategoryDTO savedCategory = categoryService.getAll().get(0);
-			CategoryDTO updatedCategory = savedCategory.withDescription(null);
-			//@formatter:off
-			RestAssured
-					.given()
-						.auth().oauth2(token)
-						.body(updatedCategory).contentType(ContentType.JSON)
-					.when()
-						.put(SecurityUtility.CATEGORIES_PATH+ "/"+savedCategory.getId())
-					.then()
-						.statusCode(HttpStatus.BAD_REQUEST.value());
-			//@formatter:on
-		}
-		
-		@Test
-		void updateShouldFailIfDescriptionIsEmpty() {
-			CategoryDTO savedCategory = categoryService.getAll().get(0);
-			CategoryDTO updatedCategory = savedCategory.withDescription("");
-			//@formatter:off
-			RestAssured
-					.given()
-						.auth().oauth2(token)
-						.body(updatedCategory).contentType(ContentType.JSON)
-					.when()
-						.put(SecurityUtility.CATEGORIES_PATH+ "/"+savedCategory.getId())
-					.then()
-						.statusCode(HttpStatus.BAD_REQUEST.value());
-			//@formatter:on
-		}
-		
-		@Test
-		void updateShouldFailIfDescriptionIsTooShort() {
-			CategoryDTO savedCategory = categoryService.getAll().get(0);
-			CategoryDTO updatedCategory = savedCategory.withDescription(StringUtils.repeat(' ', 4));
-			//@formatter:off
-			RestAssured
-					.given()
-						.auth().oauth2(token)
-						.body(updatedCategory).contentType(ContentType.JSON)
-					.when()
-						.put(SecurityUtility.CATEGORIES_PATH+ "/"+savedCategory.getId())
-					.then()
-						.statusCode(HttpStatus.BAD_REQUEST.value());
-			//@formatter:on
-		}
-		
-		@Test
-		void updateShouldFailIfDescriptionIsTooLong() {
-			CategoryDTO savedCategory = categoryService.getAll().get(0);
-			CategoryDTO updatedCategory = savedCategory.withDescription(StringUtils.repeat(' ', 251));
-			//@formatter:off
-			RestAssured
-					.given()
-						.auth().oauth2(token)
-						.body(updatedCategory).contentType(ContentType.JSON)
-					.when()
-						.put(SecurityUtility.CATEGORIES_PATH+ "/"+savedCategory.getId())
-					.then()
-						.statusCode(HttpStatus.BAD_REQUEST.value());
-			//@formatter:on
-		}
-		
-		@Test
-		void deleteShouldSucceedIfEntityExists() {
-			CategoryDTO savedCategory = categoryService.getAll().get(0);
-			//@formatter:off
-			RestAssured
-					.given()
-						.auth().oauth2(token)
-					.when()
-						.delete(SecurityUtility.CATEGORIES_PATH+ "/"+savedCategory.getId())
-					.then()
-						.statusCode(HttpStatus.NO_CONTENT.value());
-			//@formatter:on
-		}
-		
-		@Test
-		void deleteShouldFailIfEntityDoesNotExist() {
-			//@formatter:off
-			RestAssured
-					.given()
-						.auth().oauth2(token)
-					.when()
-						.delete(SecurityUtility.CATEGORIES_PATH+ "/"+Long.MAX_VALUE)
-					.then()
-						.statusCode(HttpStatus.BAD_REQUEST.value());
-			//@formatter:on
-		}
-	}
-	
-	@Nested
-	@DisplayName("If user has a role MODERATOR")
-	class ModeratorTests {
-		@BeforeEach
-		public void setUp() {
-			token = getJwtToken(RoleContainer.MODERATOR);
-		}
-		
-		@Test
-		void getAllShouldReturnAllEntities() {
-			List<CategoryDTO> categoryDTOList = categoryService.getAll();
-			
-			//@formatter:off
-			List<CategoryDTO> categoryDTOS = List.of(RestAssured
-					.given()
-						.auth().oauth2(token)
-					.when()
-						.get(SecurityUtility.CATEGORIES_PATH)
-					.then()
-						.statusCode(HttpStatus.OK.value())
-						.extract().as(CategoryDTO[].class));
-			//@formatter:on
-			
-			assertThat(categoryDTOS).isEqualTo(categoryDTOList);
-		}
-		
-		@Test
-		void getByIdShouldReturnEntityIfItExists() {
-			CategoryDTO category = categoryService.getAll().get(0);
-			
-			//@formatter:off
-			CategoryDTO categoryDTO = RestAssured
-					.given()
-						.auth().oauth2(token)
-					.when()
-						.get(SecurityUtility.CATEGORIES_PATH+"/"+category.getId())
-					.then()
-						.statusCode(HttpStatus.OK.value())
-						.extract().as(CategoryDTO.class);
-			//@formatter:on
-			
-			assertThat(category).isEqualTo(categoryDTO);
-		}
-		
-		@Test
-		void getByIdShouldReturnNotFoundIfEntityDoesNotExist() {
-			//@formatter:off
-			RestAssured
-					.given()
-						.auth().oauth2(token)
-					.when()
-						.get(SecurityUtility.CATEGORIES_PATH+"/"+Long.MAX_VALUE)
+						.put(SecurityUtility.CATEGORIES_PATH+"/"+category.getId())
 					.then()
 						.statusCode(HttpStatus.NOT_FOUND.value());
 			//@formatter:on
 		}
 		
 		@Test
-		void createShouldSucceedIfDataIsValid() {
-			CategoryDTO category = uniqueCategory;
-			//@formatter:off
-			CategoryDTO categoryDTO = RestAssured
-					.given()
-						.auth().oauth2(token)
-						.body(category).contentType(ContentType.JSON)
-					.when()
-						.post(SecurityUtility.CATEGORIES_PATH)
-					.then()
-						.statusCode(HttpStatus.CREATED.value())
-						.extract().as(CategoryDTO.class);
-			//@formatter:on
-			assertThat(categoryDTO).isEqualTo(category.withId(categoryDTO.getId()));
-		}
-		
-		@Test
-		void createShouldFailIfIdIsNotNull() {
-			CategoryDTO category = uniqueCategory.withId(Long.MAX_VALUE);
-			//@formatter:off
-			RestAssured
-					.given()
-						.auth().oauth2(token)
-						.body(category).contentType(ContentType.JSON)
-					.when()
-						.post(SecurityUtility.CATEGORIES_PATH)
-					.then()
-						.statusCode(HttpStatus.BAD_REQUEST.value());
-			//@formatter:on
-		}
-		
-		@Test
-		void createShouldFailIfNameIsNotUnique() {
-			CategoryDTO category = uniqueCategory.withName(categoryService.getAll().get(0).getName());
-			//@formatter:off
-			RestAssured
-					.given()
-						.auth().oauth2(token)
-						.body(category).contentType(ContentType.JSON)
-					.when()
-						.post(SecurityUtility.CATEGORIES_PATH)
-					.then()
-						.statusCode(HttpStatus.BAD_REQUEST.value());
-			//@formatter:on
-		}
-		
-		@Test
-		void createShouldFailIfNameIsNull() {
-			CategoryDTO category = uniqueCategory.withName(null);
-			//@formatter:off
-			RestAssured
-					.given()
-						.auth().oauth2(token)
-						.body(category).contentType(ContentType.JSON)
-					.when()
-						.post(SecurityUtility.CATEGORIES_PATH)
-					.then()
-						.statusCode(HttpStatus.BAD_REQUEST.value());
-			//@formatter:on
-		}
-		
-		@Test
-		void createShouldFailIfNameIsEmpty() {
-			CategoryDTO category = uniqueCategory.withName("");
-			//@formatter:off
-			RestAssured
-					.given()
-						.auth().oauth2(token)
-						.body(category).contentType(ContentType.JSON)
-					.when()
-						.post(SecurityUtility.CATEGORIES_PATH)
-					.then()
-						.statusCode(HttpStatus.BAD_REQUEST.value());
-			//@formatter:on
-		}
-		
-		@Test
-		void createShouldFailIfNameIsTooLong() {
-			CategoryDTO category = uniqueCategory.withName(StringUtils.repeat(' ', 51));
-			//@formatter:off
-			RestAssured
-					.given()
-						.auth().oauth2(token)
-						.body(category).contentType(ContentType.JSON)
-					.when()
-						.post(SecurityUtility.CATEGORIES_PATH)
-					.then()
-						.statusCode(HttpStatus.BAD_REQUEST.value());
-			//@formatter:on
-		}
-		
-		@Test
-		void createShouldFailIfDescriptionIsNull() {
-			CategoryDTO category = uniqueCategory.withDescription(null);
-			//@formatter:off
-			RestAssured
-					.given()
-						.auth().oauth2(token)
-						.body(category).contentType(ContentType.JSON)
-					.when()
-						.post(SecurityUtility.CATEGORIES_PATH)
-					.then()
-						.statusCode(HttpStatus.BAD_REQUEST.value());
-			//@formatter:on
-		}
-		
-		@Test
-		void createShouldFailIfDescriptionIsEmpty() {
-			CategoryDTO category = uniqueCategory.withDescription("");
-			//@formatter:off
-			RestAssured
-					.given()
-						.auth().oauth2(token)
-						.body(category).contentType(ContentType.JSON)
-					.when()
-						.post(SecurityUtility.CATEGORIES_PATH)
-					.then()
-						.statusCode(HttpStatus.BAD_REQUEST.value());
-			//@formatter:on
-		}
-		
-		@Test
-		void createShouldFailIfDescriptionIsTooShort() {
-			CategoryDTO category = uniqueCategory.withDescription(StringUtils.repeat(' ', 4));
-			//@formatter:off
-			RestAssured
-					.given()
-						.auth().oauth2(token)
-						.body(category).contentType(ContentType.JSON)
-					.when()
-						.post(SecurityUtility.CATEGORIES_PATH)
-					.then()
-						.statusCode(HttpStatus.BAD_REQUEST.value());
-			//@formatter:on
-		}
-		
-		@Test
-		void createShouldFailIfDescriptionIsTooLong() {
-			CategoryDTO category = uniqueCategory.withDescription(StringUtils.repeat(' ', 251));
-			//@formatter:off
-			RestAssured
-					.given()
-						.auth().oauth2(token)
-						.body(category).contentType(ContentType.JSON)
-					.when()
-						.post(SecurityUtility.CATEGORIES_PATH)
-					.then()
-						.statusCode(HttpStatus.BAD_REQUEST.value());
-			//@formatter:on
-		}
-		
-		@Test
-		void updateShouldSucceedIfDataIsValid() {
-			CategoryDTO savedCategory = categoryService.getAll().get(0);
-			CategoryDTO updatedCategory = savedCategory.withName("New name that's unique");
-			//@formatter:off
-			CategoryDTO returnedCategory = RestAssured
-					.given()
-						.auth().oauth2(token)
-						.body(updatedCategory).contentType(ContentType.JSON)
-					.when()
-						.put(SecurityUtility.CATEGORIES_PATH+ "/"+savedCategory.getId())
-					.then()
-						.statusCode(HttpStatus.OK.value())
-						.extract().as(CategoryDTO.class);
-			//@formatter:on
-			assertThat(returnedCategory).isEqualTo(updatedCategory);
-		}
-		
-		@Test
-		void updateShouldFailIfEntityWasNotFound() {
-			CategoryDTO category = uniqueCategory.withId(Long.MAX_VALUE);
-			//@formatter:off
-			RestAssured
-					.given()
-						.auth().oauth2(token)
-						.body(category).contentType(ContentType.JSON)
-					.when()
-						.put(SecurityUtility.CATEGORIES_PATH+ "/"+uniqueCategory.getId())
-					.then()
-						.statusCode(HttpStatus.BAD_REQUEST.value());
-			//@formatter:on
-		}
-		
-		@Test
-		void updateShouldFailIfIdIsNull() {
-			CategoryDTO savedCategory = categoryService.getAll().get(0);
+		void updateShouldReturnBadRequestIfIdIsNull() {
+			CategoryDTO savedCategory = categoryService.findAll().get(0);
 			CategoryDTO updatedCategory = savedCategory.withId(null);
 			//@formatter:off
 			RestAssured
@@ -963,47 +1238,31 @@ class CategoryControllerTest {
 						.auth().oauth2(token)
 						.body(updatedCategory).contentType(ContentType.JSON)
 					.when()
-						.put(SecurityUtility.CATEGORIES_PATH+ "/"+savedCategory.getId())
+						.put(SecurityUtility.CATEGORIES_PATH+"/"+savedCategory.getId())
 					.then()
 						.statusCode(HttpStatus.BAD_REQUEST.value());
 			//@formatter:on
 		}
 		
 		@Test
-		void updateShouldFailIfIdMismatch() {
-			CategoryDTO savedCategory = categoryService.getAll().get(0);
-			CategoryDTO updatedCategory = savedCategory.withId(Long.MAX_VALUE);
+		void updateShouldReturnBadRequestIfNameIsNotUnique() {
+			CategoryDTO savedCategory = categoryService.findAll().get(0);
+			CategoryDTO updatedCategory = savedCategory.withName(categoryService.findAll().get(1).getName());
 			//@formatter:off
 			RestAssured
 					.given()
 						.auth().oauth2(token)
 						.body(updatedCategory).contentType(ContentType.JSON)
 					.when()
-						.put(SecurityUtility.CATEGORIES_PATH+ "/"+savedCategory.getId())
+						.put(SecurityUtility.CATEGORIES_PATH+"/"+savedCategory.getId())
 					.then()
 						.statusCode(HttpStatus.BAD_REQUEST.value());
 			//@formatter:on
 		}
 		
 		@Test
-		void updateShouldFailIfNameIsNotUnique() {
-			CategoryDTO savedCategory = categoryService.getAll().get(0);
-			CategoryDTO updatedCategory = savedCategory.withName(categoryService.getAll().get(1).getName());
-			//@formatter:off
-			RestAssured
-					.given()
-						.auth().oauth2(token)
-						.body(updatedCategory).contentType(ContentType.JSON)
-					.when()
-						.put(SecurityUtility.CATEGORIES_PATH+ "/"+savedCategory.getId())
-					.then()
-						.statusCode(HttpStatus.BAD_REQUEST.value());
-			//@formatter:on
-		}
-		
-		@Test
-		void updateShouldFailIfNameIsNull() {
-			CategoryDTO savedCategory = categoryService.getAll().get(0);
+		void updateShouldReturnBadRequestIfNameIsNull() {
+			CategoryDTO savedCategory = categoryService.findAll().get(0);
 			CategoryDTO updatedCategory = savedCategory.withName(null);
 			//@formatter:off
 			RestAssured
@@ -1011,15 +1270,15 @@ class CategoryControllerTest {
 						.auth().oauth2(token)
 						.body(updatedCategory).contentType(ContentType.JSON)
 					.when()
-						.put(SecurityUtility.CATEGORIES_PATH+ "/"+savedCategory.getId())
+						.put(SecurityUtility.CATEGORIES_PATH+"/"+savedCategory.getId())
 					.then()
 						.statusCode(HttpStatus.BAD_REQUEST.value());
 			//@formatter:on
 		}
 		
 		@Test
-		void updateShouldFailIfNameIsEmpty() {
-			CategoryDTO savedCategory = categoryService.getAll().get(0);
+		void updateShouldReturnBadRequestIfNameIsEmpty() {
+			CategoryDTO savedCategory = categoryService.findAll().get(0);
 			CategoryDTO updatedCategory = savedCategory.withName("");
 			//@formatter:off
 			RestAssured
@@ -1027,15 +1286,15 @@ class CategoryControllerTest {
 						.auth().oauth2(token)
 						.body(updatedCategory).contentType(ContentType.JSON)
 					.when()
-						.put(SecurityUtility.CATEGORIES_PATH+ "/"+savedCategory.getId())
+						.put(SecurityUtility.CATEGORIES_PATH+"/"+savedCategory.getId())
 					.then()
 						.statusCode(HttpStatus.BAD_REQUEST.value());
 			//@formatter:on
 		}
 		
 		@Test
-		void updateShouldFailIfNameIsTooLong() {
-			CategoryDTO savedCategory = categoryService.getAll().get(0);
+		void updateShouldReturnBadRequestIfNameIsTooLong() {
+			CategoryDTO savedCategory = categoryService.findAll().get(0);
 			CategoryDTO updatedCategory = savedCategory.withName(StringUtils.repeat(' ', 51));
 			//@formatter:off
 			RestAssured
@@ -1043,15 +1302,15 @@ class CategoryControllerTest {
 						.auth().oauth2(token)
 						.body(updatedCategory).contentType(ContentType.JSON)
 					.when()
-						.put(SecurityUtility.CATEGORIES_PATH+ "/"+savedCategory.getId())
+						.put(SecurityUtility.CATEGORIES_PATH+"/"+savedCategory.getId())
 					.then()
 						.statusCode(HttpStatus.BAD_REQUEST.value());
 			//@formatter:on
 		}
 		
 		@Test
-		void updateShouldFailIfDescriptionIsNull() {
-			CategoryDTO savedCategory = categoryService.getAll().get(0);
+		void updateShouldReturnBadRequestIfDescriptionIsNull() {
+			CategoryDTO savedCategory = categoryService.findAll().get(0);
 			CategoryDTO updatedCategory = savedCategory.withDescription(null);
 			//@formatter:off
 			RestAssured
@@ -1059,15 +1318,15 @@ class CategoryControllerTest {
 						.auth().oauth2(token)
 						.body(updatedCategory).contentType(ContentType.JSON)
 					.when()
-						.put(SecurityUtility.CATEGORIES_PATH+ "/"+savedCategory.getId())
+						.put(SecurityUtility.CATEGORIES_PATH+"/"+savedCategory.getId())
 					.then()
 						.statusCode(HttpStatus.BAD_REQUEST.value());
 			//@formatter:on
 		}
 		
 		@Test
-		void updateShouldFailIfDescriptionIsEmpty() {
-			CategoryDTO savedCategory = categoryService.getAll().get(0);
+		void updateShouldReturnBadRequestIfDescriptionIsEmpty() {
+			CategoryDTO savedCategory = categoryService.findAll().get(0);
 			CategoryDTO updatedCategory = savedCategory.withDescription("");
 			//@formatter:off
 			RestAssured
@@ -1075,15 +1334,15 @@ class CategoryControllerTest {
 						.auth().oauth2(token)
 						.body(updatedCategory).contentType(ContentType.JSON)
 					.when()
-						.put(SecurityUtility.CATEGORIES_PATH+ "/"+savedCategory.getId())
+						.put(SecurityUtility.CATEGORIES_PATH+"/"+savedCategory.getId())
 					.then()
 						.statusCode(HttpStatus.BAD_REQUEST.value());
 			//@formatter:on
 		}
 		
 		@Test
-		void updateShouldFailIfDescriptionIsTooShort() {
-			CategoryDTO savedCategory = categoryService.getAll().get(0);
+		void updateShouldReturnBadRequestIfDescriptionIsTooShort() {
+			CategoryDTO savedCategory = categoryService.findAll().get(0);
 			CategoryDTO updatedCategory = savedCategory.withDescription(StringUtils.repeat(' ', 4));
 			//@formatter:off
 			RestAssured
@@ -1091,15 +1350,15 @@ class CategoryControllerTest {
 						.auth().oauth2(token)
 						.body(updatedCategory).contentType(ContentType.JSON)
 					.when()
-						.put(SecurityUtility.CATEGORIES_PATH+ "/"+savedCategory.getId())
+						.put(SecurityUtility.CATEGORIES_PATH+"/"+savedCategory.getId())
 					.then()
 						.statusCode(HttpStatus.BAD_REQUEST.value());
 			//@formatter:on
 		}
 		
 		@Test
-		void updateShouldFailIfDescriptionIsTooLong() {
-			CategoryDTO savedCategory = categoryService.getAll().get(0);
+		void updateShouldReturnBadRequestIfDescriptionIsTooLong() {
+			CategoryDTO savedCategory = categoryService.findAll().get(0);
 			CategoryDTO updatedCategory = savedCategory.withDescription(StringUtils.repeat(' ', 251));
 			//@formatter:off
 			RestAssured
@@ -1107,7 +1366,7 @@ class CategoryControllerTest {
 						.auth().oauth2(token)
 						.body(updatedCategory).contentType(ContentType.JSON)
 					.when()
-						.put(SecurityUtility.CATEGORIES_PATH+ "/"+savedCategory.getId())
+						.put(SecurityUtility.CATEGORIES_PATH+"/"+savedCategory.getId())
 					.then()
 						.statusCode(HttpStatus.BAD_REQUEST.value());
 			//@formatter:on
@@ -1115,29 +1374,150 @@ class CategoryControllerTest {
 		
 		@Test
 		void deleteShouldSucceedIfEntityExists() {
-			CategoryDTO savedCategory = categoryService.getAll().get(0);
+			CategoryDTO savedCategory = categoryService.findAll().get(0);
 			//@formatter:off
 			RestAssured
 					.given()
 						.auth().oauth2(token)
 					.when()
-						.delete(SecurityUtility.CATEGORIES_PATH+ "/"+savedCategory.getId())
+						.delete(SecurityUtility.CATEGORIES_PATH+"/"+savedCategory.getId())
 					.then()
 						.statusCode(HttpStatus.NO_CONTENT.value());
 			//@formatter:on
 		}
 		
 		@Test
-		void deleteShouldFailIfEntityDoesNotExist() {
+		void deleteShouldReturnBadRequestIfEntityDoesNotExist() {
 			//@formatter:off
 			RestAssured
 					.given()
 						.auth().oauth2(token)
 					.when()
-						.delete(SecurityUtility.CATEGORIES_PATH+ "/"+Long.MAX_VALUE)
+						.delete(SecurityUtility.CATEGORIES_PATH+"/"+Long.MAX_VALUE)
 					.then()
 						.statusCode(HttpStatus.BAD_REQUEST.value());
 			//@formatter:on
+		}
+		
+		@Nested
+		@DisplayName("Nested tests of categoryRoles eg. categories/{id}/roles")
+		class CategoriesRolesTests {
+			@Test
+			void getAllRolesOfAnExistingCategoryShouldSucceed() {
+				Long id = 1L;
+				Optional<Set<RoleDTO>> savedRoles = categoryService.findById(id).map(categoryDTO -> {
+					Optional<Set<RoleDTO>> rolesForCategory = categoryService.findRolesForCategory(categoryDTO);
+					return rolesForCategory.orElse(Collections.emptySet());
+				});
+				assertThat(savedRoles).isNotEmpty();
+				
+				//@formatter:off
+				Set<RoleDTO> roleDTOS = Set.of(RestAssured
+						.given()
+							.auth().oauth2(token)
+						.when()
+							.get(SecurityUtility.CATEGORIES_PATH+"/"+id+"/roles")
+						.then()
+							.statusCode(HttpStatus.OK.value())
+							.extract().as(RoleDTO[].class));
+				//@formatter:on
+				
+				assertThat(roleDTOS).isEqualTo(savedRoles.get());
+			}
+			
+			@Test
+			void getAllRolesOfNonExistingCategoryShouldReturnNotFound() {
+				Long id = Long.MAX_VALUE;
+				Optional<Set<RoleDTO>> savedRoles = categoryService.findById(id).map(categoryDTO -> {
+					Optional<Set<RoleDTO>> rolesForCategory = categoryService.findRolesForCategory(categoryDTO);
+					return rolesForCategory.orElse(Collections.emptySet());
+				});
+				assertThat(savedRoles).isEmpty();
+				
+				//@formatter:off
+				RestAssured
+						.given()
+							.auth().oauth2(token)
+						.when()
+							.get(SecurityUtility.CATEGORIES_PATH+"/"+id+"/roles")
+						.then()
+							.statusCode(HttpStatus.NOT_FOUND.value());
+				//@formatter:on
+			}
+			
+			@Test
+			void addRoleToExistingCategoryShouldSucceed() {
+				Long categoryId = 1L;
+				Long roleId = 1L;
+				Optional<Set<RoleDTO>> savedRoles = categoryService.findRolesForCategoryById(categoryId);
+				Optional<RoleDTO> roleToSave = roleService.getById(roleId);
+				
+				assertThat(savedRoles).isNotEmpty();
+				assertThat(roleToSave).isNotEmpty();
+				assertThat(savedRoles.get()).doesNotContain(roleToSave.get());
+				
+				//@formatter:off
+				RestAssured
+						.given()
+							.auth().oauth2(token)
+							.body(roleToSave.get()).contentType(ContentType.JSON)
+						.when()
+							.post(SecurityUtility.CATEGORIES_PATH+"/"+categoryId+"/roles")
+						.then()
+							.statusCode(HttpStatus.CREATED.value());
+				//@formatter:on
+				
+				savedRoles = categoryService.findById(categoryId).map(categoryDTO ->
+						categoryService.findRolesForCategory(categoryDTO).orElse(Collections.emptySet()));
+				assertThat(savedRoles).isNotEmpty();
+				assertThat(savedRoles.get()).contains(roleToSave.get());
+			}
+			
+			@Test
+			void addRoleToNonExistingCategoryShouldReturnNotFound() {
+				Long categoryId = Long.MAX_VALUE;
+				Long roleId = 1L;
+				Optional<RoleDTO> roleToSave = roleService.getById(roleId);
+				assertThat(roleToSave).isNotEmpty();
+				
+				//@formatter:off
+				RestAssured
+						.given()
+							.auth().oauth2(token)
+							.body(roleToSave.get()).contentType(ContentType.JSON)
+						.when()
+							.post(SecurityUtility.CATEGORIES_PATH+"/"+categoryId+"/roles")
+						.then()
+							.statusCode(HttpStatus.NOT_FOUND.value());
+				//@formatter:on
+			}
+			
+			@Test
+			void deleteRoleFromExistingCategoryShouldSucceed() {
+				Long categoryId = 2L;
+				Long roleId = 2L;
+				Optional<Set<RoleDTO>> savedRoles = categoryService.findById(categoryId).map(categoryDTO ->
+						categoryService.findRolesForCategory(categoryDTO).orElse(Collections.emptySet()));
+				Optional<RoleDTO> roleToDelete = roleService.getById(roleId);
+				
+				assertThat(savedRoles).isNotEmpty();
+				assertThat(roleToDelete).isNotEmpty();
+				assertThat(savedRoles.get()).contains(roleToDelete.get());
+				//@formatter:off
+				RestAssured
+						.given()
+							.auth().oauth2(token)
+							.body(roleToDelete.get()).contentType(ContentType.JSON)
+						.when()
+							.delete(SecurityUtility.CATEGORIES_PATH+"/"+categoryId+"/roles/"+roleId)
+						.then()
+							.statusCode(HttpStatus.NO_CONTENT.value());
+				//@formatter:on
+				savedRoles = categoryService.findById(categoryId).map(categoryDTO ->
+						categoryService.findRolesForCategory(categoryDTO).orElse(Collections.emptySet()));
+				assertThat(savedRoles).isNotEmpty();
+				assertThat(savedRoles.get()).doesNotContain(roleToDelete.get());
+			}
 		}
 	}
 }

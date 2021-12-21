@@ -15,9 +15,6 @@ public class UserRegistrationValidator implements ConstraintValidator<UserRegist
 		this.userService = userService;
 	}
 	
-	public UserRegistrationValidator() {
-	}
-	
 	private String message;
 	
 	public void initialize(UserRegistrationConstraint constraintAnnotation) {
@@ -27,11 +24,6 @@ public class UserRegistrationValidator implements ConstraintValidator<UserRegist
 	@Override
 	public boolean isValid(UserRegistrationDTO userRegistrationDTO, ConstraintValidatorContext cxt) {
 		cxt.disableDefaultConstraintViolation();
-		
-		// repository.save(object) uses validators under the hood (if available), but those are unable to autowire repositories.
-		// The @Valid annotation calls validator that is capable of autowiring services and repositories.
-		if (userService == null)
-			return true;
 		
 		if (userService.existsUserByEmail(userRegistrationDTO.getEmail())) {
 			cxt.buildConstraintViolationWithTemplate("Email is not unique").addPropertyNode("email").addConstraintViolation();

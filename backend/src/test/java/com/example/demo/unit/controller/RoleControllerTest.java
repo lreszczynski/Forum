@@ -4,6 +4,8 @@ import com.example.demo.controller.GlobalExceptionHandler;
 import com.example.demo.roles.RoleController;
 import com.example.demo.roles.RoleDTO;
 import com.example.demo.roles.RoleService;
+import com.example.demo.security.MyUserDetails;
+import com.example.demo.security.RoleContainer;
 import com.example.demo.security.SecurityUtility;
 import io.restassured.http.ContentType;
 import io.restassured.module.mockmvc.RestAssuredMockMvc;
@@ -15,10 +17,17 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
+import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.test.web.servlet.setup.StandaloneMockMvcBuilder;
 import org.springframework.validation.Validator;
 
+import javax.servlet.*;
+import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -44,11 +53,34 @@ class RoleControllerTest {
 	RoleDTO role1;
 	RoleDTO role2;
 	
+	private Filter mockSpringSecurityFilter = new Filter(){
+		@Override
+		public void init(FilterConfig filterConfig) throws ServletException {
+			Filter.super.init(filterConfig);
+		}
+		
+		@Override
+		public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
+			UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(
+					new MyUserDetails("User", "", List.of(new SimpleGrantedAuthority(RoleContainer.ADMIN)), true, false),
+					"", Collections.emptyList());
+			SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
+			chain.doFilter(request, response);
+		}
+		
+		@Override
+		public void destroy() {
+			SecurityContextHolder.clearContext();
+		}
+		
+		public void getFilters(MockHttpServletRequest mockHttpServletRequest){}
+	};
+	
 	@BeforeEach
 	void setUp() {
 		StandaloneMockMvcBuilder mvc = MockMvcBuilders.standaloneSetup(roleController)
 				.setControllerAdvice(new GlobalExceptionHandler())
-				.apply(springSecurity((request, response, chain) -> chain.doFilter(request, response)))
+				.apply(springSecurity(mockSpringSecurityFilter))
 				.setValidator(validator);
 		RestAssuredMockMvc.standaloneSetup(mvc);
 		initData();
@@ -91,7 +123,7 @@ class RoleControllerTest {
 		RoleDTO roleDTO = RestAssuredMockMvc
 				.given()
 				.when()
-					.get(SecurityUtility.ROLES_PATH + role1.getId())
+					.get(SecurityUtility.ROLES_PATH + "/" + role1.getId())
 				.then()
 					.status(HttpStatus.OK)
 					.extract().as(RoleDTO.class);
@@ -110,7 +142,7 @@ class RoleControllerTest {
 		RestAssuredMockMvc
 				.given()
 				.when()
-					.get(SecurityUtility.ROLES_PATH + id)
+					.get(SecurityUtility.ROLES_PATH + "/" + id)
 				.then()
 					.status(HttpStatus.NOT_FOUND);
 		//@formatter:on
@@ -155,7 +187,7 @@ class RoleControllerTest {
 					.body(updatedRole)
 					.contentType(ContentType.JSON)
 				.when()
-					.put(SecurityUtility.ROLES_PATH + savedRole.getId())
+					.put(SecurityUtility.ROLES_PATH + "/" + savedRole.getId())
 				.then()
 					.status(HttpStatus.OK)
 					.extract().as(RoleDTO.class);
@@ -181,7 +213,7 @@ class RoleControllerTest {
 					.body(updatedRole)
 					.contentType(ContentType.JSON)
 				.when()
-					.put(SecurityUtility.ROLES_PATH + updatedRole.getId())
+					.put(SecurityUtility.ROLES_PATH + "/" + updatedRole.getId())
 				.then()
 					.status(HttpStatus.NOT_FOUND);
 		//@formatter:on
@@ -196,7 +228,7 @@ class RoleControllerTest {
 		RestAssuredMockMvc
 				.given()
 				.when()
-				.delete(SecurityUtility.ROLES_PATH + id)
+				.delete(SecurityUtility.ROLES_PATH + "/" + id)
 				.then()
 				.status(HttpStatus.NO_CONTENT);
 		//@formatter:on

@@ -8,4 +8,9 @@ public interface CategoryRepository extends JpaRepository<Category, Long> {
 	boolean existsCategoryByName(String name);
 	
 	boolean existsCategoryByNameAndIdIsNot(String name, Long id);
+	
+	/*@Query("SELECT r FROM Role r " +
+			"WHERE r.id IN (SELECT cr.roleId FROM CategoryRole cr " +
+			"WHERE cr.categoryId = 2 AND cr.roleId=1) ")
+	Optional<Role> getByIdAndRoles_Id(Long categoryId, Long roleId);*/
 }

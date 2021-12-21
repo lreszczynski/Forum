@@ -50,7 +50,7 @@ public class CategoryController {
 			@ArraySchema(schema = @Schema(implementation = CategoryDTO.class)))})
 	@GetMapping
 	ResponseEntity<Collection<CategoryDTO>> getAll() {
-		List<CategoryDTO> categories = categoryService.getAll();
+		List<CategoryDTO> categories = categoryService.findAll();
 		return ResponseEntity.ok(categories);
 	}
 	
@@ -61,7 +61,7 @@ public class CategoryController {
 			@ApiResponse(responseCode = HTTP_NOT_FOUND, description = HTTP_NOT_FOUND_MESSAGE)})
 	@GetMapping("/{id}")
 	ResponseEntity<CategoryDTO> getById(@PathVariable long id) {
-		Optional<CategoryDTO> categoryDTO = categoryService.getById(id);
+		Optional<CategoryDTO> categoryDTO = categoryService.findById(id);
 		if (categoryDTO.isEmpty()) {
 			return ResponseEntity.notFound().build();
 		}
@@ -97,9 +97,6 @@ public class CategoryController {
 	@PreAuthorize("@roleContainer.isAdmin(principal) || " +
 			"(@roleContainer.isAtLeastModerator(principal) && @roleContainer.canEditCategory(principal, #id))")
 	ResponseEntity<?> update(@Validated({Default.class, UpdateCategory.class}) @RequestBody CategoryDTO categoryDTO, @PathVariable Long id) {
-		if (!id.equals(categoryDTO.getId())) {
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(HTTP_BAD_REQUEST_MESSAGE);
-		}
 		Optional<CategoryDTO> updatedCategory = categoryService.update(id, categoryDTO);
 		if (updatedCategory.isEmpty()) {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(HTTP_NOT_FOUND_MESSAGE);
@@ -126,16 +123,17 @@ public class CategoryController {
 			@ApiResponse(responseCode = HTTP_OK, description = HTTP_OK_MESSAGE, content = {
 					@Content(mediaType = APPLICATION_JSON_VALUE, array =
 					@ArraySchema(schema = @Schema(implementation = RoleDTO.class)))}),
+			@ApiResponse(responseCode = HTTP_FORBIDDEN, description = HTTP_FORBIDDEN_MESSAGE),
+			@ApiResponse(responseCode = HTTP_UNAUTHORIZED, description = HTTP_FORBIDDEN_MESSAGE),
 			@ApiResponse(responseCode = HTTP_NOT_FOUND, description = HTTP_NOT_FOUND_MESSAGE)})
 	@GetMapping("/{id}/roles")
 	@PreAuthorize("@roleContainer.isAtLeastModerator(principal)")
 	ResponseEntity<?> getRolesById(@PathVariable long id) {
-		Optional<CategoryDTO> categoryDTO = categoryService.getById(id);
-		if (categoryDTO.isEmpty()) {
+		Optional<Set<RoleDTO>> rolesForCategoryById = categoryService.findRolesForCategoryById(id);
+		if (rolesForCategoryById.isEmpty()) {
 			return ResponseEntity.notFound().build();
 		}
-		Set<RoleDTO> rolesForCategoryById = categoryService.getRolesForCategoryById(id);
-		return ResponseEntity.ok(rolesForCategoryById);
+		return ResponseEntity.ok(rolesForCategoryById.get());
 	}
 	
 	@Operation(summary = "Add role to category")
@@ -150,7 +148,7 @@ public class CategoryController {
 	@PreAuthorize("@roleContainer.isAdmin(principal) || " +
 			"(@roleContainer.isAtLeastModerator(principal) && @roleContainer.canEditCategory(principal, #id))")
 	ResponseEntity<?> addRoleToCategory(@RequestBody RoleDTO roleDTO, @PathVariable long id) {
-		Optional<CategoryDTO> categoryDTO = categoryService.getById(id);
+		Optional<CategoryDTO> categoryDTO = categoryService.findById(id);
 		if (categoryDTO.isEmpty()) {
 			return ResponseEntity.notFound().build();
 		}
@@ -171,7 +169,7 @@ public class CategoryController {
 		if (roleId != roleDTO.getId()) {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(HTTP_BAD_REQUEST_MESSAGE);
 		}
-		Optional<CategoryDTO> categoryDTO = categoryService.getById(id);
+		Optional<CategoryDTO> categoryDTO = categoryService.findById(id);
 		categoryDTO.ifPresent(category -> categoryService.deleteRolesFromCategoryByIds(category, roleId));
 		return ResponseEntity.noContent().build();
 	}

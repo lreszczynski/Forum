@@ -38,7 +38,7 @@ public class CategoryUniqueValidator implements ConstraintValidator<CategoryUniq
 		// update
 		String nameValue = categoryDTO.getName();
 		if (categoryDTO.getId() != null) {
-			Optional<CategoryDTO> optionalCategoryDTO = categoryService.getById(categoryDTO.getId());
+			Optional<CategoryDTO> optionalCategoryDTO = categoryService.findById(categoryDTO.getId());
 			if (optionalCategoryDTO.isPresent() && !nameValue.equals(optionalCategoryDTO.get().getName())) {
 				// name changed
 				return !categoryService.existsCategoryByNameAndIdIsNot(nameValue, categoryDTO.getId());

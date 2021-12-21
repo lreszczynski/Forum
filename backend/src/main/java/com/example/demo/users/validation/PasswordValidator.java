@@ -14,20 +14,12 @@ public class PasswordValidator implements ConstraintValidator<PasswordConstraint
 		this.userService = userService;
 	}
 	
-	public PasswordValidator() {
-	}
-	
 	public void initialize(PasswordConstraint constraintAnnotation) {
 	}
 	
 	@Override
 	public boolean isValid(String password, ConstraintValidatorContext cxt) {
 		cxt.disableDefaultConstraintViolation();
-		
-		// repository.save(object) uses validators under the hood (if available), but those are unable to autowire repositories.
-		// The @Valid annotation calls validator that is capable of autowiring services and repositories.
-		if (userService == null)
-			return true;
 		
 		if (password.length() < 8)
 		{

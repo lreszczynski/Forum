@@ -2,6 +2,8 @@ package com.example.demo.unit.controller;
 
 import com.example.demo.controller.GlobalExceptionHandler;
 import com.example.demo.roles.RoleDTO;
+import com.example.demo.security.MyUserDetails;
+import com.example.demo.security.RoleContainer;
 import com.example.demo.security.SecurityUtility;
 import com.example.demo.users.UserController;
 import com.example.demo.users.UserDTO;
@@ -17,10 +19,17 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
+import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.test.web.servlet.setup.StandaloneMockMvcBuilder;
 import org.springframework.validation.Validator;
 
+import javax.servlet.*;
+import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -46,11 +55,34 @@ class UserControllerTest {
 	private UserDTO user1, user2;
 	private UserRegistrationDTO userRegistrationDTO;
 	
+	private Filter mockSpringSecurityFilter = new Filter(){
+		@Override
+		public void init(FilterConfig filterConfig) throws ServletException {
+			Filter.super.init(filterConfig);
+		}
+		
+		@Override
+		public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
+			UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(
+					new MyUserDetails("User", "", List.of(new SimpleGrantedAuthority(RoleContainer.ADMIN)), true, false),
+					"", Collections.emptyList());
+			SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
+			chain.doFilter(request, response);
+		}
+		
+		@Override
+		public void destroy() {
+			SecurityContextHolder.clearContext();
+		}
+		
+		public void getFilters(MockHttpServletRequest mockHttpServletRequest){}
+	};
+	
 	@BeforeEach
 	void setUp() {
 		StandaloneMockMvcBuilder mvc = MockMvcBuilders.standaloneSetup(userController)
 				.setControllerAdvice(new GlobalExceptionHandler())
-				.apply(springSecurity((request, response, chain) -> chain.doFilter(request, response)))
+				.apply(springSecurity(mockSpringSecurityFilter))
 				.setValidator(validator);
 		RestAssuredMockMvc.standaloneSetup(mvc);
 		initData();
@@ -100,7 +132,7 @@ class UserControllerTest {
 		UserDTO userDTO = RestAssuredMockMvc
 				.given()
 				.when()
-					.get(SecurityUtility.USERS_PATH + user1.getId())
+					.get(SecurityUtility.USERS_PATH + "/" + user1.getId())
 				.then()
 					.status(HttpStatus.OK)
 					.extract().as(UserDTO.class);
@@ -119,7 +151,7 @@ class UserControllerTest {
 		RestAssuredMockMvc
 				.given()
 				.when()
-					.get(SecurityUtility.USERS_PATH + id)
+					.get(SecurityUtility.USERS_PATH + "/" + id)
 				.then()
 					.status(HttpStatus.NOT_FOUND);
 		//@formatter:on
@@ -136,7 +168,7 @@ class UserControllerTest {
 					.body(userRegistrationDTO)
 					.contentType(ContentType.JSON)
 				.when()
-					.post(SecurityUtility.USERS_PATH + "/register")
+					.post(SecurityUtility.USERS_PATH + "/" + "/register")
 				.then()
 					.status(HttpStatus.CREATED);
 		//@formatter:on
@@ -166,7 +198,7 @@ class UserControllerTest {
 					.body(updatedUser)
 					.contentType(ContentType.JSON)
 				.when()
-					.put(SecurityUtility.USERS_PATH + savedUser.getId())
+					.put(SecurityUtility.USERS_PATH + "/" + savedUser.getId())
 				.then()
 					.status(HttpStatus.OK)
 					.extract().as(UserDTO.class);
@@ -193,7 +225,7 @@ class UserControllerTest {
 					.body(updatedUser)
 					.contentType(ContentType.JSON)
 				.when()
-					.put(SecurityUtility.USERS_PATH + updatedUser.getId())
+					.put(SecurityUtility.USERS_PATH + "/" + updatedUser.getId())
 				.then()
 					.status(HttpStatus.NOT_FOUND);
 		//@formatter:on
@@ -208,7 +240,7 @@ class UserControllerTest {
 		RestAssuredMockMvc
 				.given()
 				.when()
-					.delete(SecurityUtility.USERS_PATH + id)
+					.delete(SecurityUtility.USERS_PATH + "/" + id)
 				.then()
 					.status(HttpStatus.NO_CONTENT);
 		//@formatter:on

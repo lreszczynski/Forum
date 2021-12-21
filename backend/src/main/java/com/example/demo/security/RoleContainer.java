@@ -9,6 +9,8 @@ import org.springframework.util.CollectionUtils;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -37,9 +39,12 @@ public class RoleContainer {
 	
 	public boolean canEditCategory(MyUserDetails userDetails, Long id) {
 		List<String> authorities = userDetails.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList());
-		List<String> allowedRoles = categoryService.getRolesForCategoryById(id).stream().map(RoleDTO::getName).map(String::toUpperCase).collect(Collectors.toList());
-		
-		return CollectionUtils.containsAny(allowedRoles, authorities);
+		Optional<Set<RoleDTO>> optional = categoryService.findRolesForCategoryById(id);
+		if (optional.isPresent()) {
+			List<String> allowedRoles = optional.get().stream().map(roleDTO -> roleDTO.getName().toUpperCase()).collect(Collectors.toList());
+			return CollectionUtils.containsAny(allowedRoles, authorities);
+		}
+		return false;
 	}
 	
 	public boolean isNotBanned(MyUserDetails userDetails) {

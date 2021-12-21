@@ -1,7 +1,6 @@
 package com.example.demo.categoryroles;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.Column;
 import javax.persistence.Id;
@@ -10,6 +9,9 @@ import java.util.Objects;
 
 @Setter
 @Getter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class CategoryRolePK implements Serializable {
 	@Id
 	@Column(name = "category_id")

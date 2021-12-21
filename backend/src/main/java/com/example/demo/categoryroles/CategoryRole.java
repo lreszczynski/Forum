@@ -1,6 +1,7 @@
 package com.example.demo.categoryroles;
 
 import lombok.*;
+import org.hibernate.Hibernate;
 
 import javax.persistence.*;
 import java.util.Objects;
@@ -26,9 +27,10 @@ public class CategoryRole {
 	@Override
 	public boolean equals(Object o) {
 		if (this == o) return true;
-		if (o == null || getClass() != o.getClass()) return false;
+		if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
 		CategoryRole that = (CategoryRole) o;
-		return Objects.equals(categoryId, that.categoryId) && Objects.equals(roleId, that.roleId);
+		return categoryId != null && Objects.equals(categoryId, that.categoryId)
+				&& roleId != null && Objects.equals(roleId, that.roleId);
 	}
 	
 	@Override

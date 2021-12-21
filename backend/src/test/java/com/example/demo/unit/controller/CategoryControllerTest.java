@@ -4,6 +4,7 @@ import com.example.demo.categories.CategoryController;
 import com.example.demo.categories.CategoryDTO;
 import com.example.demo.categories.CategoryService;
 import com.example.demo.controller.GlobalExceptionHandler;
+import com.example.demo.security.MyUserDetails;
 import com.example.demo.security.RoleContainer;
 import com.example.demo.security.SecurityUtility;
 import io.restassured.http.ContentType;
@@ -16,14 +17,16 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
+import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.test.web.servlet.setup.StandaloneMockMvcBuilder;
 import org.springframework.validation.Validator;
 
+import javax.servlet.*;
+import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -49,17 +52,34 @@ class CategoryControllerTest {
 	
 	private CategoryDTO category1, category2;
 	
+	private Filter mockSpringSecurityFilter = new Filter(){
+		@Override
+		public void init(FilterConfig filterConfig) throws ServletException {
+			Filter.super.init(filterConfig);
+		}
+		
+		@Override
+		public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
+			UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(
+					new MyUserDetails("User", "", List.of(new SimpleGrantedAuthority(RoleContainer.ADMIN)), true, false),
+					"", Collections.emptyList());
+			SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
+			chain.doFilter(request, response);
+		}
+		
+		@Override
+		public void destroy() {
+			SecurityContextHolder.clearContext();
+		}
+		
+		public void getFilters(MockHttpServletRequest mockHttpServletRequest){}
+	};
+	
 	@BeforeEach
 	void setUp() {
 		StandaloneMockMvcBuilder mvc = MockMvcBuilders.standaloneSetup(categoryController)
 				.setControllerAdvice(new GlobalExceptionHandler())
-				.apply(springSecurity((request, response, chain) -> {
-					UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(
-							new User("User", "", List.of(new SimpleGrantedAuthority(RoleContainer.USER))),
-							"", Collections.emptyList());
-					SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
-					chain.doFilter(request, response);
-				}))
+				.apply(springSecurity(mockSpringSecurityFilter))
 				.setValidator(validator);
 		RestAssuredMockMvc.standaloneSetup(mvc);
 		initData();
@@ -76,7 +96,7 @@ class CategoryControllerTest {
 	
 	@Test
 	void getAllShouldReturnAllEntities() {
-		given(service.getAll())
+		given(service.findAll())
 				.willReturn(List.of(category1, category2));
 		
 		//@formatter:off
@@ -95,14 +115,14 @@ class CategoryControllerTest {
 	
 	@Test
 	void getByIdShouldReturnEntityIfItExists() {
-		given(service.getById(category1.getId()))
+		given(service.findById(category1.getId()))
 				.willReturn(Optional.of(category1));
 		
 		//@formatter:off
 			CategoryDTO categoryDTO = RestAssuredMockMvc
 					.given()
 					.when()
-						.get(SecurityUtility.CATEGORIES_PATH + category1.getId())
+						.get(SecurityUtility.CATEGORIES_PATH + "/" + category1.getId())
 					.then()
 						.status(HttpStatus.OK)
 						.extract().as(CategoryDTO.class);
@@ -114,14 +134,14 @@ class CategoryControllerTest {
 	@Test
 	void getByIdShouldReturnNotFoundIfEntityDoesNotExist() {
 		long id = 1;
-		given(service.getById(id))
+		given(service.findById(id))
 				.willReturn(Optional.empty());
 		
 		//@formatter:off
 			RestAssuredMockMvc
 					.given()
 					.when()
-						.get(SecurityUtility.CATEGORIES_PATH + id)
+						.get(SecurityUtility.CATEGORIES_PATH + "/" + id)
 					.then()
 						.status(HttpStatus.NOT_FOUND);
 			//@formatter:on
@@ -166,7 +186,7 @@ class CategoryControllerTest {
 						.body(updatedCategory)
 						.contentType(ContentType.JSON)
 					.when()
-						.put(SecurityUtility.CATEGORIES_PATH + savedCategory.getId())
+						.put(SecurityUtility.CATEGORIES_PATH + "/" + savedCategory.getId())
 					.then()
 						.status(HttpStatus.OK)
 						.extract().as(CategoryDTO.class);
@@ -192,7 +212,7 @@ class CategoryControllerTest {
 						.body(updatedCategory)
 						.contentType(ContentType.JSON)
 					.when()
-						.put(SecurityUtility.CATEGORIES_PATH + updatedCategory.getId())
+						.put(SecurityUtility.CATEGORIES_PATH + "/" + updatedCategory.getId())
 					.then()
 						.status(HttpStatus.NOT_FOUND);
 			//@formatter:on
@@ -207,7 +227,7 @@ class CategoryControllerTest {
 		RestAssuredMockMvc
 				.given()
 				.when()
-					.delete(SecurityUtility.CATEGORIES_PATH + id)
+					.delete(SecurityUtility.CATEGORIES_PATH + "/" + id)
 				.then()
 					.status(HttpStatus.NO_CONTENT);
 		//@formatter:on

@@ -1,9 +1,9 @@
 package com.example.demo.categories;
 
+import com.example.demo.categoryroles.CategoryRoleRepository;
 import com.example.demo.roles.Role;
 import com.example.demo.roles.RoleDTO;
 import com.example.demo.roles.RoleRepository;
-import com.example.demo.users.User;
 import com.example.demo.users.UserRepository;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
@@ -21,34 +21,32 @@ import java.util.Set;
 public class CategoryService {
 	private final CategoryRepository categoryRepository;
 	private final RoleRepository roleRepository;
+	private final CategoryRoleRepository categoryRoleRepository;
 	private final UserRepository userRepository;
 	private final ModelMapper modelMapper;
 	
-	public CategoryService(CategoryRepository categoryRepository, RoleRepository roleRepository, UserRepository userRepository) {
+	public CategoryService(CategoryRepository categoryRepository, RoleRepository roleRepository, CategoryRoleRepository categoryRoleRepository, UserRepository userRepository) {
 		this.categoryRepository = categoryRepository;
 		this.roleRepository = roleRepository;
+		this.categoryRoleRepository = categoryRoleRepository;
 		this.userRepository = userRepository;
 		this.modelMapper = new ModelMapper();
 	}
 	
-	public List<CategoryDTO> getAll() {
-		Type listType = new TypeToken<List<CategoryDTO>>() {
-		}.getType();
-		return modelMapper.map(categoryRepository.findAll(), listType);
+	public List<CategoryDTO> findAll() {
+		return modelMapper.map(categoryRepository.findAll(), new TypeToken<List<CategoryDTO>>() {
+		}.getType());
 	}
 	
-	public Optional<CategoryDTO> getById(Long id) {
-		Optional<Category> optionalCategory = categoryRepository.findById(id);
-		return optionalCategory.map(category -> modelMapper.map(category, CategoryDTO.class));
+	public Optional<CategoryDTO> findById(Long id) {
+		return categoryRepository.findById(id).map(category -> modelMapper.map(category, CategoryDTO.class));
 	}
 	
 	public CategoryDTO create(CategoryDTO categoryDTO, String username) {
 		Category category = modelMapper.map(categoryDTO, Category.class);
 		Category saved = categoryRepository.save(category);
 		CategoryDTO savedDto = modelMapper.map(saved, CategoryDTO.class);
-		Optional<User> optionalUser = userRepository.findByUsername(username);
-		optionalUser.ifPresent(user -> addRolesToCategoryByIds(savedDto, user.getRole().getId()));
-		
+		userRepository.findByUsername(username).ifPresent(user -> addRolesToCategoryByIds(savedDto, user.getRole().getId()));
 		return savedDto;
 	}
 	
@@ -57,13 +55,55 @@ public class CategoryService {
 	}
 	
 	public Optional<CategoryDTO> update(Long id, CategoryDTO categoryDTO) {
-		if (!categoryDTO.getId().equals(id)) {
-			return Optional.empty();
-		}
-		Category category = modelMapper.map(categoryDTO, Category.class);
-		Category saved = categoryRepository.save(category);
-		
-		return Optional.of(modelMapper.map(saved, CategoryDTO.class));
+		Optional<Category> optionalCategory = categoryRepository.findById(id).map(category -> {
+			category.setName(categoryDTO.getName());
+			category.setDescription(categoryDTO.getDescription());
+			category.setActive(categoryDTO.isActive());
+			return categoryRepository.save(category);
+		});
+		return optionalCategory.map(category -> modelMapper.map(category, CategoryDTO.class));
+	}
+	
+	public Optional<Set<RoleDTO>> findRolesForCategory(CategoryDTO categoryDTO) {
+		return findRolesForCategoryById(categoryDTO.getId());
+	}
+	
+	public Optional<Set<RoleDTO>> findRolesForCategoryById(Long id) {
+		return categoryRepository.findById(id).map(category -> {
+			Set<Role> roles = category.getRoles();
+			Type listType = new TypeToken<Set<RoleDTO>>() {
+			}.getType();
+			return modelMapper.map(roles, listType);
+		});
+	}
+	
+	public void addRolesToCategory(CategoryDTO categoryDTO, RoleDTO... roles) {
+		addRolesToCategoryByIds(categoryDTO, Arrays.stream(roles).map(RoleDTO::getId).toArray(Long[]::new));
+	}
+	
+	public void addRolesToCategoryByIds(CategoryDTO categoryDTO, Long... ids) {
+		Optional<Category> optionalCategory = categoryRepository.findById(categoryDTO.getId());
+		optionalCategory.ifPresent(category -> {
+			for (Long id: ids) {
+				Optional<Role> byId = roleRepository.findById(id);
+				byId.ifPresent(role -> category.getRoles().add(role));
+			}
+		});
+	}
+	
+	public void deleteRolesFromCategory(CategoryDTO categoryDTO, RoleDTO... roles) {
+		deleteRolesFromCategoryByIds(categoryDTO, Arrays.stream(roles).map(RoleDTO::getId).toArray(Long[]::new));
+	}
+	
+	public void deleteRolesFromCategoryByIds(CategoryDTO categoryDTO, Long... ids) {
+		Optional<Category> optionalCategory = categoryRepository.findById(categoryDTO.getId());
+		optionalCategory.ifPresent(category -> {
+			for (Long id: ids) {
+				Optional<Role> byId = roleRepository.findById(id);
+				byId.ifPresent(role -> category.getRoles().remove(role));
+				//categoryRoleRepository.deleteById(CategoryRolePK.builder().categoryId(category.getId()).roleId(id).build());
+			}
+		});
 	}
 	
 	public boolean existsCategoryByName(String name) {
@@ -73,42 +113,4 @@ public class CategoryService {
 	public boolean existsCategoryByNameAndIdIsNot(String name, Long id) {
 		return categoryRepository.existsCategoryByNameAndIdIsNot(name, id);
 	}
-	
-	public Set<RoleDTO> getRolesForCategory(CategoryDTO categoryDTO) {
-		return getRolesForCategoryById(categoryDTO.getId());
-	}
-	
-	public Set<RoleDTO> getRolesForCategoryById(Long id) {
-		Category category = categoryRepository.getById(id);
-		//Hibernate.initialize(category.getRoles());
-		Set<Role> roles = category.getRoles();
-		Type listType = new TypeToken<Set<RoleDTO>>() {
-		}.getType();
-		return modelMapper.map(roles, listType);
-	}
-	
-	public void addRolesToCategory(CategoryDTO categoryDTO, RoleDTO... roles) {
-		addRolesToCategoryByIds(categoryDTO, Arrays.stream(roles).map(RoleDTO::getId).toArray(Long[]::new));
-	}
-	
-	public void addRolesToCategoryByIds(CategoryDTO categoryDTO, Long... ids) {
-		Category category = categoryRepository.getById(categoryDTO.getId());
-		for (Long id : ids) {
-			category.getRoles().add(roleRepository.getById(id));
-		}
-		categoryRepository.save(category);
-	}
-	
-	public void deleteRolesFromCategory(CategoryDTO categoryDTO, RoleDTO... roles) {
-		deleteRolesFromCategoryByIds(categoryDTO, Arrays.stream(roles).map(RoleDTO::getId).toArray(Long[]::new));
-	}
-	
-	public void deleteRolesFromCategoryByIds(CategoryDTO categoryDTO, Long... ids) {
-		Category category = categoryRepository.getById(categoryDTO.getId());
-		for (Long id : ids) {
-			category.getRoles().remove(roleRepository.getById(id));
-		}
-		categoryRepository.save(category);
-	}
-	
 }
