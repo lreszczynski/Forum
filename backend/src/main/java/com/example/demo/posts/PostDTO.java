@@ -4,7 +4,6 @@ import com.example.demo.posts.validation.CreatePost;
 import com.example.demo.posts.validation.SecondOrder;
 import com.example.demo.posts.validation.UpdatePost;
 import com.example.demo.roles.validation.RoleUniqueConstraint;
-import com.example.demo.threads.ThreadDTO;
 import com.example.demo.users.UserDTO;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
@@ -38,9 +37,6 @@ public class PostDTO {
 	
 	@JsonProperty("create_date")
 	private Timestamp createDate;
-	
-	@JsonProperty(value = "thread", access = JsonProperty.Access.READ_ONLY)
-	private ThreadDTO thread;
 	
 	@JsonProperty(value = "user", access = JsonProperty.Access.READ_ONLY)
 	private UserDTO user;

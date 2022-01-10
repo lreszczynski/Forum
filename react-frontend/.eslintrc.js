@@ -6,6 +6,7 @@ module.exports = {
   },
   extends: [
     'plugin:react/recommended',
+    'eslint:recommended',
     'airbnb',
     'prettier',
     'plugin:import/errors',
@@ -34,18 +35,19 @@ module.exports = {
     'import/no-named-as-default': 'off',
     'import/export': 'warn',
     'import/order': [
-      'error',
+      1,
       {
-        groups: ['builtin', 'external', 'parent', 'sibling', 'index'],
-        'newlines-between': 'always',
-        alphabetize: {
-          order: 'asc',
-          caseInsensitive: true,
-        },
+        groups: [
+          'external',
+          'builtin',
+          'internal',
+          'sibling',
+          'parent',
+          'index',
+        ],
+        alphabetize: { order: 'asc', caseInsensitive: true },
       },
     ],
-    'no-console': 0,
-    'no-unused-vars': 'off',
     'unused-imports/no-unused-imports': 'error',
     'unused-imports/no-unused-vars': [
       'warn',
@@ -56,6 +58,12 @@ module.exports = {
         argsIgnorePattern: '^_',
       },
     ],
+    'no-param-reassign': [
+      'error',
+      { props: true, ignorePropertyModificationsFor: ['state'] },
+    ],
+    'no-console': 0,
+    'no-unused-vars': 'off',
     'import/extensions': [
       'error',
       'ignorePackages',
@@ -64,6 +72,12 @@ module.exports = {
         jsx: 'never',
         ts: 'never',
         tsx: 'never',
+      },
+    ],
+    'no-multiple-empty-lines': [
+      'error',
+      {
+        max: 1,
       },
     ],
   },

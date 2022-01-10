@@ -1,16 +1,17 @@
 import {
+  GroupOutlined,
   HomeFilled,
   HomeOutlined,
-  Html5TwoTone,
   MenuFoldOutlined,
   MenuUnfoldOutlined,
-  UploadOutlined,
   UserOutlined,
 } from '@ant-design/icons';
 import { Layout, Menu } from 'antd';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { BrowserRouter, Link } from 'react-router-dom';
 
+import logo from 'images/logo192.png';
+import { store } from 'store';
 import RouterOutlet from './components/router-outlet/routerOutlet';
 
 import './App.scss';
@@ -18,15 +19,27 @@ import './App.scss';
 const { Header, Content, Footer, Sider } = Layout;
 function App() {
   const [isCollapsed, setCollapsed] = useState(false);
+  const [isRotated, setRotated] = useState(false);
+  const [location, setLocation] = useState('/');
+
+  store.subscribe(() => {
+    console.log('>>>>', location);
+  });
 
   const collapse = () => {
     setCollapsed(!isCollapsed);
+    setRotated(!isRotated);
   };
+
+  useEffect(() => {
+    // const location = useLocation();
+  }, []);
+
   return (
     <BrowserRouter>
       <Layout>
         <Sider
-          className="sider"
+          id="sider"
           collapsible
           breakpoint="md"
           collapsedWidth="80"
@@ -41,31 +54,36 @@ function App() {
           width="256px"
           trigger={null}
         >
-          <div className="sidebar-logo">
-            <a href="https://ant.design/" target="_blank" rel="noreferrer">
-              <Html5TwoTone className="icon" />
+          <div id="sidebar-logo">
+            <Link to="/">
+              <img
+                className={isRotated ? 'rotateA' : 'rotateB'}
+                width="32px"
+                src={logo}
+                alt=""
+              />
               <h1>Forum</h1>
-            </a>
+            </Link>
           </div>
           <Menu
             theme="dark"
             mode="inline"
-            inlineCollapsed={isCollapsed}
-            defaultSelectedKeys={['4']}
+            defaultSelectedKeys={['/']}
+            selectedKeys={[`/${location.split('/').at(1)}` || '']}
           >
-            <Menu.Item key="1" icon={<HomeFilled />}>
+            <Menu.Item key="/" icon={<HomeFilled />}>
               <Link to="/">
                 <span>Home</span>
               </Link>
             </Menu.Item>
-            <Menu.Item key="2" icon={<HomeOutlined />}>
+            <Menu.Item key="/short" icon={<HomeOutlined />}>
               <Link to="/short">
                 <span>Home short</span>
               </Link>
             </Menu.Item>
-            <Menu.Item key="3" icon={<UploadOutlined />}>
-              <Link to="/categories">
-                <span>Categories</span>
+            <Menu.Item key="/forum" icon={<GroupOutlined />}>
+              <Link to="/forum">
+                <span>Forum</span>
               </Link>
             </Menu.Item>
             <Menu.Item key="4" icon={<UserOutlined />}>
@@ -74,29 +92,44 @@ function App() {
           </Menu>
         </Sider>
         <Layout>
-          <Header style={{ padding: 0 }} className="app-header">
+          <Header style={{ padding: 0 }} id="header-flex">
             <div className="start">
-              <span
-                role="button"
+              <div
                 tabIndex={0}
-                className="header-trigger"
+                role="button"
+                className="triggerable"
                 onClick={collapse}
                 onKeyPress={collapse}
               >
                 {isCollapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
                 {console.log(isCollapsed)}
-              </span>
+              </div>
+              <div
+                tabIndex={0}
+                role="button"
+                className="triggerable"
+                onClick={collapse}
+                onKeyPress={collapse}
+              >
+                {isCollapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
+                {console.log(isCollapsed)}
+              </div>
             </div>
             <div className="end">
-              <UserOutlined className="header-trigger" />
+              <div tabIndex={0} role="button" className="triggerable">
+                <UserOutlined className="triggerable" />
+              </div>
+
+              <div tabIndex={0} role="button" className="triggerable">
+                <UserOutlined className="triggerable" />
+              </div>
             </div>
           </Header>
-          <Content style={{ margin: '24px 16px 0' }}>
+          <Content>
             <div
-              className="site-layout-background"
-              style={{ padding: 24, minHeight: 360 }}
+              style={{ padding: '24px', maxWidth: '1024px', margin: '0 auto' }}
             >
-              <RouterOutlet />
+              <RouterOutlet stateChanger={setLocation} />
             </div>
           </Content>
           <Footer style={{ textAlign: 'center' }}>

@@ -6,6 +6,7 @@ import com.example.demo.threads.validation.CreateThread;
 import com.example.demo.threads.validation.SecondOrder;
 import com.example.demo.threads.validation.UpdateThread;
 import com.example.demo.users.UserDTO;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -39,6 +40,7 @@ public class ThreadDTO {
 	private boolean active;
 	
 	@JsonProperty(value = "category", access = JsonProperty.Access.READ_ONLY)
+	@JsonBackReference
 	private CategoryDTO category;
 	
 	@JsonProperty(value = "user", access = JsonProperty.Access.READ_ONLY)

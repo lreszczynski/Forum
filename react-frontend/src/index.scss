@@ -20,9 +20,9 @@ $breakpoints: (
   xl: 1280px,
 );
 
-@mixin breakpoint-up($breakpoint) {
+@mixin breakpoint-down($breakpoint) {
   @if map-has-key($breakpoints, $breakpoint) {
-    @media (min-width: #{ map-get( $breakpoints, $breakpoint ) }) {
+    @media (max-width: #{ map-get( $breakpoints, $breakpoint ) }) {
       @content;
     }
   } @else if
@@ -35,7 +35,7 @@ $breakpoints: (
     unit($breakpoint) ==
     rem
   {
-    @media (min-width: $breakpoint) {
+    @media (max-width: $breakpoint) {
       @content;
     }
   } @else {

@@ -1,17 +1,21 @@
-.header-trigger {
+@import './index.scss';
+
+.triggerable {
+  color: lightgray;
   height: 64px;
-  padding: 20px 24px;
+  width: 48px;
   font-size: 20px;
   cursor: pointer;
   transition: all 0.3s, padding 0s;
+  text-align: center;
 }
 
-.trigger:hover {
+.triggerable:hover {
   color: #1890ff;
 }
 
-.sidebar-logo {
-  position: relative;
+#sidebar-logo {
+  //position: relative;
   height: 64px;
   padding-left: 24px;
   overflow: hidden;
@@ -20,53 +24,53 @@
   transition: all 0.3s;
 }
 
-.sidebar-logo .icon {
-  font-size: 30px;
+#sidebar-logo h1 {
   display: inline-block;
-  height: 32px;
-  width: 32px;
-  vertical-align: middle;
-}
-
-.sidebar-logo h1 {
-  display: inline-block;
-  margin: 0 0 0 20px;
+  margin: 0 0 0 10px;
   color: #fff;
   font-weight: 600;
-  font-size: 14px;
-  font-family: Avenir, Helvetica Neue, Arial, Helvetica, sans-serif;
+  font-size: 20px;
   vertical-align: middle;
 }
 
-.app-header {
+#header-flex {
   display: flex;
   //position: relative;
   height: 64px;
   padding: 0;
-  background: #fff;
   box-shadow: 0 1px 4px rgba(0, 21, 41, 0.08);
 }
 
 .start {
+  display: flex;
   align-items: flex-start;
+  flex-direction: row;
   flex-grow: 1;
 }
 
 .end {
-  align-items: flex-end;
+  display: flex;
   flex-grow: 1;
   text-align: end;
+  justify-content: end;
 }
 
-.inner-content {
-  padding: 24px;
-  background: #fff;
-  height: 100%;
-}
-
-.sider {
-  position: relative;
-  z-index: 10;
+#sider {
+  /* position: relative;
+  z-index: 10;*/
   min-height: 100vh;
   box-shadow: 2px 0 6px rgba(0, 21, 41, 0.35);
+}
+
+.rotateA {
+  transition: 1.5s ease-in-out;
+}
+
+.rotateB {
+  transition: 1.5s ease-in-out;
+  transform: rotate(120deg);
+}
+
+.ant-breadcrumb {
+  padding-bottom: 20px !important;
 }

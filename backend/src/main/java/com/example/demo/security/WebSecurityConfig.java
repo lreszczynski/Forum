@@ -16,8 +16,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import static com.example.demo.security.SecurityUtility.CATEGORIES_PATH;
-import static com.example.demo.security.SecurityUtility.LOGIN_PATH;
+import static com.example.demo.security.SecurityUtility.*;
 import static org.springframework.http.HttpMethod.GET;
 
 @EnableWebSecurity
@@ -36,6 +35,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 		
 		//@formatter:off
 		http
+				.cors().and()
 				.csrf().disable()
 				.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
 				.authorizeRequests()
@@ -43,7 +43,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 					.antMatchers("/token/refresh/**").permitAll()
 					.antMatchers("/swagger-ui/**", "/swagger-ui.html", "/api-docs/**").permitAll()
 					.antMatchers(GET, CATEGORIES_PATH).permitAll()
-					.antMatchers(GET, CATEGORIES_PATH + "/*").permitAll()
+					.antMatchers(GET, CATEGORIES_PATH + "/**").permitAll()
 					//.antMatchers(PUT, CATEGORIES_PATH + "/**").hasAnyRole(MODERATOR, ADMIN)
 					.anyRequest().authenticated().and()
 				.addFilter(customAuthenticationFilter)

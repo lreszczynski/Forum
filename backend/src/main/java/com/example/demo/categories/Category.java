@@ -1,6 +1,7 @@
 package com.example.demo.categories;
 
 import com.example.demo.roles.Role;
+import com.example.demo.threads.Thread;
 import lombok.*;
 import org.hibernate.Hibernate;
 
@@ -39,6 +40,10 @@ public class Category {
 			joinColumns = @JoinColumn(name = "category_id"),
 			inverseJoinColumns = @JoinColumn(name = "role_id"))
 	private Set<Role> roles = new LinkedHashSet<>();
+	
+	@ToString.Exclude
+	@OneToMany(mappedBy = "category", orphanRemoval = true)
+	private Set<Thread> threads = new LinkedHashSet<>();
 	
 	@Override
 	public boolean equals(Object o) {

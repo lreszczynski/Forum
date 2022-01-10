@@ -15,7 +15,7 @@ public class ThreadService {
 	private final ThreadRepository threadRepository;
 	private final ModelMapper modelMapper;
 	
-	public ThreadService(ThreadRepository threadRepository){
+	public ThreadService(ThreadRepository threadRepository) {
 		this.threadRepository = threadRepository;
 		this.modelMapper = new ModelMapper();
 	}

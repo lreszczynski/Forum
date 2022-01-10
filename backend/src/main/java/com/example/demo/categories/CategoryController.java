@@ -5,6 +5,7 @@ import com.example.demo.categories.validation.UpdateCategory;
 import com.example.demo.roles.RoleDTO;
 import com.example.demo.security.MyUserDetails;
 import com.example.demo.security.SecurityUtility;
+import com.example.demo.threads.ThreadDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -52,6 +53,16 @@ public class CategoryController {
 	ResponseEntity<Collection<CategoryDTO>> getAll() {
 		List<CategoryDTO> categories = categoryService.findAll();
 		return ResponseEntity.ok(categories);
+	}
+	
+	@Operation(summary = "Returns a list of threads by category id")
+	@ApiResponse(responseCode = HTTP_OK, description = HTTP_OK_MESSAGE, content = {
+			@Content(mediaType = APPLICATION_JSON_VALUE, array =
+			@ArraySchema(schema = @Schema(implementation = ThreadDTO.class)))})
+	@GetMapping("/{id}/threads")
+	ResponseEntity<Set<ThreadDTO>> getAllByCategoryId(@PathVariable long id) {
+		Optional<Set<ThreadDTO>> optionalThreadDTOS = categoryService.findAllByCategoryId(id);
+		return optionalThreadDTOS.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
 	}
 	
 	@Operation(summary = "Get a category by its id")

@@ -1,19 +1,21 @@
-import './categories.scss';
-
 import { HomeFilled } from '@ant-design/icons';
 import { Breadcrumb, Col, notification, Row } from 'antd';
 import BreadcrumbItem from 'antd/lib/breadcrumb/BreadcrumbItem';
-import React, { Fragment } from 'react';
+import React from 'react';
 import { useQuery } from 'react-query';
-import { Link } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
+import { Thread } from 'models/Thread';
+import { getAllThreadsByCategoryId } from 'services/CategoryService';
+import SingleThread from './singleThread';
 
-import { Category } from 'models/Category';
+export default function Threads() {
+  const params = useParams();
+  const categoryId = Number(params.id);
+  console.log('>>>', categoryId);
 
-import { getAllCategories } from 'services/CategoryService';
-import SingleCategory from './singleCategory';
-
-function Categories() {
-  const query = useQuery('categories', () => getAllCategories());
+  const query = useQuery(`categories/${categoryId}/threads`, () =>
+    getAllThreadsByCategoryId(categoryId),
+  );
   if (query.isLoading) {
     return <div>Loading...</div>;
   }
@@ -29,8 +31,6 @@ function Categories() {
     return <div>Error!</div>;
   }
 
-  // useEffect(() => {}, []);
-
   return (
     <>
       <Breadcrumb>
@@ -40,18 +40,19 @@ function Categories() {
           </Link>
         </BreadcrumbItem>
         <BreadcrumbItem>
-          <span>Forum</span>
+          <Link to="/forum/">Forum</Link>
+        </BreadcrumbItem>
+        <BreadcrumbItem>
+          <span>nazwa</span>
         </BreadcrumbItem>
       </Breadcrumb>
       <Row gutter={[8, 8]}>
-        {(query.data as Category[]).map(value => (
+        {(query.data as Thread[]).map(value => (
           <Col key={value.id} xs={24} md={12}>
-            <SingleCategory category={value} />
+            <SingleThread id={categoryId} thread={value} />
           </Col>
         ))}
       </Row>
     </>
   );
 }
-
-export default Categories;

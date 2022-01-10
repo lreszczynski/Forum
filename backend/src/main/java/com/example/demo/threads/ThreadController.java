@@ -1,5 +1,6 @@
 package com.example.demo.threads;
 
+import com.example.demo.categories.CategoryService;
 import com.example.demo.security.SecurityUtility;
 import com.example.demo.threads.validation.CreateThread;
 import com.example.demo.threads.validation.UpdateThread;
@@ -32,10 +33,12 @@ public class ThreadController {
 	private static final String THREAD_UPDATED_LOG = "Thread was updated: {}";
 	
 	private final ThreadService threadService;
+	private final CategoryService categoryService;
 	
 	@Autowired
-	public ThreadController(ThreadService threadService) {
+	public ThreadController(ThreadService threadService, CategoryService categoryService) {
 		this.threadService = threadService;
+		this.categoryService = categoryService;
 	}
 	
 	@Operation(summary = "Returns a list of threads")

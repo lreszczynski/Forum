@@ -4,6 +4,7 @@ import com.example.demo.categoryroles.CategoryRoleRepository;
 import com.example.demo.roles.Role;
 import com.example.demo.roles.RoleDTO;
 import com.example.demo.roles.RoleRepository;
+import com.example.demo.threads.ThreadDTO;
 import com.example.demo.users.UserRepository;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
@@ -36,6 +37,16 @@ public class CategoryService {
 	public List<CategoryDTO> findAll() {
 		return modelMapper.map(categoryRepository.findAll(), new TypeToken<List<CategoryDTO>>() {
 		}.getType());
+	}
+	
+	public Optional<Set<ThreadDTO>> findAllByCategoryId(Long id) {
+		Optional<Category> optionalCategory = categoryRepository.findById(id);
+		if (optionalCategory.isEmpty()) {
+			return Optional.empty();
+		}
+		Type setType = new TypeToken<Set<ThreadDTO>>() {
+		}.getType();
+		return optionalCategory.map(category -> modelMapper.map(category.getThreads(), setType));
 	}
 	
 	public Optional<CategoryDTO> findById(Long id) {

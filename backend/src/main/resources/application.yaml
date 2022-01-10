@@ -31,8 +31,6 @@ logging:
 app:
   token:
     secret: q4NyfcZa41vhSF4PHPhgDILTJ4sqQW+V7Iup8G6q5Bw=
-
-
 ---
 
 #?stringtype=unspecified
