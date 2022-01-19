@@ -1,0 +1,48 @@
+@import './../../index.scss';
+
+.thread {
+  border-radius: 10px;
+  height: 100%;
+  border: solid 2px lightgray;
+  margin: 0px !important;
+}
+
+.avatar {
+  display: flex;
+  margin: 0 auto;
+  width: 48px;
+  height: 48px;
+  background-color: pink;
+  border-radius: 100%;
+  justify-content: center;
+  align-items: center;
+  * {
+    margin: 0 auto;
+    font-size: x-large;
+  }
+}
+
+.smallAvatar {
+  display: flex;
+  width: 16px;
+  height: 16px;
+  background-color: pink;
+  border-radius: 100%;
+  justify-content: center;
+  align-items: center;
+  * {
+    margin: 0 auto;
+    text-align: center;
+  }
+}
+
+.userInfoContainer {
+  text-align: center;
+}
+
+.verticalLine {
+  border-left: 2px solid lightgray;
+  height: 100%;
+  left: 50%;
+  margin-left: -1px;
+}

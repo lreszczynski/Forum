@@ -1,10 +1,10 @@
 import { configureStore } from '@reduxjs/toolkit';
 
-import historySlice from 'features/history/historySlice';
+import counterSlice from './reducers';
 
 export const store = configureStore({
   reducer: {
-    history: historySlice,
+    counter: counterSlice,
   },
 });
 

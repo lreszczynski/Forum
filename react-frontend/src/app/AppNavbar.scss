@@ -1,0 +1,22 @@
+#sidebar-logo {
+  //position: relative;
+  height: 64px;
+  padding-left: 24px;
+  overflow: hidden;
+  line-height: 64px;
+  background: #001529;
+  transition: all 0.3s;
+}
+
+#sidebar-logo h1 {
+  display: inline-block;
+  margin: 0 0 0 10px;
+  color: #fff;
+  font-weight: 600;
+  font-size: 20px;
+  vertical-align: middle;
+}
+
+.ant-menu {
+  margin-top: -4px !important;
+}

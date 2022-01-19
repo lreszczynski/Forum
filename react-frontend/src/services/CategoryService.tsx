@@ -1,12 +1,22 @@
 import { Category } from 'models/Category';
-import { Thread } from 'models/Thread';
+import { CategoryWithThreads } from 'models/CategoryWithThreads';
 
-export function getAllCategories() {
-  return fetch('/categories').then(res => res.json() as Promise<Category[]>);
-}
+const CategoryService = {
+  getAllCategories() {
+    return fetch('/categories').then(res => res.json() as Promise<Category[]>);
+  },
 
-export function getAllThreadsByCategoryId(id: number) {
-  return fetch(`/categories/${id}/threads`).then(
-    res => res.json() as Promise<Thread[]>,
-  );
-}
+  getCategoryByIdWithThreads(id: number) {
+    return fetch(`/categories/${id}/threads`).then(
+      res => res.json() as Promise<CategoryWithThreads>,
+    );
+  },
+
+  getCategoryById(id: number) {
+    return fetch(`/categories/${id}`).then(
+      res => res.json() as Promise<Category>,
+    );
+  },
+};
+
+export default CategoryService;

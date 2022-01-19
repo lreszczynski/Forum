@@ -1,9 +1,10 @@
 import React, { useEffect } from 'react';
 import { Route, Routes, useLocation } from 'react-router-dom';
+import Posts from 'components/posts/Posts';
+import Threads from 'components/threads/Threads';
 
-import Threads from 'components/threads/threads';
-import Categories from '../categories/categories';
-import Main from '../main/main';
+import Categories from '../components/categories/Categories';
+import Main from '../components/main/Main';
 
 function RouterOutlet({ stateChanger }: any) {
   const location = useLocation();
@@ -16,10 +17,11 @@ function RouterOutlet({ stateChanger }: any) {
 
   return (
     <Routes>
-      <Route path="/" element={<Main longText />} />
+      <Route path="/" element={<Main />} />
       <Route path="/short" element={<Main longText={false} />} />
       <Route path="/forum" element={<Categories />} />
       <Route path="/forum/:id/" element={<Threads />} />
+      <Route path="/forum/:id/threads/:id2" element={<Posts />} />
     </Routes>
   );
 }

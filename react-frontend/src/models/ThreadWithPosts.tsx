@@ -1,13 +1,12 @@
+import { Category } from './Category';
 import { Post } from './Post';
 import { User } from './User';
 
-export interface Thread {
+export interface ThreadWithPosts {
   id: number;
   title: String;
-  createDate: Date;
   active: boolean;
-  pinned: boolean;
+  category: Category;
   user: User;
-  postsCount: number;
-  lastPost: Post;
+  posts: Set<Post>;
 }

@@ -1,0 +1,36 @@
+@import './index.scss';
+
+#header-flex {
+  display: flex;
+  //position: relative;
+  height: 64px;
+  padding: 0;
+  box-shadow: 0 1px 4px rgba(0, 21, 41, 0.08);
+}
+
+.start {
+  display: flex;
+  align-items: flex-start;
+  flex-direction: row;
+  flex-grow: 1;
+}
+
+.end {
+  display: flex;
+  flex-grow: 1;
+  text-align: end;
+  justify-content: flex-end;
+}
+
+.rotateA {
+  transition: 1.5s ease-in-out;
+}
+
+.rotateB {
+  transition: 1.5s ease-in-out;
+  transform: rotate(120deg);
+}
+
+.ant-breadcrumb {
+  padding-bottom: 20px !important;
+}

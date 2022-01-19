@@ -1,5 +1,5 @@
 import './index.scss';
-import 'antd/dist/antd.min.css';
+// import 'antd/dist/antd.min.css';
 
 import React from 'react';
 import ReactDOM from 'react-dom';
@@ -7,8 +7,8 @@ import { QueryClient, QueryClientProvider } from 'react-query';
 import { ReactQueryDevtools } from 'react-query/devtools';
 import { Provider } from 'react-redux';
 
-import { store } from 'store';
-import App from './App';
+import App from 'app/App';
+import { store } from 'store/store';
 import reportWebVitals from './reportWebVitals';
 
 const queryClientConfig = {

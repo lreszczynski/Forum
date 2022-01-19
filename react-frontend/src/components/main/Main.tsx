@@ -1,7 +1,10 @@
 import React from 'react';
 
-function Main(props: { longText: boolean }) {
-  const { longText } = props;
+export interface IMainProps {
+  longText?: boolean;
+}
+
+export default function Main({ longText = true }: IMainProps) {
   if (longText) {
     return (
       <div>
@@ -125,5 +128,3 @@ function Main(props: { longText: boolean }) {
     </p>
   );
 }
-
-export default Main;
