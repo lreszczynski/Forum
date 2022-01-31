@@ -1,4 +1,4 @@
-import './Categories.scss';
+import './ListOfCategories.scss';
 
 import { HomeFilled } from '@ant-design/icons';
 import { Breadcrumb, Col, notification, Row, Skeleton } from 'antd';
@@ -10,7 +10,7 @@ import { Link } from 'react-router-dom';
 import CategoryService from 'services/CategoryService';
 import SingleCategory from './SingleCategory';
 
-function Categories() {
+function ListOfCategories() {
   const query = useQuery('categories', () =>
     CategoryService.getAllCategories(),
   );
@@ -74,4 +74,4 @@ function Categories() {
   return null;
 }
 
-export default Categories;
+export default ListOfCategories;

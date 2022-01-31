@@ -1,8 +1,10 @@
+import axios from 'axios';
 import { Post } from 'models/Post';
 
 const PostService = {
-  getAllPosts() {
-    return fetch('/posts').then(res => res.json() as Promise<Post[]>);
+  async getAllPosts(): Promise<Post[]> {
+    const value = await axios.get<Post[]>('/posts');
+    return value.data;
   },
 };
 

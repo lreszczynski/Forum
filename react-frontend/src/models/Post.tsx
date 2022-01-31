@@ -2,7 +2,7 @@ import { User } from './User';
 
 export interface Post {
   id: number;
-  content: String;
+  content: string;
   createDate: Date;
   user: User;
 }

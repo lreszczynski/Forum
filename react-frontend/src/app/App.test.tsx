@@ -1,10 +1,11 @@
-import { render } from '@testing-library/react';
+import { act, render, screen } from '@testing-library/react';
 import React from 'react';
+import Main from 'components/main/Main';
 
-import App from './App';
-
-test('renders learn react link', () => {
-  render(<App />);
-  // const linkElement = screen.getByText(/Categories/i);
-  // expect(linkElement).toBeInTheDocument();
+test('renders learn react link', async () => {
+  await act(async () => {
+    render(<Main />);
+  });
+  const linkElement = screen.getAllByText(/Lorem/i)[0];
+  expect(linkElement).toBeInTheDocument();
 });

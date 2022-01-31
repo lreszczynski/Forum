@@ -5,8 +5,8 @@ import {
   GroupOutlined,
   HomeFilled,
   HomeOutlined,
-  UserOutlined,
 } from '@ant-design/icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Col, Menu, Row } from 'antd';
 import Title from 'antd/lib/typography/Title';
 import * as React from 'react';
@@ -25,7 +25,7 @@ export default function AppNavbar(props: IAppNavbarProps) {
 
   return (
     <>
-      <div id="sidebar-logo">
+      <div id="sidebar-logo" style={{ marginTop: !isDrawer ? '64px' : '' }}>
         <Row>
           <Col flex="auto" style={{ marginTop: '-2px' }}>
             <Link to="/">
@@ -74,8 +74,11 @@ export default function AppNavbar(props: IAppNavbarProps) {
             <span>Forum</span>
           </Link>
         </Menu.Item>
-        <Menu.Item key="4" icon={<UserOutlined />}>
-          nav 4
+
+        <Menu.Item key="4" icon={<FontAwesomeIcon icon="reply" />}>
+          <Link to="/categories/2">
+            <span>JWT test</span>
+          </Link>
         </Menu.Item>
       </Menu>
     </>

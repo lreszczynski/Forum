@@ -1,21 +1,49 @@
+import axios from 'axios';
 import { Category } from 'models/Category';
-import { CategoryWithThreads } from 'models/CategoryWithThreads';
+import { Page } from 'models/Page';
+import { ThreadAndPostStats } from 'models/ThreadAndPostStats';
+import authHeader from './AuthHeader';
 
 const CategoryService = {
-  getAllCategories() {
-    return fetch('/categories').then(res => res.json() as Promise<Category[]>);
+  async getAllCategories(): Promise<Category[]> {
+    const value = await axios.get<Category[]>('/categories');
+    return value.data;
   },
 
-  getCategoryByIdWithThreads(id: number) {
-    return fetch(`/categories/${id}/threads`).then(
-      res => res.json() as Promise<CategoryWithThreads>,
+  async getThreadsByCategoryId(
+    categoryId: number,
+    page: number,
+  ): Promise<Page<ThreadAndPostStats>> {
+    const value = await axios.get<Page<ThreadAndPostStats>>(
+      `/categories/${categoryId}/threads?page=${page}`,
     );
+    return value.data;
   },
 
-  getCategoryById(id: number) {
-    return fetch(`/categories/${id}`).then(
-      res => res.json() as Promise<Category>,
+  async getPinnedThreadsByCategoryId(
+    categoryId: number,
+  ): Promise<ThreadAndPostStats[]> {
+    const value = await axios.get<ThreadAndPostStats[]>(
+      `/categories/${categoryId}/pinned-threads`,
     );
+    return value.data;
+  },
+
+  async getCategoryById(id: number): Promise<Category> {
+    const value = await axios.get<Category>(`/categories/${id}`);
+    return value.data;
+  },
+
+  async updateCategory(category: Category): Promise<Category> {
+    const value = await axios.put<Category>(
+      `/categories/${category.id}`,
+      category,
+      {
+        headers: authHeader(),
+      },
+    );
+
+    return value.data;
   },
 };
 

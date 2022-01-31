@@ -1,26 +1,29 @@
 import './SingleThread.scss';
 
 import { ClockCircleFilled, MessageFilled } from '@ant-design/icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Col, Row, Space } from 'antd';
 import Text from 'antd/lib/typography/Text';
 import Title from 'antd/lib/typography/Title';
 import moment from 'moment';
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Thread } from 'models/Thread';
+import { Category } from 'models/Category';
+import { ThreadAndPostStats } from 'models/ThreadAndPostStats';
 import { breakpoints } from 'utils/screenWidth';
 
 export interface ISingleThreadProps {
-  id: number;
-  thread: Thread;
+  category: Category;
+  threadAndLastPost: ThreadAndPostStats;
 }
 
 export default function SingleThread(params: ISingleThreadProps) {
-  const { id, thread } = params;
+  const { category, threadAndLastPost } = params;
+  const { thread, lastPost, postsCount } = threadAndLastPost;
   const [width, setWidth] = useState(window.innerWidth);
   // const threadId = thread.id;
   const navigate = useNavigate();
-  const link = () => navigate(`/forum/${id}/threads/${thread.id}`);
+  const link = () => navigate(`/forum/${category.id}/threads/${thread.id}`);
 
   useEffect(() => {
     function handleResize() {
@@ -28,7 +31,10 @@ export default function SingleThread(params: ISingleThreadProps) {
     }
 
     window.addEventListener('resize', handleResize);
-  });
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
 
   let colour = '';
   switch (thread.user.role.name) {
@@ -45,7 +51,7 @@ export default function SingleThread(params: ISingleThreadProps) {
     }
   }
 
-  const replies = thread.postsCount - 1;
+  const replies = postsCount - 1;
 
   if (width > breakpoints.sm) {
     return (
@@ -75,24 +81,28 @@ export default function SingleThread(params: ISingleThreadProps) {
           <Title level={4} ellipsis={{ rows: 2 }}>
             {thread.title}
           </Title>
-          <Space>
-            <Text type="secondary">
-              {moment(thread.createDate).format('L')}
-            </Text>
-            <Text>
-              <MessageFilled /> {replies}
-              {replies > 0 && (
-                <>
-                  <Text type="secondary">, last by </Text>
-                  {thread.lastPost.user.username}
-                </>
-              )}
-            </Text>
-            <Text>
-              <ClockCircleFilled />{' '}
-              {moment(thread.lastPost.createDate).fromNow()}
-            </Text>
-          </Space>
+          <Row>
+            <Col>
+              <Space>
+                <Text type="secondary">
+                  {moment(thread.createDate).format('L')}
+                </Text>
+                <Text>
+                  <MessageFilled /> {replies}{' '}
+                  {replies > 0 && (
+                    <>
+                      <FontAwesomeIcon icon="reply" /> {lastPost.user.username}
+                    </>
+                  )}
+                </Text>
+              </Space>
+            </Col>
+            <Col flex="auto" style={{ textAlign: 'right' }}>
+              <Text>
+                <ClockCircleFilled /> {moment(lastPost.createDate).fromNow()}
+              </Text>
+            </Col>
+          </Row>
         </Col>
       </Row>
     );
@@ -126,18 +136,16 @@ export default function SingleThread(params: ISingleThreadProps) {
         </Row>
         <Row align="middle" gutter={8}>
           <Col>
-            <MessageFilled /> {replies}
+            <MessageFilled /> {replies}{' '}
             {replies > 0 && (
               <>
-                <Text type="secondary">, last by </Text>
-                {thread.lastPost.user.username}
+                <FontAwesomeIcon icon="reply" /> {lastPost.user.username}
               </>
-            )}{' '}
+            )}
           </Col>
           <Col flex="auto" style={{ textAlign: 'right' }}>
             <Text>
-              <ClockCircleFilled />{' '}
-              {moment(thread.lastPost.createDate).fromNow()}
+              <ClockCircleFilled /> {moment(lastPost.createDate).fromNow()}
             </Text>
           </Col>
         </Row>

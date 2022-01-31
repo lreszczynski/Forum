@@ -2,7 +2,7 @@ import { Role } from './Role';
 
 export interface User {
   id: number;
-  username: String;
+  username: string;
   banned: boolean;
   role: Role;
 }
