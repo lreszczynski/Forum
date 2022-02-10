@@ -61,13 +61,6 @@ jobs:
           java-version: 17
           distribution: 'adopt'
           cache: gradle
-      - name: Wait for database
-        uses: lewagon/wait-on-check-action@v1.1.1
-        with:
-          ref: ${{ github.ref }}
-          check-name: 'Recreate database'
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
-          wait-interval: 10
 
       - name: Build with Gradle
         run: ./gradlew build 
