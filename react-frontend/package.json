@@ -36,6 +36,7 @@
     "lint-staged": "lint-staged --config lint-staged.js",
     "lint": "eslint --fix src --ext .tsx,.ts,.js,.jsx",
     "prettier": "prettier --check .",
+    "typescript": "tsc --project tsconfig.json --noEmit",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
