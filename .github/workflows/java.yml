@@ -51,7 +51,7 @@ jobs:
       - name: Recreate database
         run: |
           chmod +x "${GITHUB_WORKSPACE}/database-scripts/recreate.sh"
-          "${GITHUB_WORKSPACE}/database-scripts/recreate.sh" "postgres"
+          "${GITHUB_WORKSPACE}/database-scripts/recreate.sh"
 
 
       - uses: actions/checkout@v2
