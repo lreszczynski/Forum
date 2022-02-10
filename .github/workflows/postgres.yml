@@ -36,4 +36,4 @@ jobs:
           apt-get update
           apt-get install --yes postgresql-client
       - name: Recreate database
-        run: ./database-scripts/recreate.sh
+        run: "${GITHUB_WORKSPACE}/database-scripts/recreate.sh"
