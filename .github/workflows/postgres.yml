@@ -19,7 +19,6 @@ jobs:
           POSTGRES_PASSWORD: dbpassword
           POSTGRES_PORT: 5432
           POSTGRES_USER: dbuser
-          POSTGRES_HOST: localhost
         ports:
           # maps tcp port 5432 on service container to the host
           - 5432:5432
@@ -41,4 +40,4 @@ jobs:
       - name: Recreate database 
         run: |
           chmod +x "${GITHUB_WORKSPACE}/database-scripts/recreate.sh"
-          "${GITHUB_WORKSPACE}/database-scripts/recreate.sh"
+          "${GITHUB_WORKSPACE}/database-scripts/recreate.sh postgres"
