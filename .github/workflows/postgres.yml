@@ -31,12 +31,11 @@ jobs:
           --health-timeout 5s
           --health-retries 5
     steps:
+      - uses: actions/checkout@v2
       - name: Install PostgreSQL client
         run: |
           apt-get update
           apt-get install --yes postgresql-client
       - name: Recreate database 
         run: |
-          ls "${GITHUB_WORKSPACE}"
-          chmod +x "${GITHUB_WORKSPACE}/database-scripts/recreate.sh"
           "${GITHUB_WORKSPACE}/database-scripts/recreate.sh"
