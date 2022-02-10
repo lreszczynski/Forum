@@ -9,7 +9,7 @@ jobs:
     # service containers to run with `postgres-job`
     services:
       # label used to access the service container
-      postgres:
+      localhost:
         # Docker Hub image
         image: postgres:latest
         # service environment variables
@@ -35,6 +35,9 @@ jobs:
         run: |
           apt-get update
           apt-get install --yes postgresql-client
+      - name: Enable pgcrypto extension
+        run: |
+
       - name: Recreate database 
         run: |
           chmod +x "${GITHUB_WORKSPACE}/database-scripts/recreate.sh"
