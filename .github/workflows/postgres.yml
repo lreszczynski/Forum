@@ -5,7 +5,7 @@ jobs:
   postgres-job:
     # containers must run in Linux based operating systems
     runs-on: ubuntu-latest
-
+    container: gradle:jdk11
     # service containers to run with `postgres-job`
     services:
       # label used to access the service container
