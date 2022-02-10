@@ -26,7 +26,6 @@ import java.util.Set;
 public class CategoryDTO {
 	@NotNull(groups = UpdateCategory.class)
 	@Null(groups = CreateCategory.class)
-	@JsonProperty("id")
 	private Long id;
 	
 	@NotNull
