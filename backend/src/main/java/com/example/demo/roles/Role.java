@@ -19,7 +19,7 @@ import static com.fasterxml.jackson.annotation.JsonProperty.Access.READ_ONLY;
 @AllArgsConstructor
 @Builder
 @Entity
-@Table(name = "app_role", schema = "public", catalog = "demo")
+@Table(name = "app_role", schema = "public")
 public class Role {
 	@Id
 	@Column(name = "id")

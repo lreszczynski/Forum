@@ -12,12 +12,21 @@
   display: flex;
   align-items: center;
   flex-direction: row;
-  flex-grow: 1;
+  flex: 1;
+}
+
+.middle {
+  display: flex;
+  flex: 2;
+  max-width: 800px;
+  text-align: center;
+  align-items: center;
+  justify-content: center;
 }
 
 .end {
   display: flex;
-  flex-grow: 1;
+  flex: 1;
   text-align: end;
   align-items: center;
   justify-content: flex-end;
@@ -41,7 +50,7 @@
   margin: 14px;
   width: 48px;
   height: 48px;
-  background-color: pink;
+  background-color: rgb(124, 37, 52);
   border-radius: 100%;
   justify-content: center;
   align-items: center;

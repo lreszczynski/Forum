@@ -1,10 +1,9 @@
 package com.example.demo.users;
 
+import com.example.demo.security.MyUserDetails;
 import com.example.demo.users.validation.UpdateUser;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.extern.slf4j.Slf4j;
@@ -12,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -38,22 +38,32 @@ public class UserController {
 	}
 	
 	@Operation(summary = "Returns a list of users")
-	@ApiResponse(responseCode = HTTP_OK, description = HTTP_OK_MESSAGE, content = {
-			@Content(mediaType = APPLICATION_JSON_VALUE, array =
-			@ArraySchema(schema = @Schema(implementation = UserDTO.class)))})
+	@ApiResponse(responseCode = HTTP_OK)
 	@GetMapping
 	ResponseEntity<Collection<UserDTO>> getAll() {
 		List<UserDTO> users = userService.getAll();
 		return ResponseEntity.ok(users);
 	}
 	
-	@Operation(summary = "Get a user by its id")
+	@Operation(summary = "Get user account settings")
 	@ApiResponses(value = {
-			@ApiResponse(responseCode = HTTP_OK, description = HTTP_OK_MESSAGE, content = {
-					@Content(mediaType = APPLICATION_JSON_VALUE, schema = @Schema(implementation = UserDTO.class))}),
-			@ApiResponse(responseCode = HTTP_NOT_FOUND, description = HTTP_NOT_FOUND_MESSAGE)})
-	@GetMapping("/{id}")
-	ResponseEntity<UserDTO> getById(@PathVariable long id) {
+			@ApiResponse(responseCode = HTTP_OK),
+			@ApiResponse(responseCode = HTTP_NOT_FOUND, content = @Content)})
+	@GetMapping("/account")
+	ResponseEntity<UserDTO> getById(@AuthenticationPrincipal MyUserDetails myUserDetails) {
+		Optional<UserDTO> userDTO = userService.getById(myUserDetails.getId());
+		if (userDTO.isEmpty()) {
+			return ResponseEntity.notFound().build();
+		}
+		return ResponseEntity.ok(userDTO.get());
+	}
+	
+	@Operation(summary = "Get user's public profile")
+	@ApiResponses(value = {
+			@ApiResponse(responseCode = HTTP_OK),
+			@ApiResponse(responseCode = HTTP_NOT_FOUND, content = @Content)})
+	@GetMapping("/profile/{id}")
+	ResponseEntity<UserDTO> getProfile(@PathVariable long id) {
 		Optional<UserDTO> userDTO = userService.getById(id);
 		if (userDTO.isEmpty()) {
 			return ResponseEntity.notFound().build();
@@ -63,12 +73,11 @@ public class UserController {
 	
 	@Operation(summary = "Update a user by its id")
 	@ApiResponses(value = {
-			@ApiResponse(responseCode = HTTP_OK, description = HTTP_OK_MESSAGE, content = {
-					@Content(mediaType = APPLICATION_JSON_VALUE, schema = @Schema(implementation = UserDTO.class))}),
-			@ApiResponse(responseCode = HTTP_NOT_FOUND, description = HTTP_NOT_FOUND_MESSAGE, content = @Content),
-			@ApiResponse(responseCode = HTTP_BAD_REQUEST, description = HTTP_BAD_REQUEST_MESSAGE),
-			@ApiResponse(responseCode = HTTP_FORBIDDEN, description = HTTP_FORBIDDEN_MESSAGE),
-			@ApiResponse(responseCode = HTTP_UNAUTHORIZED, description = HTTP_UNAUTHORIZED_MESSAGE)})
+			@ApiResponse(responseCode = HTTP_OK),
+			@ApiResponse(responseCode = HTTP_NOT_FOUND, content = @Content),
+			@ApiResponse(responseCode = HTTP_BAD_REQUEST, content = @Content),
+			@ApiResponse(responseCode = HTTP_FORBIDDEN, content = @Content),
+			@ApiResponse(responseCode = HTTP_UNAUTHORIZED, content = @Content)})
 	@PutMapping(value = "/{id}", consumes = APPLICATION_JSON_VALUE)
 	@PreAuthorize("@roleContainer.isAdmin(principal)")
 	ResponseEntity<UserDTO> update(@Validated({Default.class, UpdateUser.class}) @RequestBody UserDTO userDTO, @PathVariable Long id) {
@@ -82,9 +91,9 @@ public class UserController {
 	
 	@Operation(summary = "Delete a user")
 	@ApiResponses(value = {
-			@ApiResponse(responseCode = HTTP_NO_CONTENT, description = HTTP_NO_CONTENT_MESSAGE),
-			@ApiResponse(responseCode = HTTP_FORBIDDEN, description = HTTP_FORBIDDEN_MESSAGE),
-			@ApiResponse(responseCode = HTTP_UNAUTHORIZED, description = HTTP_UNAUTHORIZED_MESSAGE)})
+			@ApiResponse(responseCode = HTTP_NO_CONTENT, content = @Content),
+			@ApiResponse(responseCode = HTTP_FORBIDDEN, content = @Content),
+			@ApiResponse(responseCode = HTTP_UNAUTHORIZED, content = @Content)})
 	@DeleteMapping("/{id}")
 	public ResponseEntity<?> delete(@PathVariable Long id) {
 		userService.deleteById(id);
@@ -93,9 +102,8 @@ public class UserController {
 	
 	@Operation(summary = "Register a new user")
 	@ApiResponses(value = {
-			@ApiResponse(responseCode = HTTP_OK, description = HTTP_OK_MESSAGE, content = {
-					@Content(mediaType = APPLICATION_JSON_VALUE, schema = @Schema(implementation = UserDTO.class))}),
-			@ApiResponse(responseCode = HTTP_BAD_REQUEST, description = HTTP_BAD_REQUEST_MESSAGE)})	
+			@ApiResponse(responseCode = HTTP_OK),
+			@ApiResponse(responseCode = HTTP_BAD_REQUEST, content = @Content)})
 	@PostMapping(value = "/register", consumes = APPLICATION_JSON_VALUE)
 	ResponseEntity<UserDTO> register(@Validated @RequestBody UserRegistrationDTO userRegistrationDTO) {
 		UserDTO createdUser = userService.register(userRegistrationDTO);

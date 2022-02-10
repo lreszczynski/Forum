@@ -1,3 +1,4 @@
+/*
 package com.example.demo.unit.controller;
 
 import com.example.demo.controller.GlobalExceptionHandler;
@@ -246,4 +247,4 @@ class UserControllerTest {
 		//@formatter:on
 	}
 	
-}
+}*/

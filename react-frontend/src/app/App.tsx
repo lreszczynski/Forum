@@ -38,7 +38,7 @@ function App() {
           closable={false}
           visible={!isCollapsed}
           width="256px"
-          bodyStyle={{ backgroundColor: '#001529', padding: '0' }}
+          bodyStyle={{ padding: '0' }}
         >
           <AppNavbar
             location={location.pathname}
@@ -64,6 +64,7 @@ function App() {
           collapsed={isCollapsed}
           width="256px"
           trigger={null}
+          theme="dark"
         >
           <AppNavbar
             location={location.pathname}
@@ -71,12 +72,16 @@ function App() {
             setCollapsed={collapse}
           />
         </Sider>
-        <Layout>
+        <Layout
+          style={{
+            backgroundColor: '#111',
+          }}
+        >
           <Content>
             <div
               style={{
                 padding: '24px',
-                maxWidth: '1024px',
+                maxWidth: '1280px',
                 margin: '64px auto 0',
               }}
             >

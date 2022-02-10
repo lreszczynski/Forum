@@ -6,6 +6,8 @@ import com.example.demo.roles.RoleDTO;
 import com.example.demo.roles.RoleService;
 import com.example.demo.security.RoleContainer;
 import com.example.demo.security.SecurityUtility;
+import com.example.demo.threads.ThreadProjDTO;
+import com.example.demo.threads.ThreadService;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import org.apache.commons.lang3.StringUtils;
@@ -16,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.jdbc.datasource.init.ScriptUtils;
 
@@ -40,6 +43,9 @@ class CategoryControllerTest {
 	
 	@Autowired
 	private CategoryService categoryService;
+	
+	@Autowired
+	private ThreadService threadService;
 	
 	@Autowired
 	private RoleService roleService;
@@ -76,7 +82,7 @@ class CategoryControllerTest {
 					.post(SecurityUtility.LOGIN_PATH)
 				.then()
 					.statusCode(HttpStatus.OK.value())
-					.extract().path("access_token");
+					.extract().path("accessToken");
 		//@formatter:on
 	}
 	
@@ -115,6 +121,44 @@ class CategoryControllerTest {
 			//@formatter:on
 			
 			assertThat(categoryDTOS).isEqualTo(categoryDTOList);
+		}
+		
+		@Test
+		void getAllPinnedThreadsByCategoryIdShouldReturnAllEntities() {
+			long id = 3;
+			List<ThreadProjDTO> threadProjDTOList = threadService.getAllPinnedByCategoryId(id);
+			
+			ThreadProjDTO[] as = RestAssured
+					.given()
+					.when()
+					.get(SecurityUtility.CATEGORIES_PATH + "/" + id + "/pinned-threads")
+					.then()
+					.statusCode(HttpStatus.OK.value())
+					.extract().as(ThreadProjDTO[].class);
+			
+			//@formatter:off
+			List<ThreadProjDTO> threadProjDTOS = List.of(as);
+			//@formatter:on
+			
+			assertThat(threadProjDTOS).isEqualTo(threadProjDTOList);
+		}
+		
+		@Test
+		void getAllThreadsByCategoryIdShouldReturnAllEntities() {
+			long id = 2;
+			Page<ThreadProjDTO> threadProjDTOList = threadService.getAllByCategoryId(id, null);
+			
+			//@formatter:off
+			List<ThreadProjDTO> threadProjDTOS = RestAssured
+					.given()
+					.when()
+						.get(SecurityUtility.CATEGORIES_PATH+"/"+id+"/threads")
+					.then()
+						.statusCode(HttpStatus.OK.value())
+						.extract().body().jsonPath().getList("content",ThreadProjDTO.class);
+			//@formatter:on
+			
+			assertThat(threadProjDTOS).isEqualTo(threadProjDTOList.getContent());
 		}
 		
 		@Test
@@ -266,6 +310,44 @@ class CategoryControllerTest {
 			//@formatter:on
 			
 			assertThat(categoryDTOS).isEqualTo(categoryDTOList);
+		}
+		
+		@Test
+		void getAllPinnedThreadsByCategoryIdShouldReturnAllEntities() {
+			long id = 3;
+			List<ThreadProjDTO> threadProjDTOList = threadService.getAllPinnedByCategoryId(id);
+			
+			ThreadProjDTO[] as = RestAssured
+					.given()
+					.when()
+					.get(SecurityUtility.CATEGORIES_PATH + "/" + id + "/pinned-threads")
+					.then()
+					.statusCode(HttpStatus.OK.value())
+					.extract().as(ThreadProjDTO[].class);
+			
+			//@formatter:off
+			List<ThreadProjDTO> threadProjDTOS = List.of(as);
+			//@formatter:on
+			
+			assertThat(threadProjDTOS).isEqualTo(threadProjDTOList);
+		}
+		
+		@Test
+		void getAllThreadsByCategoryIdShouldReturnAllEntities() {
+			long id = 2;
+			Page<ThreadProjDTO> threadProjDTOList = threadService.getAllByCategoryId(id, null);
+			
+			//@formatter:off
+			List<ThreadProjDTO> threadProjDTOS = RestAssured
+					.given()
+					.when()
+					.get(SecurityUtility.CATEGORIES_PATH+"/"+id+"/threads")
+					.then()
+					.statusCode(HttpStatus.OK.value())
+					.extract().body().jsonPath().getList("content",ThreadProjDTO.class);
+			//@formatter:on
+			
+			assertThat(threadProjDTOS).isEqualTo(threadProjDTOList.getContent());
 		}
 		
 		@Test
@@ -429,6 +511,44 @@ class CategoryControllerTest {
 			//@formatter:on
 			
 			assertThat(categoryDTOS).isEqualTo(categoryDTOList);
+		}
+		
+		@Test
+		void getAllPinnedThreadsByCategoryIdShouldReturnAllEntities() {
+			long id = 3;
+			List<ThreadProjDTO> threadProjDTOList = threadService.getAllPinnedByCategoryId(id);
+			
+			ThreadProjDTO[] as = RestAssured
+					.given()
+					.when()
+					.get(SecurityUtility.CATEGORIES_PATH + "/" + id + "/pinned-threads")
+					.then()
+					.statusCode(HttpStatus.OK.value())
+					.extract().as(ThreadProjDTO[].class);
+			
+			//@formatter:off
+			List<ThreadProjDTO> threadProjDTOS = List.of(as);
+			//@formatter:on
+			
+			assertThat(threadProjDTOS).isEqualTo(threadProjDTOList);
+		}
+		
+		@Test
+		void getAllThreadsByCategoryIdShouldReturnAllEntities() {
+			long id = 2;
+			Page<ThreadProjDTO> threadProjDTOList = threadService.getAllByCategoryId(id, null);
+			
+			//@formatter:off
+			List<ThreadProjDTO> threadProjDTOS = RestAssured
+					.given()
+					.when()
+					.get(SecurityUtility.CATEGORIES_PATH+"/"+id+"/threads")
+					.then()
+					.statusCode(HttpStatus.OK.value())
+					.extract().body().jsonPath().getList("content",ThreadProjDTO.class);
+			//@formatter:on
+			
+			assertThat(threadProjDTOS).isEqualTo(threadProjDTOList.getContent());
 		}
 		
 		@Test
@@ -972,7 +1092,6 @@ class CategoryControllerTest {
 				RestAssured
 						.given()
 							.auth().oauth2(token)
-							.body(roleToDelete.get()).contentType(ContentType.JSON)
 						.when()
 							.delete(SecurityUtility.CATEGORIES_PATH+"/"+categoryId+"/roles/"+roleId)
 						.then()
@@ -1010,6 +1129,44 @@ class CategoryControllerTest {
 			//@formatter:on
 			
 			assertThat(categoryDTOS).isEqualTo(categoryDTOList);
+		}
+		
+		@Test
+		void getAllPinnedThreadsByCategoryIdShouldReturnAllEntities() {
+			long id = 3;
+			List<ThreadProjDTO> threadProjDTOList = threadService.getAllPinnedByCategoryId(id);
+			
+			ThreadProjDTO[] as = RestAssured
+					.given()
+					.when()
+					.get(SecurityUtility.CATEGORIES_PATH + "/" + id + "/pinned-threads")
+					.then()
+					.statusCode(HttpStatus.OK.value())
+					.extract().as(ThreadProjDTO[].class);
+			
+			//@formatter:off
+			List<ThreadProjDTO> threadProjDTOS = List.of(as);
+			//@formatter:on
+			
+			assertThat(threadProjDTOS).isEqualTo(threadProjDTOList);
+		}
+		
+		@Test
+		void getAllThreadsByCategoryIdShouldReturnAllEntities() {
+			long id = 2;
+			Page<ThreadProjDTO> threadProjDTOList = threadService.getAllByCategoryId(id, null);
+			
+			//@formatter:off
+			List<ThreadProjDTO> threadProjDTOS = RestAssured
+					.given()
+					.when()
+					.get(SecurityUtility.CATEGORIES_PATH+"/"+id+"/threads")
+					.then()
+					.statusCode(HttpStatus.OK.value())
+					.extract().body().jsonPath().getList("content",ThreadProjDTO.class);
+			//@formatter:on
+			
+			assertThat(threadProjDTOS).isEqualTo(threadProjDTOList.getContent());
 		}
 		
 		@Test
@@ -1507,7 +1664,6 @@ class CategoryControllerTest {
 				RestAssured
 						.given()
 							.auth().oauth2(token)
-							.body(roleToDelete.get()).contentType(ContentType.JSON)
 						.when()
 							.delete(SecurityUtility.CATEGORIES_PATH+"/"+categoryId+"/roles/"+roleId)
 						.then()

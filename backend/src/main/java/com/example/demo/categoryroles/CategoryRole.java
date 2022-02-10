@@ -13,7 +13,7 @@ import java.util.Objects;
 @Builder
 @ToString
 @Entity
-@Table(name = "app_category_role", schema = "public", catalog = "demo")
+@Table(name = "app_category_role", schema = "public")
 @IdClass(CategoryRolePK.class)
 public class CategoryRole {
 	@Id

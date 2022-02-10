@@ -62,7 +62,7 @@ class RoleControllerTest {
 		@Override
 		public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
 			UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(
-					new MyUserDetails("User", "", List.of(new SimpleGrantedAuthority(RoleContainer.ADMIN)), true, false),
+					new MyUserDetails(1L, "User", "", List.of(new SimpleGrantedAuthority(RoleContainer.ADMIN)), true, false),
 					"", Collections.emptyList());
 			SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
 			chain.doFilter(request, response);

@@ -4,6 +4,7 @@ import com.example.demo.categories.validation.CategoryUniqueConstraint;
 import com.example.demo.categories.validation.CreateCategory;
 import com.example.demo.categories.validation.SecondOrder;
 import com.example.demo.categories.validation.UpdateCategory;
+import com.example.demo.roles.RoleDTO;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 import org.hibernate.validator.constraints.Length;
@@ -12,6 +13,8 @@ import javax.validation.GroupSequence;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Null;
+import java.util.HashSet;
+import java.util.Set;
 
 @Data
 @With
@@ -40,4 +43,7 @@ public class CategoryDTO {
 	@NotNull
 	@JsonProperty("active")
 	private boolean active;
+	
+	@Builder.Default
+	private Set<RoleDTO> roles = new HashSet<>();
 }

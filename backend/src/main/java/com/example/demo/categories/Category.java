@@ -17,12 +17,11 @@ import java.util.Set;
 @Builder
 @ToString
 @Entity
-@Table(name = "app_category", schema = "public", catalog = "demo")
+@Table(name = "app_category", schema = "public")
 public class Category {
 	@Id
 	@Column(name = "id")
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	//@JsonProperty(access = READ_ONLY)
 	private Long id;
 	
 	@Column(name = "name", unique = true)

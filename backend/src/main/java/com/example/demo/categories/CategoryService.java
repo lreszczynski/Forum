@@ -1,37 +1,48 @@
 package com.example.demo.categories;
 
 import com.example.demo.categoryroles.CategoryRoleRepository;
+import com.example.demo.posts.Post;
+import com.example.demo.posts.PostRepository;
 import com.example.demo.roles.Role;
 import com.example.demo.roles.RoleDTO;
 import com.example.demo.roles.RoleRepository;
-import com.example.demo.threads.ThreadDTO;
+import com.example.demo.threads.Thread;
+import com.example.demo.threads.ThreadRepository;
+import com.example.demo.threads.ThreadWithLastPostDTO;
 import com.example.demo.users.UserRepository;
+import org.modelmapper.Converter;
 import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeMap;
 import org.modelmapper.TypeToken;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.lang.reflect.Type;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
 public class CategoryService {
 	private final CategoryRepository categoryRepository;
 	private final RoleRepository roleRepository;
+	private final PostRepository postRepository;
+	private final ThreadRepository threadRepository;
 	private final CategoryRoleRepository categoryRoleRepository;
 	private final UserRepository userRepository;
 	private final ModelMapper modelMapper;
 	
-	public CategoryService(CategoryRepository categoryRepository, RoleRepository roleRepository, CategoryRoleRepository categoryRoleRepository, UserRepository userRepository) {
+	public CategoryService(CategoryRepository categoryRepository, RoleRepository roleRepository, PostRepository postRepository, ThreadRepository threadRepository, CategoryRoleRepository categoryRoleRepository, UserRepository userRepository) {
 		this.categoryRepository = categoryRepository;
 		this.roleRepository = roleRepository;
+		this.postRepository = postRepository;
+		this.threadRepository = threadRepository;
 		this.categoryRoleRepository = categoryRoleRepository;
 		this.userRepository = userRepository;
 		this.modelMapper = new ModelMapper();
+		TypeMap<Thread, ThreadWithLastPostDTO> propertyMapper = modelMapper.createTypeMap(Thread.class, ThreadWithLastPostDTO.class);
+		Converter<Collection<Post>, Integer> collectionToSize = (c -> c.getSource().size());
+		propertyMapper.addMappings(mapper -> mapper.using(collectionToSize).map(Thread::getPosts, ThreadWithLastPostDTO::setPostsCount));
 	}
 	
 	public List<CategoryDTO> findAll() {
@@ -39,26 +50,22 @@ public class CategoryService {
 		}.getType());
 	}
 	
-	public Optional<Set<ThreadDTO>> findAllByCategoryId(Long id) {
-		Optional<Category> optionalCategory = categoryRepository.findById(id);
-		if (optionalCategory.isEmpty()) {
-			return Optional.empty();
-		}
-		Type setType = new TypeToken<Set<ThreadDTO>>() {
-		}.getType();
-		return optionalCategory.map(category -> modelMapper.map(category.getThreads(), setType));
-	}
-	
 	public Optional<CategoryDTO> findById(Long id) {
 		return categoryRepository.findById(id).map(category -> modelMapper.map(category, CategoryDTO.class));
 	}
 	
-	public CategoryDTO create(CategoryDTO categoryDTO, String username) {
-		Category category = modelMapper.map(categoryDTO, Category.class);
+	public CategoryDTO create(CategoryDTO categoryDTO) {
+		Category category = Category.builder()
+				.name(categoryDTO.getName())
+				.description(categoryDTO.getDescription())
+				.active(categoryDTO.isActive())
+				.roles(categoryDTO.getRoles().stream().map(roleDTO -> modelMapper.map(roleDTO, Role.class)).collect(
+						Collectors.toSet()))
+				.build();
+		
 		Category saved = categoryRepository.save(category);
-		CategoryDTO savedDto = modelMapper.map(saved, CategoryDTO.class);
-		userRepository.findByUsername(username).ifPresent(user -> addRolesToCategoryByIds(savedDto, user.getRole().getId()));
-		return savedDto;
+		
+		return modelMapper.map(saved, CategoryDTO.class);
 	}
 	
 	public void deleteById(Long id) {
@@ -70,6 +77,12 @@ public class CategoryService {
 			category.setName(categoryDTO.getName());
 			category.setDescription(categoryDTO.getDescription());
 			category.setActive(categoryDTO.isActive());
+			Set<Role> newRoles = new HashSet<>();
+			categoryDTO.getRoles().forEach(roleDTO -> {
+				Role byId = roleRepository.getById(roleDTO.getId());
+				newRoles.add(byId);
+			});
+			category.setRoles(newRoles);
 			return categoryRepository.save(category);
 		});
 		return optionalCategory.map(category -> modelMapper.map(category, CategoryDTO.class));
@@ -95,7 +108,7 @@ public class CategoryService {
 	public void addRolesToCategoryByIds(CategoryDTO categoryDTO, Long... ids) {
 		Optional<Category> optionalCategory = categoryRepository.findById(categoryDTO.getId());
 		optionalCategory.ifPresent(category -> {
-			for (Long id: ids) {
+			for (Long id : ids) {
 				Optional<Role> byId = roleRepository.findById(id);
 				byId.ifPresent(role -> category.getRoles().add(role));
 			}
@@ -109,7 +122,7 @@ public class CategoryService {
 	public void deleteRolesFromCategoryByIds(CategoryDTO categoryDTO, Long... ids) {
 		Optional<Category> optionalCategory = categoryRepository.findById(categoryDTO.getId());
 		optionalCategory.ifPresent(category -> {
-			for (Long id: ids) {
+			for (Long id : ids) {
 				Optional<Role> byId = roleRepository.findById(id);
 				byId.ifPresent(role -> category.getRoles().remove(role));
 				//categoryRoleRepository.deleteById(CategoryRolePK.builder().categoryId(category.getId()).roleId(id).build());

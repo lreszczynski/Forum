@@ -1,12 +1,10 @@
 package com.example.demo.roles;
 
-import com.example.demo.categories.CategoryDTO;
 import com.example.demo.roles.validation.CreateRole;
 import com.example.demo.roles.validation.UpdateRole;
 import com.example.demo.security.SecurityUtility;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.extern.slf4j.Slf4j;
@@ -40,8 +38,7 @@ public class RoleController {
 	}
 	
 	@Operation(summary = "Returns a list of roles")
-	@ApiResponse(responseCode = HTTP_OK, description = HTTP_OK_MESSAGE, content = {
-			@Content(mediaType = APPLICATION_JSON_VALUE, schema = @Schema(implementation = RoleDTO.class))})
+	@ApiResponse(responseCode = HTTP_OK)
 	@GetMapping
 	ResponseEntity<Collection<RoleDTO>> getAll() {
 		List<RoleDTO> categories = roleService.getAll();
@@ -50,9 +47,8 @@ public class RoleController {
 	
 	@Operation(summary = "Get a role by its id")
 	@ApiResponses(value = {
-			@ApiResponse(responseCode = HTTP_OK, description = HTTP_OK_MESSAGE, content = {
-					@Content(mediaType = APPLICATION_JSON_VALUE, schema = @Schema(implementation = RoleDTO.class))}),
-			@ApiResponse(responseCode = HTTP_NOT_FOUND, description = HTTP_NOT_FOUND_MESSAGE)})
+			@ApiResponse(responseCode = HTTP_OK),
+			@ApiResponse(responseCode = HTTP_NOT_FOUND, content = @Content)})
 	@GetMapping("/{id}")
 	ResponseEntity<RoleDTO> getById(@PathVariable long id) {
 		Optional<RoleDTO> roleDTO = roleService.getById(id);
@@ -64,11 +60,10 @@ public class RoleController {
 	
 	@Operation(summary = "Create a new role")
 	@ApiResponses(value = {
-			@ApiResponse(responseCode = HTTP_CREATED, description = HTTP_CREATED_MESSAGE, content = {
-					@Content(mediaType = APPLICATION_JSON_VALUE, schema = @Schema(implementation = CategoryDTO.class))}),
-			@ApiResponse(responseCode = HTTP_BAD_REQUEST, description = HTTP_BAD_REQUEST_MESSAGE),
-			@ApiResponse(responseCode = HTTP_FORBIDDEN, description = HTTP_FORBIDDEN_MESSAGE),
-			@ApiResponse(responseCode = HTTP_UNAUTHORIZED, description = HTTP_UNAUTHORIZED_MESSAGE)})
+			@ApiResponse(responseCode = HTTP_CREATED),
+			@ApiResponse(responseCode = HTTP_BAD_REQUEST, content = @Content),
+			@ApiResponse(responseCode = HTTP_FORBIDDEN, content = @Content),
+			@ApiResponse(responseCode = HTTP_UNAUTHORIZED, content = @Content)})
 	@PostMapping(consumes = APPLICATION_JSON_VALUE)
 	@PreAuthorize("@roleContainer.isAdmin(principal)")
 	ResponseEntity<RoleDTO> create(@Validated({Default.class, CreateRole.class}) @RequestBody RoleDTO roleDTO) {
@@ -79,12 +74,11 @@ public class RoleController {
 	
 	@Operation(summary = "Update a role by its id")
 	@ApiResponses(value = {
-			@ApiResponse(responseCode = HTTP_OK, description = HTTP_OK_MESSAGE, content = {
-					@Content(mediaType = APPLICATION_JSON_VALUE, schema = @Schema(implementation = CategoryDTO.class))}),
-			@ApiResponse(responseCode = HTTP_NOT_FOUND, description = HTTP_NOT_FOUND_MESSAGE, content = @Content),
-			@ApiResponse(responseCode = HTTP_BAD_REQUEST, description = HTTP_BAD_REQUEST_MESSAGE),
-			@ApiResponse(responseCode = HTTP_FORBIDDEN, description = HTTP_FORBIDDEN_MESSAGE),
-			@ApiResponse(responseCode = HTTP_UNAUTHORIZED, description = HTTP_UNAUTHORIZED_MESSAGE)})
+			@ApiResponse(responseCode = HTTP_OK),
+			@ApiResponse(responseCode = HTTP_NOT_FOUND, content = @Content),
+			@ApiResponse(responseCode = HTTP_BAD_REQUEST, content = @Content),
+			@ApiResponse(responseCode = HTTP_FORBIDDEN, content = @Content),
+			@ApiResponse(responseCode = HTTP_UNAUTHORIZED, content = @Content)})
 	@PutMapping(value = "/{id}", consumes = APPLICATION_JSON_VALUE)
 	@PreAuthorize("@roleContainer.isAdmin(principal)")
 	ResponseEntity<RoleDTO> update(@Validated({Default.class, UpdateRole.class}) @RequestBody RoleDTO roleDTO, @PathVariable Long id) {
@@ -98,9 +92,9 @@ public class RoleController {
 	
 	@Operation(summary = "Delete a role")
 	@ApiResponses(value = {
-			@ApiResponse(responseCode = HTTP_NO_CONTENT, description = HTTP_NO_CONTENT_MESSAGE),
-			@ApiResponse(responseCode = HTTP_FORBIDDEN, description = HTTP_FORBIDDEN_MESSAGE),
-			@ApiResponse(responseCode = HTTP_UNAUTHORIZED, description = HTTP_UNAUTHORIZED_MESSAGE)})
+			@ApiResponse(responseCode = HTTP_NO_CONTENT),
+			@ApiResponse(responseCode = HTTP_FORBIDDEN, content = @Content),
+			@ApiResponse(responseCode = HTTP_UNAUTHORIZED, content = @Content)})
 	@DeleteMapping("/{id}")
 	@PreAuthorize("@roleContainer.isAdmin(principal)")
 	public ResponseEntity<?> delete(@PathVariable Long id) {

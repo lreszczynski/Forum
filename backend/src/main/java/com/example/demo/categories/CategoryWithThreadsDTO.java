@@ -1,43 +1,26 @@
 package com.example.demo.categories;
 
-import com.example.demo.categories.validation.CategoryUniqueConstraint;
-import com.example.demo.categories.validation.CreateCategory;
-import com.example.demo.categories.validation.SecondOrder;
-import com.example.demo.categories.validation.UpdateCategory;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.*;
-import org.hibernate.validator.constraints.Length;
+import com.example.demo.threads.ThreadWithLastPostDTO;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.With;
 
-import javax.validation.GroupSequence;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Null;
+import java.util.List;
 
 @Data
 @With
-@Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@CategoryUniqueConstraint(groups = SecondOrder.class)
-@GroupSequence({CategoryDTO.class, SecondOrder.class})
-public class CategoryDTO {
-	@NotNull(groups = UpdateCategory.class)
-	@Null(groups = CreateCategory.class)
-	@JsonProperty("id")
+public class CategoryWithThreadsDTO {
 	private Long id;
 	
-	@NotNull
-	@NotEmpty
-	@Length(max = 50)
-	@JsonProperty("name")
 	private String name;
 	
-	@NotNull
-	@Length(min = 5, max = 250)
-	@JsonProperty("description")
 	private String description;
 	
-	@NotNull
-	@JsonProperty("active")
 	private boolean active;
+	
+//	@JsonManagedReference
+	private List<ThreadWithLastPostDTO> threads;
 }

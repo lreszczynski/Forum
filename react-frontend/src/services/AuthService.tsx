@@ -1,4 +1,8 @@
 import axios from 'axios';
+import { Category } from 'models/Category';
+import { Post } from 'models/Post';
+import { Role } from 'models/Role';
+import { Thread } from 'models/Thread';
 import { Tokens } from 'models/Tokens';
 import { User } from 'models/User';
 import UserService from './UserService';
@@ -41,6 +45,97 @@ const AuthService = {
       return JSON.parse(user);
     }
     return undefined;
+  },
+
+  getCurrentUserRole(): Role | undefined {
+    const user = localStorage.getItem('user');
+    if (user !== null && user !== undefined) {
+      const u: User = JSON.parse(user);
+      return u.role;
+    }
+    return undefined;
+  },
+
+  isCurrentUserAtLeastModerator(): boolean {
+    const role = this.getCurrentUserRole();
+    return role?.name === 'Moderator' || role?.name === 'Admin';
+  },
+
+  isCurrentUserAdmin(): boolean {
+    const role = this.getCurrentUserRole();
+    return role?.name === 'Admin';
+  },
+
+  canUserCreateCategory(): boolean {
+    return this.isCurrentUserAdmin();
+  },
+
+  canUserEditCategory(category: Category): boolean {
+    return (
+      this.isCurrentUserAdmin() ||
+      (this.isCurrentUserAtLeastModerator() &&
+        category.roles.some(r => r.id === this.getCurrentUserRole()?.id))
+    );
+  },
+
+  canUserDeleteCategory(_category: Category): boolean {
+    return this.isCurrentUserAdmin();
+  },
+
+  canUserCreateThread(category: Category): boolean {
+    return (
+      this.isCurrentUserAdmin() ||
+      (category.active &&
+        category.roles.some(r => r.id === this.getCurrentUserRole()?.id))
+    );
+  },
+
+  canUserEditThread(thread: Thread): boolean {
+    return (
+      this.isCurrentUserAdmin() ||
+      (this.isCurrentUserAtLeastModerator() &&
+        thread.category.roles.some(r => r.id === this.getCurrentUserRole()?.id))
+    );
+  },
+
+  canUserDeleteThread(thread: Thread): boolean {
+    return (
+      this.isCurrentUserAdmin() ||
+      (this.isCurrentUserAtLeastModerator() &&
+        thread.category.roles.some(r => r.id === this.getCurrentUserRole()?.id))
+    );
+  },
+
+  canUserCreatePost(thread: Thread): boolean {
+    const isThreadActive = thread.active;
+    const allowedRoles = thread.category.roles;
+    return (
+      this.isCurrentUserAdmin() ||
+      (isThreadActive &&
+        allowedRoles.some(r => r.id === this.getCurrentUserRole()?.id))
+    );
+  },
+
+  canUserEditPost(post: Post): boolean {
+    const user = this.getCurrentUser();
+    return (
+      this.isCurrentUserAdmin() ||
+      (this.isCurrentUserAtLeastModerator() &&
+        post.thread.category.roles.some(
+          r => r.id === this.getCurrentUserRole()?.id,
+        )) ||
+      user?.id === post.user.id
+    );
+  },
+
+  canUserDeletePost(post: Post): boolean {
+    return (
+      this.isCurrentUserAdmin() ||
+      (this.isCurrentUserAtLeastModerator() &&
+        post.thread.category.roles.some(
+          r => r.id === this.getCurrentUserRole()?.id,
+        ))
+    );
   },
 };
 

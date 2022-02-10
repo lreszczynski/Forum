@@ -1,4 +1,4 @@
-@import '~antd/dist/antd';
+@import '~antd/dist/antd.dark';
 
 body {
   margin: 0;
@@ -101,4 +101,9 @@ $breakpoints: (
 
 .triggerable:hover {
   color: #1890ff;
+}
+
+.highlight {
+  color: #1890ff;
+  cursor: pointer;
 }

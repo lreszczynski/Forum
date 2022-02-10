@@ -33,7 +33,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 		log.info("User found in the database: {}", user.getUsername());
 		Collection<GrantedAuthority> authorities = new ArrayList<>();
 		authorities.add(new SimpleGrantedAuthority(user.getRole().getName().toUpperCase()));
-		return new MyUserDetails(user.getUsername(), user.getPassword(), authorities, user.isActive(), user.isBanned());
+		return new MyUserDetails(user.getId(), user.getUsername(), user.getPassword(), authorities, user.isActive(), user.isBanned());
 		//return new org.springframework.security.core.userdetails.User(user.getUsername(), user.getPassword(), authorities);
 	}
 }

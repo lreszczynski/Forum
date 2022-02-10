@@ -5,15 +5,18 @@ import com.example.demo.categories.validation.UpdateCategory;
 import com.example.demo.roles.RoleDTO;
 import com.example.demo.security.MyUserDetails;
 import com.example.demo.security.SecurityUtility;
-import com.example.demo.threads.ThreadDTO;
+import com.example.demo.threads.ThreadProjDTO;
+import com.example.demo.threads.ThreadService;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.extern.slf4j.Slf4j;
+import org.springdoc.core.converters.models.PageableAsQueryParam;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -39,37 +42,38 @@ public class CategoryController {
 	private static final String CATEGORY_UPDATED_LOG = "Category was updated: {}";
 	
 	private final CategoryService categoryService;
+	private final ThreadService threadService;
 	
 	@Autowired
-	public CategoryController(CategoryService categoryService) {
+	public CategoryController(CategoryService categoryService, ThreadService threadService) {
 		this.categoryService = categoryService;
+		this.threadService = threadService;
 	}
 	
 	@Operation(summary = "Returns a list of categories")
-	@ApiResponse(responseCode = HTTP_OK, description = HTTP_OK_MESSAGE, content = {
-			@Content(mediaType = APPLICATION_JSON_VALUE, array =
-			@ArraySchema(schema = @Schema(implementation = CategoryDTO.class)))})
 	@GetMapping
 	ResponseEntity<Collection<CategoryDTO>> getAll() {
 		List<CategoryDTO> categories = categoryService.findAll();
 		return ResponseEntity.ok(categories);
 	}
 	
+	@Operation(summary = "Returns a list of pinned threads by category id")
+	@GetMapping("/{id}/pinned-threads")
+	ResponseEntity<Collection<ThreadProjDTO>> getAllPinnedByCategoryId(@PathVariable Long id) {
+		return ResponseEntity.ok(threadService.getAllPinnedByCategoryId(id));
+	}
+	
 	@Operation(summary = "Returns a list of threads by category id")
-	@ApiResponse(responseCode = HTTP_OK, description = HTTP_OK_MESSAGE, content = {
-			@Content(mediaType = APPLICATION_JSON_VALUE, array =
-			@ArraySchema(schema = @Schema(implementation = ThreadDTO.class)))})
+	@PageableAsQueryParam
 	@GetMapping("/{id}/threads")
-	ResponseEntity<Set<ThreadDTO>> getAllByCategoryId(@PathVariable long id) {
-		Optional<Set<ThreadDTO>> optionalThreadDTOS = categoryService.findAllByCategoryId(id);
-		return optionalThreadDTOS.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+	ResponseEntity<Page<ThreadProjDTO>> getAllByCategoryId(@PathVariable Long id, @Parameter(hidden = true) Pageable pageable) {
+		return ResponseEntity.ok(threadService.getAllByCategoryId(id, pageable));
 	}
 	
 	@Operation(summary = "Get a category by its id")
 	@ApiResponses(value = {
-			@ApiResponse(responseCode = HTTP_OK, description = HTTP_OK_MESSAGE, content = {
-					@Content(mediaType = APPLICATION_JSON_VALUE, schema = @Schema(implementation = CategoryDTO.class))}),
-			@ApiResponse(responseCode = HTTP_NOT_FOUND, description = HTTP_NOT_FOUND_MESSAGE)})
+			@ApiResponse(responseCode = HTTP_OK),
+			@ApiResponse(responseCode = HTTP_NOT_FOUND, content = @Content)})
 	@GetMapping("/{id}")
 	ResponseEntity<CategoryDTO> getById(@PathVariable long id) {
 		Optional<CategoryDTO> categoryDTO = categoryService.findById(id);
@@ -81,33 +85,33 @@ public class CategoryController {
 	
 	@Operation(summary = "Create a new category")
 	@ApiResponses(value = {
-			@ApiResponse(responseCode = HTTP_CREATED, description = HTTP_CREATED_MESSAGE, content = {
-					@Content(mediaType = APPLICATION_JSON_VALUE, schema = @Schema(implementation = CategoryDTO.class))}),
-			@ApiResponse(responseCode = HTTP_BAD_REQUEST, description = HTTP_BAD_REQUEST_MESSAGE),
-			@ApiResponse(responseCode = HTTP_FORBIDDEN, description = HTTP_FORBIDDEN_MESSAGE),
-			@ApiResponse(responseCode = HTTP_UNAUTHORIZED, description = HTTP_UNAUTHORIZED_MESSAGE)})
+			@ApiResponse(responseCode = HTTP_CREATED),
+			@ApiResponse(responseCode = HTTP_BAD_REQUEST, content = @Content),
+			@ApiResponse(responseCode = HTTP_FORBIDDEN, content = @Content),
+			@ApiResponse(responseCode = HTTP_UNAUTHORIZED, content = @Content)})
 	@PostMapping(consumes = APPLICATION_JSON_VALUE)
 	@PreAuthorize("@roleContainer.isAtLeastModerator(principal)")
-	ResponseEntity<CategoryDTO> create(@Validated({Default.class, CreateCategory.class}) @RequestBody CategoryDTO categoryDTO) {
+	ResponseEntity<CategoryDTO> create(
+			@Validated({Default.class, CreateCategory.class}) @RequestBody CategoryDTO categoryDTO) {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		String username = ((MyUserDetails) authentication.getPrincipal()).getUsername();
-		CategoryDTO createdCategory = categoryService.create(categoryDTO, username);
+		CategoryDTO createdCategory = categoryService.create(categoryDTO);
 		log.info(CATEGORY_CREATED_LOG, createdCategory);
 		return ResponseEntity.status(HttpStatus.CREATED).body(createdCategory);
 	}
 	
 	@Operation(summary = "Update a category by its id")
 	@ApiResponses(value = {
-			@ApiResponse(responseCode = HTTP_OK, description = HTTP_OK_MESSAGE, content = {
-					@Content(mediaType = APPLICATION_JSON_VALUE, schema = @Schema(implementation = CategoryDTO.class))}),
-			@ApiResponse(responseCode = HTTP_NOT_FOUND, description = HTTP_NOT_FOUND_MESSAGE, content = @Content),
-			@ApiResponse(responseCode = HTTP_BAD_REQUEST, description = HTTP_BAD_REQUEST_MESSAGE),
-			@ApiResponse(responseCode = HTTP_FORBIDDEN, description = HTTP_FORBIDDEN_MESSAGE),
-			@ApiResponse(responseCode = HTTP_UNAUTHORIZED, description = HTTP_UNAUTHORIZED_MESSAGE)})
+			@ApiResponse(responseCode = HTTP_OK),
+			@ApiResponse(responseCode = HTTP_NOT_FOUND, content = @Content),
+			@ApiResponse(responseCode = HTTP_BAD_REQUEST, content = @Content),
+			@ApiResponse(responseCode = HTTP_FORBIDDEN, content = @Content),
+			@ApiResponse(responseCode = HTTP_UNAUTHORIZED, content = @Content)})
 	@PutMapping(value = "/{id}", consumes = APPLICATION_JSON_VALUE)
 	@PreAuthorize("@roleContainer.isAdmin(principal) || " +
 			"(@roleContainer.isAtLeastModerator(principal) && @roleContainer.canEditCategory(principal, #id))")
-	ResponseEntity<?> update(@Validated({Default.class, UpdateCategory.class}) @RequestBody CategoryDTO categoryDTO, @PathVariable Long id) {
+	ResponseEntity<?> update(@Validated({Default.class, UpdateCategory.class}) @RequestBody CategoryDTO categoryDTO,
+	                         @PathVariable Long id) {
 		Optional<CategoryDTO> updatedCategory = categoryService.update(id, categoryDTO);
 		if (updatedCategory.isEmpty()) {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(HTTP_NOT_FOUND_MESSAGE);
@@ -118,9 +122,9 @@ public class CategoryController {
 	
 	@Operation(summary = "Delete a category")
 	@ApiResponses(value = {
-			@ApiResponse(responseCode = HTTP_NO_CONTENT, description = HTTP_NO_CONTENT_MESSAGE),
-			@ApiResponse(responseCode = HTTP_FORBIDDEN, description = HTTP_FORBIDDEN_MESSAGE),
-			@ApiResponse(responseCode = HTTP_UNAUTHORIZED, description = HTTP_UNAUTHORIZED_MESSAGE)})
+			@ApiResponse(responseCode = HTTP_NO_CONTENT),
+			@ApiResponse(responseCode = HTTP_FORBIDDEN, content = @Content),
+			@ApiResponse(responseCode = HTTP_UNAUTHORIZED, content = @Content)})
 	@DeleteMapping("/{id}")
 	@PreAuthorize("@roleContainer.isAdmin(principal) || " +
 			"(@roleContainer.isAtLeastModerator(principal) && @roleContainer.canEditCategory(principal, #id))")
@@ -131,12 +135,10 @@ public class CategoryController {
 	
 	@Operation(summary = "Get roles of a category")
 	@ApiResponses(value = {
-			@ApiResponse(responseCode = HTTP_OK, description = HTTP_OK_MESSAGE, content = {
-					@Content(mediaType = APPLICATION_JSON_VALUE, array =
-					@ArraySchema(schema = @Schema(implementation = RoleDTO.class)))}),
-			@ApiResponse(responseCode = HTTP_FORBIDDEN, description = HTTP_FORBIDDEN_MESSAGE),
-			@ApiResponse(responseCode = HTTP_UNAUTHORIZED, description = HTTP_FORBIDDEN_MESSAGE),
-			@ApiResponse(responseCode = HTTP_NOT_FOUND, description = HTTP_NOT_FOUND_MESSAGE)})
+			@ApiResponse(responseCode = HTTP_OK),
+			@ApiResponse(responseCode = HTTP_NOT_FOUND, content = @Content),
+			@ApiResponse(responseCode = HTTP_FORBIDDEN, content = @Content),
+			@ApiResponse(responseCode = HTTP_UNAUTHORIZED, content = @Content)})
 	@GetMapping("/{id}/roles")
 	@PreAuthorize("@roleContainer.isAtLeastModerator(principal)")
 	ResponseEntity<?> getRolesById(@PathVariable long id) {
@@ -149,12 +151,11 @@ public class CategoryController {
 	
 	@Operation(summary = "Add role to category")
 	@ApiResponses(value = {
-			@ApiResponse(responseCode = HTTP_CREATED, description = HTTP_CREATED_MESSAGE, content = {
-					@Content(mediaType = APPLICATION_JSON_VALUE, schema = @Schema(implementation = CategoryDTO.class))}),
-			@ApiResponse(responseCode = HTTP_BAD_REQUEST, description = HTTP_BAD_REQUEST_MESSAGE),
-			@ApiResponse(responseCode = HTTP_FORBIDDEN, description = HTTP_FORBIDDEN_MESSAGE),
-			@ApiResponse(responseCode = HTTP_UNAUTHORIZED, description = HTTP_UNAUTHORIZED_MESSAGE),
-			@ApiResponse(responseCode = HTTP_NOT_FOUND, description = HTTP_NOT_FOUND_MESSAGE)})
+			@ApiResponse(responseCode = HTTP_CREATED),
+			@ApiResponse(responseCode = HTTP_NOT_FOUND, content = @Content),
+			@ApiResponse(responseCode = HTTP_BAD_REQUEST, content = @Content),
+			@ApiResponse(responseCode = HTTP_FORBIDDEN, content = @Content),
+			@ApiResponse(responseCode = HTTP_UNAUTHORIZED, content = @Content)})
 	@PostMapping(value = "/{id}/roles", consumes = APPLICATION_JSON_VALUE)
 	@PreAuthorize("@roleContainer.isAdmin(principal) || " +
 			"(@roleContainer.isAtLeastModerator(principal) && @roleContainer.canEditCategory(principal, #id))")
@@ -169,17 +170,13 @@ public class CategoryController {
 	
 	@Operation(summary = "Delete role from category")
 	@ApiResponses(value = {
-			@ApiResponse(responseCode = HTTP_NO_CONTENT, description = HTTP_NO_CONTENT_MESSAGE),
-			@ApiResponse(responseCode = HTTP_BAD_REQUEST, description = HTTP_BAD_REQUEST_MESSAGE),
-			@ApiResponse(responseCode = HTTP_FORBIDDEN, description = HTTP_FORBIDDEN_MESSAGE),
-			@ApiResponse(responseCode = HTTP_UNAUTHORIZED, description = HTTP_UNAUTHORIZED_MESSAGE)})
+			@ApiResponse(responseCode = HTTP_NO_CONTENT),
+			@ApiResponse(responseCode = HTTP_FORBIDDEN, content = @Content),
+			@ApiResponse(responseCode = HTTP_UNAUTHORIZED, content = @Content)})
 	@DeleteMapping(value = "/{id}/roles/{roleId}")
 	@PreAuthorize("@roleContainer.isAdmin(principal) || " +
 			"(@roleContainer.isAtLeastModerator(principal) && @roleContainer.canEditCategory(principal, #id))")
-	ResponseEntity<?> deleteRoleFromCategory(@RequestBody RoleDTO roleDTO, @PathVariable long id, @PathVariable long roleId) {
-		if (roleId != roleDTO.getId()) {
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(HTTP_BAD_REQUEST_MESSAGE);
-		}
+	ResponseEntity<?> deleteRoleFromCategory(@PathVariable long id, @PathVariable long roleId) {
 		Optional<CategoryDTO> categoryDTO = categoryService.findById(id);
 		categoryDTO.ifPresent(category -> categoryService.deleteRolesFromCategoryByIds(category, roleId));
 		return ResponseEntity.noContent().build();

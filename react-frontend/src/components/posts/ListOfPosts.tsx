@@ -7,7 +7,9 @@ import Title from 'antd/lib/typography/Title';
 import React from 'react';
 import { useQuery } from 'react-query';
 import { Link, useNavigate, useParams } from 'react-router-dom';
+import AuthService from 'services/AuthService';
 import ThreadService from 'services/ThreadService';
+import NewPost from './NewPost';
 import SinglePost from './SinglePost';
 
 export interface IListOfPostsProps {}
@@ -79,11 +81,26 @@ export default function ListOfPosts(_props: IListOfPostsProps) {
   }
 
   if (queryThread.isSuccess && queryPosts.isSuccess) {
+    const canUserCreatePost = AuthService.canUserCreatePost(queryThread.data);
+    const pagination = (
+      <Pagination
+        pageSize={20}
+        showQuickJumper
+        showSizeChanger={false}
+        current={pageId}
+        total={queryPosts.data.totalElements}
+        onChange={(pageNumber, _pageSize) => onChange(pageNumber)}
+      />
+    );
+
     return (
       <>
         {breadcrumbs}
+        {pagination}
         <div className="title">
-          <Title level={3}>{queryThread.data.title}</Title>
+          <Title level={2} style={{ marginTop: '8px' }}>
+            {queryThread.data.title}
+          </Title>
         </div>
         <Row gutter={[16, 16]}>
           {Array.from(queryPosts.data.content).map(value => (
@@ -92,15 +109,12 @@ export default function ListOfPosts(_props: IListOfPostsProps) {
             </Col>
           ))}
         </Row>
-        <Pagination
-          style={{ marginTop: '16px' }}
-          pageSize={20}
-          showQuickJumper
-          showSizeChanger={false}
-          current={pageId}
-          total={queryPosts.data.totalElements}
-          onChange={(pageNumber, _pageSize) => onChange(pageNumber)}
-        />
+        {canUserCreatePost && (
+          <div style={{ marginTop: '16px', marginBottom: '16px' }}>
+            <NewPost thread={queryThread.data} />
+          </div>
+        )}
+        {pagination}
       </>
     );
   }

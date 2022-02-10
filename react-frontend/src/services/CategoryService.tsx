@@ -45,6 +45,20 @@ const CategoryService = {
 
     return value.data;
   },
+
+  async createCategory(category: Category): Promise<Category> {
+    const value = await axios.post<Category>(`/categories`, category, {
+      headers: authHeader(),
+    });
+
+    return value.data;
+  },
+
+  async deleteCategory(id: number): Promise<void> {
+    await axios.delete(`/categories/${id}`, {
+      headers: authHeader(),
+    });
+  },
 };
 
 export default CategoryService;

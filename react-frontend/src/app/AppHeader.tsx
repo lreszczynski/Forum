@@ -1,10 +1,6 @@
-import {
-  MenuFoldOutlined,
-  MenuUnfoldOutlined,
-  SearchOutlined,
-  UserOutlined,
-} from '@ant-design/icons';
+import { MenuFoldOutlined, MenuUnfoldOutlined } from '@ant-design/icons';
 import { Button, Dropdown, Menu } from 'antd';
+import Search from 'antd/lib/input/Search';
 import { Header } from 'antd/lib/layout/layout';
 import Text from 'antd/lib/typography/Text';
 import * as React from 'react';
@@ -36,6 +32,11 @@ export default function AppHeader(props: IAppHeaderProps) {
     </Menu>
   );
 
+  const onSearch = (value: any) => {
+    console.log(value);
+    navigate(`/posts/search?text=${value}`);
+  };
+
   return (
     <Header
       style={{ padding: 0, position: 'fixed', zIndex: 1, width: '100%' }}
@@ -51,27 +52,11 @@ export default function AppHeader(props: IAppHeaderProps) {
         >
           {isCollapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
         </div>
-        <div
-          tabIndex={0}
-          role="button"
-          className="triggerable"
-          onClick={() => collapse()}
-          onKeyPress={() => collapse()}
-        >
-          {isCollapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
-        </div>
+      </div>
+      <div className="middle">
+        <Search placeholder="input search text" onSearch={onSearch} />
       </div>
       <div className="end">
-        <div
-          tabIndex={0}
-          role="button"
-          className="triggerable"
-          onClick={() => AuthService.logout()}
-          onKeyPress={() => AuthService.logout()}
-        >
-          <SearchOutlined />
-        </div>
-
         {tokens === undefined ? (
           <Button
             style={{ marginRight: '16px' }}
@@ -85,26 +70,13 @@ export default function AppHeader(props: IAppHeaderProps) {
             Log in
           </Button>
         ) : (
-          <>
-            <div
-              tabIndex={0}
-              role="button"
-              className="triggerable"
-              onKeyPress={() => {
-                navigate('/login');
-              }}
-              onClick={() => {
-                navigate('/login');
-              }}
-            >
-              <UserOutlined />
+          <Dropdown overlay={menu} placement="bottomCenter" arrow>
+            <div className="avatarHeader" style={{ cursor: 'pointer' }}>
+              <Text>
+                {AuthService.getCurrentUser()?.username.at(0)?.toUpperCase()}
+              </Text>
             </div>
-            <Dropdown overlay={menu} placement="bottomCenter" arrow>
-              <div className="avatarHeader" style={{ cursor: 'pointer' }}>
-                <Text>{AuthService.getCurrentUser()?.username.at(0)}</Text>
-              </div>
-            </Dropdown>
-          </>
+          </Dropdown>
         )}
       </div>
     </Header>

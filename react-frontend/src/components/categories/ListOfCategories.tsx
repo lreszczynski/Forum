@@ -1,16 +1,20 @@
 import './ListOfCategories.scss';
 
 import { HomeFilled } from '@ant-design/icons';
-import { Breadcrumb, Col, notification, Row, Skeleton } from 'antd';
+import { Breadcrumb, Button, Col, notification, Row, Skeleton } from 'antd';
 import BreadcrumbItem from 'antd/lib/breadcrumb/BreadcrumbItem';
 import Text from 'antd/lib/typography/Text';
 import React, { Fragment } from 'react';
 import { useQuery } from 'react-query';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import AuthService from 'services/AuthService';
 import CategoryService from 'services/CategoryService';
 import SingleCategory from './SingleCategory';
 
 function ListOfCategories() {
+  const navigate = useNavigate();
+  const canUserCreateCategory = AuthService.canUserCreateCategory();
+
   const query = useQuery('categories', () =>
     CategoryService.getAllCategories(),
   );
@@ -60,6 +64,15 @@ function ListOfCategories() {
     return (
       <>
         {breadcrumbs}
+        {canUserCreateCategory && (
+          <Button
+            type="primary"
+            style={{ marginBottom: '16px' }}
+            onClick={() => navigate(`/categories/new`)}
+          >
+            Create New Category
+          </Button>
+        )}
         <Row gutter={[8, 8]}>
           {query.data.map(value => (
             <Col key={value.id} xs={24} lg={12}>

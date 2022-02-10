@@ -72,8 +72,8 @@ public class UserService {
 		return userRepository.existsUserByUsername(username);
 	}
 	
-	public Optional<User> getUserByUsername(String username) {
-		return userRepository.findByUsername(username);
+	public Optional<UserDTO> getUserByUsername(String username) {
+		return userRepository.findByUsername(username).map(user -> modelMapper.map(user, UserDTO.class));
 	}
 	
 	public boolean existsUserByUsernameAndIdIsNot(String username, Long id) {

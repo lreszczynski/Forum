@@ -2,14 +2,22 @@ import './SingleThread.scss';
 
 import { ClockCircleFilled, MessageFilled } from '@ant-design/icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { Col, Row, Space } from 'antd';
+import { Col, Modal, Row, Space } from 'antd';
 import Text from 'antd/lib/typography/Text';
 import Title from 'antd/lib/typography/Title';
+import { AxiosError } from 'axios';
 import moment from 'moment';
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useMutation, useQueryClient } from 'react-query';
+import { Link, useNavigate } from 'react-router-dom';
 import { Category } from 'models/Category';
 import { ThreadAndPostStats } from 'models/ThreadAndPostStats';
+import AuthService from 'services/AuthService';
+import ThreadService from 'services/ThreadService';
+import {
+  notificationErrorStatusCode,
+  notificationSuccessfulEdit,
+} from 'utils/Notifications';
 import { breakpoints } from 'utils/screenWidth';
 
 export interface ISingleThreadProps {
@@ -20,10 +28,17 @@ export interface ISingleThreadProps {
 export default function SingleThread(params: ISingleThreadProps) {
   const { category, threadAndLastPost } = params;
   const { thread, lastPost, postsCount } = threadAndLastPost;
+  const [isModalVisible, setIsModalVisible] = useState(false);
   const [width, setWidth] = useState(window.innerWidth);
   // const threadId = thread.id;
   const navigate = useNavigate();
   const link = () => navigate(`/forum/${category.id}/threads/${thread.id}`);
+  const canUserEditThread = AuthService.canUserEditThread(thread);
+  const queryClient = useQueryClient();
+
+  const mutation = useMutation<void, AxiosError, number, any>((id: number) =>
+    ThreadService.deleteThread(id),
+  );
 
   useEffect(() => {
     function handleResize() {
@@ -53,11 +68,72 @@ export default function SingleThread(params: ISingleThreadProps) {
 
   const replies = postsCount - 1;
 
+  const showModal = () => {
+    setIsModalVisible(true);
+  };
+
+  const handleOk = () => {
+    mutation.mutate(thread.id, {
+      onSuccess: (_data, _variables) => {
+        queryClient.invalidateQueries();
+        notificationSuccessfulEdit();
+      },
+      onError: (error, _variables) => {
+        if (error.response !== undefined) {
+          notificationErrorStatusCode(error.response.status);
+        }
+      },
+    });
+    setIsModalVisible(false);
+  };
+
+  const handleCancel = () => {
+    setIsModalVisible(false);
+  };
+
+  const editControls = (
+    <Space>
+      <Link to={`/threads/${thread.id}`}>
+        <FontAwesomeIcon icon="edit" />
+      </Link>
+      <div
+        style={{ cursor: 'pointer' }}
+        role="none"
+        onClick={() => showModal()}
+        onKeyDown={() => showModal()}
+      >
+        <Text type="danger">
+          <FontAwesomeIcon icon="trash" />
+        </Text>
+      </div>
+    </Space>
+  );
+
+  const modal = (
+    <Modal
+      title="Confirm delete"
+      visible={isModalVisible}
+      onOk={handleOk}
+      onCancel={handleCancel}
+    >
+      <Text>Do you want to delete &apos;{thread.title}&apos;?</Text>
+    </Modal>
+  );
+
   if (width > breakpoints.sm) {
     return (
       <Row className="thread" wrap={false}>
-        <Col flex="140px" style={{ cursor: 'pointer', padding: '6px' }}>
-          <div className="userInfoContainer">
+        <Col flex="140px">
+          <div
+            className="userInfoContainer"
+            style={{
+              cursor: 'pointer',
+              padding: '6px',
+              backgroundColor: 'rgb(13, 47, 99)',
+              borderRadius: '8px 0 0 8px',
+              minHeight: '100%',
+            }}
+          >
             <div className="avatar">
               <p>{thread.user.username.at(0)?.toUpperCase()}</p>
             </div>
@@ -78,9 +154,16 @@ export default function SingleThread(params: ISingleThreadProps) {
           onClick={link}
           style={{ cursor: 'pointer', padding: '6px' }}
         >
-          <Title level={4} ellipsis={{ rows: 2 }}>
-            {thread.title}
-          </Title>
+          <Row wrap={false}>
+            <Col>
+              <Title level={4} ellipsis={{ rows: 2 }}>
+                {thread.title}
+              </Title>
+            </Col>
+            <Col flex="auto" style={{ textAlign: 'right' }}>
+              {canUserEditThread && editControls}
+            </Col>
+          </Row>
           <Row>
             <Col>
               <Space>
@@ -104,6 +187,7 @@ export default function SingleThread(params: ISingleThreadProps) {
             </Col>
           </Row>
         </Col>
+        {modal}
       </Row>
     );
   }
@@ -114,9 +198,14 @@ export default function SingleThread(params: ISingleThreadProps) {
         onClick={link}
         style={{ cursor: 'pointer', padding: '6px' }}
       >
-        <Title level={5} ellipsis={{ rows: 2 }}>
-          {thread.title}
-        </Title>
+        <Row>
+          <Col flex="auto">
+            <Title level={5} ellipsis={{ rows: 2 }}>
+              {thread.title}
+            </Title>
+          </Col>
+          <Col>{canUserEditThread && editControls}</Col>
+        </Row>
         <Row align="middle" gutter={8}>
           <Col>
             <Text type="secondary">
@@ -126,7 +215,9 @@ export default function SingleThread(params: ISingleThreadProps) {
             </Text>
           </Col>
           <Col>
-            <Text>{thread.user.username}</Text>
+            <Text ellipsis style={{ color: colour }}>
+              {thread.user.username}
+            </Text>
           </Col>
           <Col>
             <Text type="secondary">
@@ -150,6 +241,7 @@ export default function SingleThread(params: ISingleThreadProps) {
           </Col>
         </Row>
       </Col>
+      {modal}
     </Row>
   );
 }

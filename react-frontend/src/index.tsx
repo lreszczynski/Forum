@@ -2,7 +2,12 @@ import './index.scss';
 // import 'antd/dist/antd.min.css';
 import 'moment/locale/en-gb';
 import { library } from '@fortawesome/fontawesome-svg-core';
-import { faReply } from '@fortawesome/free-solid-svg-icons';
+import {
+  faEdit,
+  faEye,
+  faReply,
+  faTrash,
+} from '@fortawesome/free-solid-svg-icons';
 import moment from 'moment';
 import React from 'react';
 import ReactDOM from 'react-dom';
@@ -13,10 +18,14 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import App from 'app/App';
 import CategoryDashboard from 'components/categories/CategoryDashboard';
 import ListOfCategories from 'components/categories/ListOfCategories';
+import NewCategory from 'components/categories/NewCategory';
 import Login from 'components/login/Login';
 import Main from 'components/main/Main';
 import ListOfPosts from 'components/posts/ListOfPosts';
+import PostSearchResults from 'components/posts/PostSearchResults';
 import ListOfThreads from 'components/threads/ListOfThreads';
+import NewThread from 'components/threads/NewThread';
+import ThreadDashboard from 'components/threads/ThreadDashboard';
 import { store } from 'store/store';
 import reportWebVitals from './reportWebVitals';
 
@@ -28,14 +37,14 @@ const queryClientConfig = {
       cacheTime: 1000 * 30, // 30 seconds
     },
     mutations: {
-      retry: 3,
+      retry: 0,
     },
   },
 };
 
 moment.locale('en-gb');
 
-library.add(faReply);
+library.add(faReply, faEye, faEdit, faTrash);
 
 const queryClient = new QueryClient(queryClientConfig);
 
@@ -57,6 +66,10 @@ ReactDOM.render(
               element={<ListOfPosts />}
             />
             <Route path="/categories/:id/" element={<CategoryDashboard />} />
+            <Route path="/categories/new" element={<NewCategory />} />
+            <Route path="/threads/:id/" element={<ThreadDashboard />} />
+            <Route path="/categories/:id/newThread" element={<NewThread />} />
+            <Route path="/posts/search" element={<PostSearchResults />} />
           </Route>
         </Routes>
       </BrowserRouter>

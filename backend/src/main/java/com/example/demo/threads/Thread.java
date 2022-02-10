@@ -8,6 +8,7 @@ import lombok.*;
 import org.hibernate.Hibernate;
 
 import javax.persistence.*;
+import java.time.Instant;
 import java.util.LinkedHashSet;
 import java.util.Objects;
 import java.util.Set;
@@ -20,7 +21,7 @@ import static com.fasterxml.jackson.annotation.JsonProperty.Access.READ_ONLY;
 @AllArgsConstructor
 @Builder
 @Entity
-@Table(name = "app_thread", schema = "public", catalog = "demo")
+@Table(name = "app_thread", schema = "public")
 public class Thread {
 	@Id
 	@Column(name = "id")
@@ -31,8 +32,14 @@ public class Thread {
 	@Column(name = "title")
 	private String title;
 	
+	@Column(name = "create_date", nullable = false)
+	private Instant createDate;
+	
 	@Column(name = "active")
 	private boolean active;
+	
+	@JsonProperty("pinned")
+	private boolean pinned;
 	
 	@ManyToOne(optional = false)
 	@JoinColumn(name = "category_id", nullable = false)

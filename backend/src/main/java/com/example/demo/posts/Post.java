@@ -7,7 +7,7 @@ import lombok.*;
 import org.hibernate.Hibernate;
 
 import javax.persistence.*;
-import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.Objects;
 
 import static com.fasterxml.jackson.annotation.JsonProperty.Access.READ_ONLY;
@@ -19,7 +19,7 @@ import static com.fasterxml.jackson.annotation.JsonProperty.Access.READ_ONLY;
 @AllArgsConstructor
 @Builder
 @Entity
-@Table(name = "app_post", schema = "public", catalog = "demo")
+@Table(name = "app_post", schema = "public")
 public class Post {
 	@Id
 	@Column(name = "id")
@@ -31,7 +31,7 @@ public class Post {
 	private String content;
 	
 	@Column(name = "create_date")
-	private Timestamp createDate;
+	private Instant createDate;
 	
 	@ManyToOne(optional = false)
 	@JoinColumn(name = "thread_id", nullable = false)

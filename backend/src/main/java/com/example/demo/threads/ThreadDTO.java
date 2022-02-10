@@ -1,12 +1,10 @@
 package com.example.demo.threads;
 
 import com.example.demo.categories.CategoryDTO;
-import com.example.demo.roles.validation.RoleUniqueConstraint;
 import com.example.demo.threads.validation.CreateThread;
 import com.example.demo.threads.validation.SecondOrder;
 import com.example.demo.threads.validation.UpdateThread;
 import com.example.demo.users.UserDTO;
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -18,12 +16,12 @@ import javax.validation.GroupSequence;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Null;
+import java.time.Instant;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@RoleUniqueConstraint(groups = SecondOrder.class)
 @GroupSequence({ThreadDTO.class, SecondOrder.class})
 public class ThreadDTO {
 	@NotNull(groups = UpdateThread.class)
@@ -36,13 +34,18 @@ public class ThreadDTO {
 	@JsonProperty("title")
 	private String title;
 	
+	@JsonProperty("createDate")
+	private Instant createDate;
+	
 	@JsonProperty("active")
 	private boolean active;
 	
-	@JsonProperty(value = "category", access = JsonProperty.Access.READ_ONLY)
-	@JsonBackReference
+	@JsonProperty("pinned")
+	private boolean pinned;
+	
+	@JsonProperty(value = "category")
 	private CategoryDTO category;
 	
-	@JsonProperty(value = "user", access = JsonProperty.Access.READ_ONLY)
+	@JsonProperty(value = "user")
 	private UserDTO user;
 }

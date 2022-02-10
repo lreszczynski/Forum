@@ -1,7 +1,7 @@
 spring:
   datasource:
     password: dbpassword
-    url: jdbc:postgresql://localhost:5432/demo
+    url: jdbc:postgresql://localhost:5432/test
     username: dbuser
   jpa:
     hibernate:
@@ -14,9 +14,12 @@ spring:
   data:
     rest:
       detection-strategy: annotated
+      default-page-size: 20
+      max-page-size: 20
   jackson:
     serialization:
       FAIL_ON_EMPTY_BEANS: false
+
 
 logging:
   level:

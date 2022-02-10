@@ -1,9 +1,9 @@
 package com.example.demo;
 
-import com.example.demo.categories.CategoryDTO;
 import com.example.demo.categories.CategoryRepository;
 import com.example.demo.categories.CategoryService;
 import com.example.demo.roles.RoleRepository;
+import com.example.demo.threads.ThreadRepository;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -15,8 +15,11 @@ public class DemoApplication {
 		CategoryService categoryService = (CategoryService) run.getBean("categoryService");
 		CategoryRepository categoryRepository = (CategoryRepository) run.getBean("categoryRepository");
 		RoleRepository roleRepository = (RoleRepository) run.getBean("roleRepository");
+		ThreadRepository threadRepository = (ThreadRepository) run.getBean("threadRepository");
 		
-		categoryService.addRolesToCategoryByIds(CategoryDTO.builder().id(2L).build(),2L);
+		//System.out.println(threadRepository.getThreadWithoutCategoryById(1L));
+		
+		//categoryService.addRolesToCategoryByIds(CategoryDTO.builder().id(2L).build(),2L);
 		//categoryService.addRolesToCategoryByIds(CategoryDTO.builder().id(1L).build(), 1000L);
 		/*long start, finish, timeElapsed;
 		

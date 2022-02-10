@@ -1,27 +1,30 @@
 package com.example.demo.threads;
 
-import com.example.demo.posts.PostDTO;
+import com.example.demo.posts.PostWithoutContentDTO;
 import com.example.demo.users.UserDTO;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.Instant;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ThreadWithoutCategoryDTO {
+public class ThreadWithLastPostDTO {
 	private Long id;
 	
 	private String title;
 	
 	private boolean active;
 	
+	private boolean pinned;
+	
+	private Instant createDate;
+	
 	private UserDTO user;
 	
-	@JsonProperty("posts-count")
 	private int postsCount;
 	
-	@JsonProperty("last-post")
-	private PostDTO lastPost;
+	private PostWithoutContentDTO lastPost;
 }

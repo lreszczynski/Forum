@@ -1,10 +1,19 @@
 import { HomeFilled } from '@ant-design/icons';
-import { Breadcrumb, Col, Collapse, notification, Pagination, Row } from 'antd';
+import {
+  Breadcrumb,
+  Button,
+  Col,
+  Collapse,
+  notification,
+  Pagination,
+  Row,
+} from 'antd';
 import BreadcrumbItem from 'antd/lib/breadcrumb/BreadcrumbItem';
 import CollapsePanel from 'antd/lib/collapse/CollapsePanel';
 import React from 'react';
 import { useQuery } from 'react-query';
 import { Link, useNavigate, useParams } from 'react-router-dom';
+import AuthService from 'services/AuthService';
 import CategoryService from 'services/CategoryService';
 import SingleThread from './SingleThread';
 
@@ -96,11 +105,23 @@ export default function ListOfThreads() {
         onChange={(pageNumber, _pageSize) => onChange(pageNumber)}
       />
     );
+    const canUserCreateThread = AuthService.canUserCreateThread(
+      queryCategory.data,
+    );
 
     return (
       <>
         {breadcrumbs}
         <div style={{ marginBottom: '16px' }}>{pagination}</div>
+        {canUserCreateThread && (
+          <Button
+            type="primary"
+            style={{ marginBottom: '16px' }}
+            onClick={() => navigate(`/categories/${categoryId}/newThread`)}
+          >
+            Create New Thread
+          </Button>
+        )}
         {pageId === 1 && queryPinnedThreads.data.length > 0 && (
           <div style={{ marginBottom: '8px' }}>
             <Collapse defaultActiveKey={['1']}>
@@ -110,6 +131,7 @@ export default function ListOfThreads() {
             </Collapse>
           </div>
         )}
+
         <Row gutter={[8, 8]}>{threads.map(value => value)}</Row>
         <div style={{ marginTop: '16px' }}>{pagination}</div>
       </>

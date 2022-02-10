@@ -1,62 +1,58 @@
-/* eslint-disable no-restricted-syntax */
 import {
   Button,
   Checkbox,
+  DatePicker,
   Form,
   Input,
   InputNumber,
   Select,
   Space,
 } from 'antd';
-import TextArea from 'antd/lib/input/TextArea';
 import Title from 'antd/lib/typography/Title';
 import { AxiosError } from 'axios';
+import moment from 'moment';
 import * as React from 'react';
 import { useMutation, useQuery, useQueryClient } from 'react-query';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Category } from 'models/Category';
-import { Role } from 'models/Role';
+import { Thread } from 'models/Thread';
 import CategoryService from 'services/CategoryService';
-import RoleService from 'services/RoleService';
+import ThreadService from 'services/ThreadService';
 import {
   notificationError,
   notificationErrorStatusCode,
   notificationSuccessfulEdit,
 } from 'utils/Notifications';
 
-export interface ICategoryDashboardProps {}
+export interface IThreadDashboardProps {}
 
-export default function CategoryDashboard(_props: ICategoryDashboardProps) {
+export default function ThreadDashboard(_props: IThreadDashboardProps) {
   const params = useParams();
   const id = Number(params.id);
   const queryClient = useQueryClient();
-  const query = useQuery(`categories/${id}`, () =>
-    CategoryService.getCategoryById(id),
+  const query = useQuery(`threads/${id}`, () =>
+    ThreadService.getThreadById(id),
   );
-  const queryRoles = useQuery(`roles/`, () => RoleService.getAllRoles());
-  const mutation = useMutation<Category, AxiosError, Category, any>(
-    (newCategory: Category) => CategoryService.updateCategory(newCategory),
+  const queryCategories = useQuery(`categories/`, () =>
+    CategoryService.getAllCategories(),
   );
-  const queries = [query, queryRoles];
+  const mutation = useMutation<Thread, AxiosError, Thread, any>(
+    (newThread: Thread) => ThreadService.updateThread(newThread),
+  );
+  const queries = [query, queryCategories];
 
   const leftSpan = 4;
   const navigate = useNavigate();
 
   const update = async (values: any) => {
     const formValues = values;
-    formValues.roles = [];
-    (formValues.rolesIds as String[])
-      .map(r => Number(r))
-      .forEach(r => {
-        (formValues.roles as Role[]).push(
-          queryRoles.data?.find(qr => qr.id === r)!,
-        );
-      });
-    delete formValues.rolesIds;
+    formValues.category = queryCategories.data?.find(
+      qc => qc.id === Number(formValues.categoryId),
+    );
+    delete formValues.categoryId;
 
-    const newCategory: Category = values;
+    const newThread: Thread = values;
 
-    mutation.mutate(newCategory, {
+    mutation.mutate(newThread, {
       onSuccess: (_data, _variables) => {
         queryClient.invalidateQueries();
         notificationSuccessfulEdit();
@@ -74,23 +70,24 @@ export default function CategoryDashboard(_props: ICategoryDashboardProps) {
     notificationError();
   }
 
-  if (query.isSuccess && queryRoles.isSuccess) {
+  if (query.isSuccess && queryCategories.isSuccess) {
     console.log(query.data);
+    const categoryId = String(query.data.category.id);
 
     return (
       <>
         <Title level={2} style={{ textAlign: 'center' }}>
-          Category
+          Thread
         </Title>
         <Form
           name="basic"
           initialValues={{
             id: query.data.id,
-            name: query.data.name,
-            description: query.data.description,
+            title: query.data.title,
+            createDate: moment(query.data.createDate),
             active: query.data.active,
-            rolesIds: query.data.roles.map(r => String(r.id)),
-            remember: true,
+            pinned: query.data.pinned,
+            categoryId,
           }}
           onFinish={update}
           labelCol={{ span: leftSpan }}
@@ -99,31 +96,33 @@ export default function CategoryDashboard(_props: ICategoryDashboardProps) {
           <Form.Item label="Id" name="id">
             <InputNumber disabled />
           </Form.Item>
-          <Form.Item label="Name" name="name">
+          <Form.Item label="Title" name="title">
             <Input />
           </Form.Item>
-          <Form.Item label="Description" name="description">
-            <TextArea />
+          <Form.Item label="Creation date" name="createDate">
+            <DatePicker allowClear={false} disabled />
           </Form.Item>
           <Form.Item label="Active" name="active" valuePropName="checked">
             <Checkbox />
           </Form.Item>
+          <Form.Item label="Pinned" name="pinned" valuePropName="checked">
+            <Checkbox />
+          </Form.Item>
           <Form.Item
-            label="Roles"
-            name={['rolesIds']}
+            label="Category"
+            name={['categoryId']}
             /* normalize={(e: string[]) => {
-              console.log('nn', e, typeof e);
-              return e;
-            }} */
+                console.log('nn', e, typeof e);
+                return e;
+              }} */
           >
             <Select
-              mode="multiple"
-              allowClear
+              allowClear={false}
               style={{ width: '100%' }}
               placeholder="Please select"
               // defaultValue={selected.map(q => q.name)}
             >
-              {queryRoles.data.map(qr => (
+              {queryCategories.data.map(qr => (
                 <Select.Option key={qr.id}>{qr.name}</Select.Option>
               ))}
             </Select>

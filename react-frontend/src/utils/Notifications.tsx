@@ -11,11 +11,27 @@ export function notificationError() {
 
 export function notificationErrorStatusCode(error: number) {
   switch (error) {
+    case 400:
+      notification.error({
+        duration: 3,
+        message: 'Bad Request',
+        description: '400 Bad Request.',
+      });
+      break;
+
     case 401:
       notification.error({
         duration: 3,
-        message: 'Connection problem',
-        description: 'Unauthorized.',
+        message: 'Unauthorized',
+        description: '401 Unauthorized.',
+      });
+      break;
+
+    case 403:
+      notification.error({
+        duration: 3,
+        message: 'Forbidden',
+        description: '403 Forbidden.',
       });
       break;
 

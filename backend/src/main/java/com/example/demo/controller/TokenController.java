@@ -45,8 +45,8 @@ public class TokenController {
 			String accessToken = JWTUtility.generateToken(request.getRequestURI(), username, roles, JWTUtility.TOKEN_TYPE.ACCESS);
 			
 			Map<String, String> tokens = new HashMap<>();
-			tokens.put("access_token", accessToken);
-			tokens.put("refresh_token", refreshToken);
+			tokens.put("accessToken", accessToken);
+			tokens.put("refreshToken", refreshToken);
 			return ResponseEntity.ok(tokens);
 		}
 		return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Refresh token expired.");

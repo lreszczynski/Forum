@@ -35,7 +35,9 @@ CREATE TABLE App_Thread
 (
     id          BIGINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
     title       VARCHAR(80) NOT NULL,
+    create_date TIMESTAMP NOT NULL DEFAULT (current_timestamp),
     active      BOOLEAN NOT NULL DEFAULT (TRUE),
+    pinned 		BOOLEAN NOT NULL DEFAULT (FALSE),
     category_id BIGINT REFERENCES App_Category(id) ON DELETE CASCADE NOT NULL,
     user_id     BIGINT REFERENCES App_User(id) NOT NULL
 );

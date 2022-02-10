@@ -1,19 +1,11 @@
 /* eslint-disable no-restricted-syntax */
-import {
-  Button,
-  Checkbox,
-  Form,
-  Input,
-  InputNumber,
-  Select,
-  Space,
-} from 'antd';
+import { Button, Checkbox, Form, Input, Select, Space } from 'antd';
 import TextArea from 'antd/lib/input/TextArea';
 import Title from 'antd/lib/typography/Title';
 import { AxiosError } from 'axios';
 import * as React from 'react';
 import { useMutation, useQuery, useQueryClient } from 'react-query';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { Category } from 'models/Category';
 import { Role } from 'models/Role';
 import CategoryService from 'services/CategoryService';
@@ -24,20 +16,14 @@ import {
   notificationSuccessfulEdit,
 } from 'utils/Notifications';
 
-export interface ICategoryDashboardProps {}
+export interface INewCategoryProps {}
 
-export default function CategoryDashboard(_props: ICategoryDashboardProps) {
-  const params = useParams();
-  const id = Number(params.id);
+export default function NewCategory(_props: INewCategoryProps) {
   const queryClient = useQueryClient();
-  const query = useQuery(`categories/${id}`, () =>
-    CategoryService.getCategoryById(id),
-  );
   const queryRoles = useQuery(`roles/`, () => RoleService.getAllRoles());
   const mutation = useMutation<Category, AxiosError, Category, any>(
-    (newCategory: Category) => CategoryService.updateCategory(newCategory),
+    (newCategory: Category) => CategoryService.createCategory(newCategory),
   );
-  const queries = [query, queryRoles];
 
   const leftSpan = 4;
   const navigate = useNavigate();
@@ -45,16 +31,19 @@ export default function CategoryDashboard(_props: ICategoryDashboardProps) {
   const update = async (values: any) => {
     const formValues = values;
     formValues.roles = [];
-    (formValues.rolesIds as String[])
-      .map(r => Number(r))
-      .forEach(r => {
-        (formValues.roles as Role[]).push(
-          queryRoles.data?.find(qr => qr.id === r)!,
-        );
-      });
+    if (formValues.rolesIds !== undefined) {
+      (formValues?.rolesIds as String[])
+        .map(r => Number(r))
+        .forEach(r => {
+          (formValues.roles as Role[]).push(
+            queryRoles.data?.find(qr => qr.id === r)!,
+          );
+        });
+    }
     delete formValues.rolesIds;
 
     const newCategory: Category = values;
+    console.log(newCategory);
 
     mutation.mutate(newCategory, {
       onSuccess: (_data, _variables) => {
@@ -70,13 +59,11 @@ export default function CategoryDashboard(_props: ICategoryDashboardProps) {
     });
   };
 
-  if (queries.some(q => q.isError)) {
+  if (queryRoles.isError) {
     notificationError();
   }
 
-  if (query.isSuccess && queryRoles.isSuccess) {
-    console.log(query.data);
-
+  if (queryRoles.isSuccess) {
     return (
       <>
         <Title level={2} style={{ textAlign: 'center' }}>
@@ -84,25 +71,33 @@ export default function CategoryDashboard(_props: ICategoryDashboardProps) {
         </Title>
         <Form
           name="basic"
-          initialValues={{
-            id: query.data.id,
-            name: query.data.name,
-            description: query.data.description,
-            active: query.data.active,
-            rolesIds: query.data.roles.map(r => String(r.id)),
-            remember: true,
-          }}
           onFinish={update}
           labelCol={{ span: leftSpan }}
           wrapperCol={{ span: 24 - 2 * leftSpan }}
         >
-          <Form.Item label="Id" name="id">
-            <InputNumber disabled />
-          </Form.Item>
-          <Form.Item label="Name" name="name">
+          <Form.Item
+            label="Name"
+            name="name"
+            rules={[
+              {
+                required: true,
+                max: 50,
+              },
+            ]}
+          >
             <Input />
           </Form.Item>
-          <Form.Item label="Description" name="description">
+          <Form.Item
+            label="Description"
+            name="description"
+            rules={[
+              {
+                required: true,
+                max: 250,
+                min: 5,
+              },
+            ]}
+          >
             <TextArea />
           </Form.Item>
           <Form.Item label="Active" name="active" valuePropName="checked">
@@ -110,7 +105,7 @@ export default function CategoryDashboard(_props: ICategoryDashboardProps) {
           </Form.Item>
           <Form.Item
             label="Roles"
-            name={['rolesIds']}
+            name="rolesIds"
             /* normalize={(e: string[]) => {
               console.log('nn', e, typeof e);
               return e;
