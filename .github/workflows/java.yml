@@ -26,7 +26,7 @@ jobs:
           distribution: 'adopt'
           cache: gradle
       - name: Wait for database
-        uses: lewagon/wait-on-check-action@latest
+        uses: lewagon/wait-on-check-action@v1.1.1
         with:
           ref: ${{ github.ref }}
           check-name: 'Recreate database'
