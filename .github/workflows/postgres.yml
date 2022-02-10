@@ -30,3 +30,11 @@ jobs:
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
+
+        steps:
+          - name: Install PostgreSQL client
+            run: |
+              apt-get update
+              apt-get install --yes postgresql-client
+          - name: Recreate database
+            run: ./database-scripts/recreate.sh
