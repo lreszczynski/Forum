@@ -5,7 +5,6 @@ import com.example.demo.categories.validation.CreateCategory;
 import com.example.demo.categories.validation.SecondOrder;
 import com.example.demo.categories.validation.UpdateCategory;
 import com.example.demo.roles.RoleDTO;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 import org.hibernate.validator.constraints.Length;
 
@@ -26,7 +25,6 @@ import java.util.Set;
 public class CategoryDTO {
 	@NotNull(groups = UpdateCategory.class)
 	@Null(groups = CreateCategory.class)
-	@JsonProperty("id")
 	private Long id;
 	
 	@NotNull
