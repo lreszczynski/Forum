@@ -9,7 +9,7 @@ jobs:
     # service containers to run with `postgres-job`
     services:
       # label used to access the service container
-      localhost:
+      postgres:
         # Docker Hub image
         image: postgres:latest
         # service environment variables
