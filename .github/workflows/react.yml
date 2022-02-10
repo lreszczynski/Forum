@@ -1,12 +1,14 @@
 name: React App CI
-on:
-    push:
-        branches: [main]
-    pull_request:
-        branches: [main]
+
+on:       
+  push:
+    paths:
+    - 'react-frontend/**'
+
 defaults:
-    run:
-        working-directory: react-frontend
+  run:
+    working-directory: react-frontend
+
 jobs:
     react-app-workflow:
         runs-on: ubuntu-latest
