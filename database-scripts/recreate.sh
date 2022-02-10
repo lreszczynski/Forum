@@ -5,4 +5,4 @@ PASSWORD='dbpassword'
 DATABASE='test'
 
 cd $SCRIPT_DIR
-PGPASSWORD=$PASSWORD psql -U $USER $DATABASE -f delete.sql -f create.sql -f insert.sql
+PGPASSWORD=$PASSWORD psql -h postgres -U $USER $DATABASE -f delete.sql -f create.sql -f insert.sql
