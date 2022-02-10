@@ -5,5 +5,5 @@ PASSWORD='dbpassword'
 DATABASE='test'
 
 cd $SCRIPT_DIR
-PGPASSWORD=$PASSWORD psql -h localhost -U $USER $DATABASE -tc "CREATE EXTENSION IF NOT EXISTS \"pgcrypto\""
-PGPASSWORD=$PASSWORD psql -h localhost -U $USER $DATABASE -f delete.sql -f create.sql -f insert.sql
+PGPASSWORD=$PASSWORD psql -h postgres -U $USER $DATABASE -tc "CREATE EXTENSION IF NOT EXISTS \"pgcrypto\""
+PGPASSWORD=$PASSWORD psql -h postgres -U $USER $DATABASE -f delete.sql -f create.sql -f insert.sql
