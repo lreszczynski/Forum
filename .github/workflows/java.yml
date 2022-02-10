@@ -61,19 +61,16 @@ jobs:
           java-version: 11
           distribution: 'adopt'
           cache: gradle
-
-      - name: Build with Gradle
-        run: ./gradlew build 
       - name: Test
         run: ./gradlew test
       - name: Upload JaCoCo coverage report
         uses: actions/upload-artifact@v2
         with:
           name: jacoco-report
-          path: reports/jacoco/
+          path: build/reports/jacoco/
       - name: Generate JaCoCo Badge
         uses: cicirello/jacoco-badge-generator@v2
         with:
           generate-branches-badge: true
-          jacoco-csv-file: build/reports/jacoco/test/jacocoTestReport.csv
+          jacoco-csv-file: backend/build/reports/jacoco/test/jacocoTestReport.csv
 
