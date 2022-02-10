@@ -5,8 +5,6 @@ jobs:
   postgres-job:
     # containers must run in Linux based operating systems
     runs-on: ubuntu-latest
-    # Docker Hub image that `postgres-job` executes in
-    container: node:latest
 
     # service containers to run with `postgres-job`
     services:
@@ -38,4 +36,5 @@ jobs:
           apt-get install --yes postgresql-client
       - name: Recreate database 
         run: |
+          chmod +x "${GITHUB_WORKSPACE}/database-scripts/recreate.sh"
           "${GITHUB_WORKSPACE}/database-scripts/recreate.sh"
