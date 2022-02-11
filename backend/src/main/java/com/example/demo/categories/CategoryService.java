@@ -26,19 +26,11 @@ import java.util.stream.Collectors;
 public class CategoryService {
 	private final CategoryRepository categoryRepository;
 	private final RoleRepository roleRepository;
-	private final PostRepository postRepository;
-	private final ThreadRepository threadRepository;
-	private final CategoryRoleRepository categoryRoleRepository;
-	private final UserRepository userRepository;
 	private final ModelMapper modelMapper;
 	
 	public CategoryService(CategoryRepository categoryRepository, RoleRepository roleRepository, PostRepository postRepository, ThreadRepository threadRepository, CategoryRoleRepository categoryRoleRepository, UserRepository userRepository) {
 		this.categoryRepository = categoryRepository;
 		this.roleRepository = roleRepository;
-		this.postRepository = postRepository;
-		this.threadRepository = threadRepository;
-		this.categoryRoleRepository = categoryRoleRepository;
-		this.userRepository = userRepository;
 		this.modelMapper = new ModelMapper();
 		TypeMap<Thread, ThreadWithLastPostDTO> propertyMapper = modelMapper.createTypeMap(Thread.class, ThreadWithLastPostDTO.class);
 		Converter<Collection<Post>, Integer> collectionToSize = (c -> c.getSource().size());

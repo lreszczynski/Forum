@@ -25,7 +25,6 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.groups.Default;
-import java.util.Collection;
 import java.util.Optional;
 
 import static com.example.demo.controller.HttpResponse.*;
@@ -51,9 +50,10 @@ public class ThreadController {
 	
 	@Operation(summary = "Returns a list of threads")
 	@ApiResponse(responseCode = HTTP_OK)
+	@PageableAsQueryParam
 	@GetMapping
-	ResponseEntity<Collection<ThreadWithPostsCountDTO>> getAll() {
-		return ResponseEntity.ok(threadService.getAll());
+	ResponseEntity<Page<ThreadDTO>> getAll(@Parameter(hidden = true) Pageable pageable) {
+		return ResponseEntity.ok(threadService.getAll(pageable));
 	}
 	
 	@Operation(summary = "Get a thread by its id")
@@ -109,7 +109,7 @@ public class ThreadController {
 			@ApiResponse(responseCode = HTTP_FORBIDDEN, content = @Content),
 			@ApiResponse(responseCode = HTTP_UNAUTHORIZED, content = @Content)})
 	@PutMapping(value = "/{id}", consumes = APPLICATION_JSON_VALUE)
-		//@PreAuthorize("@roleContainer.isAtLeastModerator(principal)")
+	@PreAuthorize("@roleContainer.canEditThread(principal, #threadDTO.id)")
 	ResponseEntity<ThreadDTO> update(@Validated({Default.class, UpdateThread.class}) @RequestBody ThreadDTO threadDTO, @PathVariable Long id) {
 		Optional<ThreadDTO> updatedThread = threadService.update(id, threadDTO);
 		if (updatedThread.isEmpty()) {

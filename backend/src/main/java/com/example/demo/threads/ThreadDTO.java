@@ -6,10 +6,7 @@ import com.example.demo.threads.validation.SecondOrder;
 import com.example.demo.threads.validation.UpdateThread;
 import com.example.demo.users.UserDTO;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.validator.constraints.Length;
 
 import javax.validation.GroupSequence;
@@ -19,6 +16,7 @@ import javax.validation.constraints.Null;
 import java.time.Instant;
 
 @Data
+@With
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder

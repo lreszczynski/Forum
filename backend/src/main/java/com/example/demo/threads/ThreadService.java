@@ -42,10 +42,10 @@ public class ThreadService {
 		propertyMapper.addMappings(mapper -> mapper.using(collectionToSize).map(Thread::getPosts, ThreadWithPostsCountDTO::setPostsCount));
 	}
 	
-	public List<ThreadWithPostsCountDTO> getAll() {
-		Type listType = new TypeToken<List<ThreadWithPostsCountDTO>>() {
-		}.getType();
-		return modelMapper.map(threadRepository.findAll(), listType);
+	public Page<ThreadDTO> getAll(Pageable pageable) {
+		Page<Thread> page = threadRepository.findAll(pageable);
+		Page<ThreadDTO> map = page.map(thread -> modelMapper.map(thread, ThreadDTO.class));
+		return map;
 	}
 	
 	public List<ThreadProjDTO> getAllPinnedByCategoryId(Long id) {

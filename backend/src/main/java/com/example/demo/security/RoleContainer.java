@@ -47,12 +47,7 @@ public class RoleContainer {
 				Arrays.asList(MODERATOR,ADMIN));
 	}
 	
-	public boolean canEditCategory(MyUserDetails userDetails, Long categoryId) {
-		if (isAdmin(userDetails))
-			return true;
-		if (!isAtLeastModerator(userDetails))
-			return false;
-		
+	private boolean checkIfUserHasRightsForCategory(MyUserDetails userDetails, Long categoryId) {
 		List<String> authorities = userDetails.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList());
 		Optional<Set<RoleDTO>> optional = categoryService.findRolesForCategoryById(categoryId);
 		if (optional.isPresent()) {
@@ -62,20 +57,22 @@ public class RoleContainer {
 		return false;
 	}
 	
+	public boolean canEditCategory(MyUserDetails userDetails, Long categoryId) {
+		if (isAdmin(userDetails))
+			return true;
+		if (!isAtLeastModerator(userDetails))
+			return false;
+		
+		return checkIfUserHasRightsForCategory(userDetails, categoryId);
+	}
+	
 	public boolean canCreateThread(MyUserDetails userDetails, Long categoryId) {
 		if (isAdmin(userDetails))
 			return true;
 		Optional<CategoryDTO> optionalCategoryDTO = categoryService.findById(categoryId);
 		if (optionalCategoryDTO.isEmpty() || !optionalCategoryDTO.get().isActive())
 			return false;
-		
-		List<String> authorities = userDetails.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList());
-		Optional<Set<RoleDTO>> optional = categoryService.findRolesForCategoryById(categoryId);
-		if (optional.isPresent()) {
-			List<String> allowedRoles = optional.get().stream().map(roleDTO -> roleDTO.getName().toUpperCase()).collect(Collectors.toList());
-			return CollectionUtils.containsAny(allowedRoles, authorities);
-		}
-		return false;
+		return checkIfUserHasRightsForCategory(userDetails, categoryId);
 	}
 	
 	public boolean canEditThread(MyUserDetails userDetails, Long threadId) {
@@ -85,16 +82,9 @@ public class RoleContainer {
 			return false;
 		
 		Optional<ThreadDTO> optionalThreadDTO = threadService.findById(threadId);
-		if (optionalThreadDTO.isPresent()) {
-			List<String> authorities = userDetails.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList());
-			Optional<Set<RoleDTO>> optional = categoryService.findRolesForCategoryById(optionalThreadDTO.get().getCategory().getId());
-			if (optional.isPresent()) {
-				List<String> allowedRoles = optional.get().stream().map(roleDTO -> roleDTO.getName().toUpperCase()).collect(Collectors.toList());
-				return CollectionUtils.containsAny(allowedRoles, authorities);
-			}
-		}
+		return optionalThreadDTO.filter(
+				threadDTO -> checkIfUserHasRightsForCategory(userDetails, threadDTO.getCategory().getId())).isPresent();
 		
-		return false;
 	}
 	
 	public boolean canCreatePost(MyUserDetails userDetails, Long threadId) {
@@ -108,12 +98,7 @@ public class RoleContainer {
 				return false;
 			
 			CategoryDTO category = optionalThreadDTO.get().getCategory();
-			List<String> authorities = userDetails.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList());
-			Optional<Set<RoleDTO>> optional = categoryService.findRolesForCategoryById(category.getId());
-			if (optional.isPresent()) {
-				List<String> allowedRoles = optional.get().stream().map(roleDTO -> roleDTO.getName().toUpperCase()).collect(Collectors.toList());
-				return CollectionUtils.containsAny(allowedRoles, authorities);
-			}
+			checkIfUserHasRightsForCategory(userDetails, category.getId());
 		}
 		
 		return false;
@@ -131,12 +116,7 @@ public class RoleContainer {
 			
 			ThreadDTO threadDTO = optionalPostDTO.get().getThread();
 			CategoryDTO category = threadDTO.getCategory();
-			List<String> authorities = userDetails.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList());
-			Optional<Set<RoleDTO>> optional = categoryService.findRolesForCategoryById(category.getId());
-			if (optional.isPresent()) {
-				List<String> allowedRoles = optional.get().stream().map(roleDTO -> roleDTO.getName().toUpperCase()).collect(Collectors.toList());
-				return CollectionUtils.containsAny(allowedRoles, authorities);
-			}
+			checkIfUserHasRightsForCategory(userDetails, category.getId());
 		}
 		
 		return false;

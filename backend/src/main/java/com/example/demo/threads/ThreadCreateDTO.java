@@ -1,16 +1,16 @@
 package com.example.demo.threads;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.validator.constraints.Length;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
 @Data
+@With
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class ThreadCreateDTO {
 	@NotEmpty
 	@Length(max = 80)

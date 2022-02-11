@@ -21,6 +21,6 @@ public class CategoryWithThreadsDTO {
 	
 	private boolean active;
 	
-//	@JsonManagedReference
+	// @JsonManagedReference
 	private List<ThreadWithLastPostDTO> threads;
 }
