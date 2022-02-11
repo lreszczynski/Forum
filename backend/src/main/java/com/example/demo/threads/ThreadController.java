@@ -125,7 +125,7 @@ public class ThreadController {
 			@ApiResponse(responseCode = HTTP_FORBIDDEN, content = @Content),
 			@ApiResponse(responseCode = HTTP_UNAUTHORIZED, content = @Content)})
 	@DeleteMapping("/{id}")
-	//@PreAuthorize("@roleContainer.isAtLeastModerator(principal)")
+	@PreAuthorize("@roleContainer.canEditThread(principal, #id)")
 	public ResponseEntity<?> delete(@PathVariable Long id) {
 		threadService.deleteById(id);
 		return ResponseEntity.noContent().build();

@@ -84,7 +84,6 @@ public class RoleContainer {
 		Optional<ThreadDTO> optionalThreadDTO = threadService.findById(threadId);
 		return optionalThreadDTO.filter(
 				threadDTO -> checkIfUserHasRightsForCategory(userDetails, threadDTO.getCategory().getId())).isPresent();
-		
 	}
 	
 	public boolean canCreatePost(MyUserDetails userDetails, Long threadId) {
