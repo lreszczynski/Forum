@@ -1,6 +1,6 @@
 package com.example.demo.categories.validation;
 
-import com.example.demo.categories.CategoryDTO;
+import com.example.demo.categories.dto.CategoryDTO;
 import com.example.demo.categories.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 

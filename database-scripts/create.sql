@@ -39,7 +39,7 @@ CREATE TABLE App_Thread
     active      BOOLEAN NOT NULL DEFAULT (TRUE),
     pinned 		BOOLEAN NOT NULL DEFAULT (FALSE),
     category_id BIGINT REFERENCES App_Category(id) ON DELETE CASCADE NOT NULL,
-    user_id     BIGINT REFERENCES App_User(id) NOT NULL
+    user_id     BIGINT REFERENCES App_User(id) ON DELETE CASCADE NOT NULL
 );
 
 CREATE TABLE App_Post
@@ -48,5 +48,5 @@ CREATE TABLE App_Post
     content     VARCHAR(10000) NOT NULL CHECK (length(content) >= 10),
     create_date TIMESTAMP NOT NULL DEFAULT (current_timestamp),
     thread_id   BIGINT REFERENCES App_Thread (id) ON DELETE CASCADE NOT NULL,
-    user_id     BIGINT REFERENCES App_User (id) NOT NULL
+    user_id     BIGINT REFERENCES App_User (id) ON DELETE CASCADE NOT NULL
 );

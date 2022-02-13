@@ -7,6 +7,8 @@ public interface TestSimpleProj {
 	
 	Post getLastPost();
 	
+	boolean isActive();
+	
 	/*private boolean active;
 	
 	private User user;*//*

@@ -1,11 +1,10 @@
-package com.example.demo.categories;
+package com.example.demo.categories.dto;
 
 import com.example.demo.categories.validation.CategoryUniqueConstraint;
 import com.example.demo.categories.validation.CreateCategory;
 import com.example.demo.categories.validation.SecondOrder;
 import com.example.demo.categories.validation.UpdateCategory;
-import com.example.demo.roles.RoleDTO;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.example.demo.roles.dto.RoleDTO;
 import lombok.*;
 import org.hibernate.validator.constraints.Length;
 

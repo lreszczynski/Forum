@@ -1,14 +1,10 @@
-package com.example.demo.posts;
+package com.example.demo.posts.dto;
 
 import com.example.demo.posts.validation.CreatePost;
 import com.example.demo.posts.validation.UpdatePost;
-import com.example.demo.threads.ThreadDTO;
-import com.example.demo.users.UserDTO;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import com.example.demo.threads.dto.ThreadDTO;
+import com.example.demo.users.dto.UserBasicDTO;
+import lombok.*;
 import org.hibernate.validator.constraints.Length;
 
 import javax.validation.constraints.NotEmpty;
@@ -17,6 +13,7 @@ import javax.validation.constraints.Null;
 import java.time.Instant;
 
 @Data
+@With
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
@@ -33,6 +30,5 @@ public class PostDTO {
 	
 	private ThreadDTO thread;
 	
-	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
-	private UserDTO user;
+	private UserBasicDTO user;
 }

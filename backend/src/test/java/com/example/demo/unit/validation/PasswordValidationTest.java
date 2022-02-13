@@ -1,6 +1,6 @@
 package com.example.demo.unit.validation;
 
-import com.example.demo.users.UserRegistrationDTO;
+import com.example.demo.users.dto.UserRegistrationDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

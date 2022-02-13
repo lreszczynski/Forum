@@ -1,5 +1,7 @@
 package com.example.demo.posts;
 
+import com.example.demo.posts.dto.PostCreateDTO;
+import com.example.demo.posts.dto.PostDTO;
 import com.example.demo.posts.validation.CreatePost;
 import com.example.demo.posts.validation.UpdatePost;
 import com.example.demo.security.MyUserDetails;
@@ -23,8 +25,6 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.groups.Default;
-import java.util.Collection;
-import java.util.List;
 import java.util.Optional;
 
 import static com.example.demo.controller.HttpResponse.*;
@@ -46,9 +46,10 @@ public class PostController {
 	
 	@Operation(summary = "Returns a list of posts")
 	@ApiResponse(responseCode = HTTP_OK)
+	@PageableAsQueryParam
 	@GetMapping
-	ResponseEntity<Collection<PostDTO>> getAll() {
-		List<PostDTO> posts = postService.getAll();
+	ResponseEntity<Page<PostDTO>> getAll(@Parameter(hidden = true) Pageable pageable) {
+		Page<PostDTO> posts = postService.getAll(pageable);
 		return ResponseEntity.ok(posts);
 	}
 	
@@ -120,7 +121,7 @@ public class PostController {
 			@ApiResponse(responseCode = HTTP_FORBIDDEN, content = @Content),
 			@ApiResponse(responseCode = HTTP_UNAUTHORIZED, content = @Content)})
 	@DeleteMapping("/{id}")
-	//@PreAuthorize("@roleContainer.isAtLeastModerator(principal)")
+	@PreAuthorize("@roleContainer.canEditPost(principal, #id)")
 	public ResponseEntity<?> delete(@PathVariable Long id) {
 		postService.deleteById(id);
 		return ResponseEntity.noContent().build();

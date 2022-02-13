@@ -1,14 +1,15 @@
 package com.example.demo.categories;
 
+import com.example.demo.categories.dto.CategoryDTO;
 import com.example.demo.categoryroles.CategoryRoleRepository;
 import com.example.demo.posts.Post;
 import com.example.demo.posts.PostRepository;
 import com.example.demo.roles.Role;
-import com.example.demo.roles.RoleDTO;
+import com.example.demo.roles.dto.RoleDTO;
 import com.example.demo.roles.RoleRepository;
 import com.example.demo.threads.Thread;
 import com.example.demo.threads.ThreadRepository;
-import com.example.demo.threads.ThreadWithLastPostDTO;
+import com.example.demo.threads.dto.ThreadWithLastPostDTO;
 import com.example.demo.users.UserRepository;
 import org.modelmapper.Converter;
 import org.modelmapper.ModelMapper;

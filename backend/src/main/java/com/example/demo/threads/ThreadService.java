@@ -4,6 +4,10 @@ import com.example.demo.categories.Category;
 import com.example.demo.categories.CategoryRepository;
 import com.example.demo.posts.Post;
 import com.example.demo.posts.PostRepository;
+import com.example.demo.threads.dto.CreateThreadDTO;
+import com.example.demo.threads.dto.ThreadDTO;
+import com.example.demo.threads.dto.ThreadProjDTO;
+import com.example.demo.threads.dto.ThreadWithPostsCountDTO;
 import com.example.demo.users.User;
 import com.example.demo.users.UserRepository;
 import org.modelmapper.Converter;
@@ -44,8 +48,7 @@ public class ThreadService {
 	
 	public Page<ThreadDTO> getAll(Pageable pageable) {
 		Page<Thread> page = threadRepository.findAll(pageable);
-		Page<ThreadDTO> map = page.map(thread -> modelMapper.map(thread, ThreadDTO.class));
-		return map;
+		return page.map(thread -> modelMapper.map(thread, ThreadDTO.class));
 	}
 	
 	public List<ThreadProjDTO> getAllPinnedByCategoryId(Long id) {
@@ -60,7 +63,6 @@ public class ThreadService {
 	public Page<ThreadProjDTO> getAllByCategoryId(Long id, Pageable pageable) {
 		Type type = new TypeToken<Page<ThreadProjDTO>>() {
 		}.getType();
-		Page<TestSimpleProj> eeeee = threadRepository.findAllByCategoryIdAndPinnedIsFalse(id, pageable);
 		Page<ThreadProjDTO> list = threadRepository.findAllByCategoryIdAndPinnedIsFalse(id, pageable)
 				.map(thread -> modelMapper.map(thread, ThreadProjDTO.class));
 		
@@ -75,7 +77,7 @@ public class ThreadService {
 		return optionalThread.map(thread -> modelMapper.map(thread, ThreadDTO.class));
 	}
 	
-	public Optional<ThreadDTO> create(ThreadCreateDTO threadCreateDTO, String username) {
+	public Optional<ThreadDTO> create(CreateThreadDTO threadCreateDTO, String username) {
 		Optional<User> optionalUser = userRepository.findByUsername(username);
 		Optional<Category> optionalCategory = categoryRepository.findById(threadCreateDTO.getCategoryId());
 		if (optionalUser.isPresent() && optionalCategory.isPresent()) {

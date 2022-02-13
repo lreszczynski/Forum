@@ -1,11 +1,12 @@
 package com.example.demo.categories;
 
+import com.example.demo.categories.dto.CategoryDTO;
 import com.example.demo.categories.validation.CreateCategory;
 import com.example.demo.categories.validation.UpdateCategory;
-import com.example.demo.roles.RoleDTO;
+import com.example.demo.roles.dto.RoleDTO;
 import com.example.demo.security.MyUserDetails;
 import com.example.demo.security.SecurityUtility;
-import com.example.demo.threads.ThreadProjDTO;
+import com.example.demo.threads.dto.ThreadProjDTO;
 import com.example.demo.threads.ThreadService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;

@@ -1,10 +1,10 @@
-package com.example.demo.threads;
+package com.example.demo.threads.dto;
 
-import com.example.demo.categories.CategoryDTO;
+import com.example.demo.categories.dto.CategoryDTO;
 import com.example.demo.threads.validation.CreateThread;
 import com.example.demo.threads.validation.SecondOrder;
 import com.example.demo.threads.validation.UpdateThread;
-import com.example.demo.users.UserDTO;
+import com.example.demo.users.dto.UserDTO;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 import org.hibernate.validator.constraints.Length;

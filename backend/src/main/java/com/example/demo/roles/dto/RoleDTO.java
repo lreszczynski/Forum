@@ -1,4 +1,4 @@
-package com.example.demo.roles;
+package com.example.demo.roles.dto;
 
 import com.example.demo.roles.validation.CreateRole;
 import com.example.demo.roles.validation.RoleUniqueConstraint;
@@ -14,6 +14,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Null;
 
 @Data
+@With
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder

@@ -1,6 +1,6 @@
-package com.example.demo.categories;
+package com.example.demo.categories.dto;
 
-import com.example.demo.threads.ThreadWithLastPostDTO;
+import com.example.demo.threads.dto.ThreadWithLastPostDTO;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

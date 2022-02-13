@@ -1,7 +1,7 @@
 package com.example.demo.unit.controller;
 
 import com.example.demo.categories.CategoryController;
-import com.example.demo.categories.CategoryDTO;
+import com.example.demo.categories.dto.CategoryDTO;
 import com.example.demo.categories.CategoryService;
 import com.example.demo.controller.GlobalExceptionHandler;
 import com.example.demo.security.MyUserDetails;

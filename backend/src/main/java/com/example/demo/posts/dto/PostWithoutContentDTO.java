@@ -1,6 +1,6 @@
-package com.example.demo.posts;
+package com.example.demo.posts.dto;
 
-import com.example.demo.users.UserSimpleDTO;
+import com.example.demo.users.dto.UserBasicDTO;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -15,5 +15,5 @@ public class PostWithoutContentDTO {
 	
 	private Instant createDate;
 	
-	private UserSimpleDTO user;
+	private UserBasicDTO user;
 }

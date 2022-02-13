@@ -1,12 +1,10 @@
-package com.example.demo.users;
+package com.example.demo.users.dto;
 
-import com.example.demo.roles.RoleDTO;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import com.example.demo.roles.dto.RoleDTO;
+import lombok.*;
 
 @Data
+@With
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -21,6 +19,5 @@ public class UserDTO {
 	
 	private boolean active;
 	
-	//@EqualsAndHashCode.Exclude
 	private RoleDTO role;
 }

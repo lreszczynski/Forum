@@ -1,14 +1,19 @@
 package com.example.demo.roles;
 
+import com.example.demo.roles.dto.RoleDTO;
 import com.example.demo.roles.validation.CreateRole;
 import com.example.demo.roles.validation.UpdateRole;
 import com.example.demo.security.SecurityUtility;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.extern.slf4j.Slf4j;
+import org.springdoc.core.converters.models.PageableAsQueryParam;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -16,8 +21,6 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.groups.Default;
-import java.util.Collection;
-import java.util.List;
 import java.util.Optional;
 
 import static com.example.demo.controller.HttpResponse.*;
@@ -39,9 +42,10 @@ public class RoleController {
 	
 	@Operation(summary = "Returns a list of roles")
 	@ApiResponse(responseCode = HTTP_OK)
+	@PageableAsQueryParam
 	@GetMapping
-	ResponseEntity<Collection<RoleDTO>> getAll() {
-		List<RoleDTO> categories = roleService.getAll();
+	ResponseEntity<Page<RoleDTO>> getAll(@Parameter(hidden = true) Pageable pageable) {
+		Page<RoleDTO> categories = roleService.getAll(pageable);
 		return ResponseEntity.ok(categories);
 	}
 	
@@ -90,7 +94,7 @@ public class RoleController {
 		return ResponseEntity.ok(updatedRole.get());
 	}
 	
-	@Operation(summary = "Delete a role")
+	/*@Operation(summary = "Delete a role")
 	@ApiResponses(value = {
 			@ApiResponse(responseCode = HTTP_NO_CONTENT),
 			@ApiResponse(responseCode = HTTP_FORBIDDEN, content = @Content),
@@ -100,5 +104,5 @@ public class RoleController {
 	public ResponseEntity<?> delete(@PathVariable Long id) {
 		roleService.deleteById(id);
 		return ResponseEntity.noContent().build();
-	}
+	}*/
 }

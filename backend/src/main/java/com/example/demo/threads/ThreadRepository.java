@@ -16,13 +16,13 @@ public interface ThreadRepository extends JpaRepository<Thread, Long> {
 			"WHERE t.id=?1", nativeQuery = true)
 	TestSimpleProj getThreadWithoutCategoryById(Long id);*/
 	
-	@Query(value = "SELECT t AS thread, ap AS lastPost FROM Thread t "+
+	@Query(value = "SELECT t AS thread, ap AS lastPost, t.active AS active FROM Thread t "+
 			"LEFT JOIN Post ap ON t.id = ap.thread.id "+
 			"AND ap.createDate=(SELECT MAX(p.createDate) FROM Post p WHERE p.thread.id=t.id) "+
 			"WHERE t.category.id=?1 AND t.pinned=TRUE ORDER BY ap.createDate DESC")
 	List<TestSimpleProj> findAllByCategoryIdAndPinnedIsTrue(Long id);
 	
-	@Query(value = "SELECT t AS thread, ap AS lastPost FROM Thread t "+
+	@Query(value = "SELECT t AS thread, ap AS lastPost, t.active AS active FROM Thread t "+
 			"LEFT JOIN Post ap ON t.id = ap.thread.id "+
 			"AND ap.createDate=(SELECT MAX(p.createDate) FROM Post p WHERE p.thread.id=t.id) "+
 			"WHERE t.category.id=?1 AND t.pinned=FALSE ORDER BY ap.createDate DESC")

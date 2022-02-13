@@ -1,6 +1,6 @@
 package com.example.demo.users.validation;
 
-import com.example.demo.users.UserRegistrationDTO;
+import com.example.demo.users.dto.UserRegistrationDTO;
 import com.example.demo.users.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 

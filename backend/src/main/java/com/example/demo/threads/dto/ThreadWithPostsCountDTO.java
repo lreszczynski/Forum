@@ -1,6 +1,5 @@
-package com.example.demo.threads;
+package com.example.demo.threads.dto;
 
-import com.example.demo.posts.PostWithoutContentDTO;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -8,8 +7,8 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ThreadProjDTO {
+public class ThreadWithPostsCountDTO {
 	private ThreadDTO thread;
-	private PostWithoutContentDTO lastPost;
+	
 	private int postsCount;
 }

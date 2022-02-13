@@ -1,10 +1,12 @@
 package com.example.demo.threads;
 
 import com.example.demo.categories.CategoryService;
-import com.example.demo.posts.PostDTO;
 import com.example.demo.posts.PostService;
+import com.example.demo.posts.dto.PostDTO;
 import com.example.demo.security.MyUserDetails;
 import com.example.demo.security.SecurityUtility;
+import com.example.demo.threads.dto.CreateThreadDTO;
+import com.example.demo.threads.dto.ThreadDTO;
 import com.example.demo.threads.validation.UpdateThread;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -90,7 +92,7 @@ public class ThreadController {
 			@ApiResponse(responseCode = HTTP_UNAUTHORIZED, content = @Content)})
 	@PostMapping(consumes = APPLICATION_JSON_VALUE)
 	@PreAuthorize("@roleContainer.canCreateThread(principal, #threadDTO.categoryId)")
-	ResponseEntity<ThreadDTO> create(@Validated @RequestBody ThreadCreateDTO threadDTO) {
+	ResponseEntity<ThreadDTO> create(@Validated @RequestBody CreateThreadDTO threadDTO) {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		String username = ((MyUserDetails) authentication.getPrincipal()).getUsername();
 		Optional<ThreadDTO> createdThread = threadService.create(threadDTO, username);

@@ -1,6 +1,6 @@
 package com.example.demo.roles.validation;
 
-import com.example.demo.roles.RoleDTO;
+import com.example.demo.roles.dto.RoleDTO;
 import com.example.demo.roles.RoleService;
 import org.springframework.beans.factory.annotation.Autowired;
 

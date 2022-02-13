@@ -1,4 +1,4 @@
-package com.example.demo.users;
+package com.example.demo.users.dto;
 
 import com.example.demo.users.validation.PasswordConstraint;
 import com.example.demo.users.validation.UserRegistrationConstraint;

@@ -1,4 +1,4 @@
-package com.example.demo.threads;
+package com.example.demo.threads.dto;
 
 import lombok.*;
 import org.hibernate.validator.constraints.Length;
@@ -11,7 +11,7 @@ import javax.validation.constraints.NotNull;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class ThreadCreateDTO {
+public class CreateThreadDTO {
 	@NotEmpty
 	@Length(max = 80)
 	private String title;

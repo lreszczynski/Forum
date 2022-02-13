@@ -1,11 +1,11 @@
 package com.example.demo.security;
 
-import com.example.demo.categories.CategoryDTO;
+import com.example.demo.categories.dto.CategoryDTO;
 import com.example.demo.categories.CategoryService;
-import com.example.demo.posts.PostDTO;
+import com.example.demo.posts.dto.PostDTO;
 import com.example.demo.posts.PostService;
-import com.example.demo.roles.RoleDTO;
-import com.example.demo.threads.ThreadDTO;
+import com.example.demo.roles.dto.RoleDTO;
+import com.example.demo.threads.dto.ThreadDTO;
 import com.example.demo.threads.ThreadService;
 import com.example.demo.users.UserService;
 import org.springframework.security.core.GrantedAuthority;
@@ -97,7 +97,7 @@ public class RoleContainer {
 				return false;
 			
 			CategoryDTO category = optionalThreadDTO.get().getCategory();
-			checkIfUserHasRightsForCategory(userDetails, category.getId());
+			return checkIfUserHasRightsForCategory(userDetails, category.getId());
 		}
 		
 		return false;
@@ -113,9 +113,11 @@ public class RoleContainer {
 			if (userDetails.getId().equals(optionalPostDTO.get().getUser().getId()))
 				return true;
 			
+			if (!isAtLeastModerator(userDetails))
+				return false;
 			ThreadDTO threadDTO = optionalPostDTO.get().getThread();
 			CategoryDTO category = threadDTO.getCategory();
-			checkIfUserHasRightsForCategory(userDetails, category.getId());
+			return checkIfUserHasRightsForCategory(userDetails, category.getId());
 		}
 		
 		return false;

@@ -1,12 +1,12 @@
-package com.example.demo.integration.controller.categories;
+package com.example.demo.integration.controller;
 
-import com.example.demo.categories.CategoryDTO;
+import com.example.demo.categories.dto.CategoryDTO;
 import com.example.demo.categories.CategoryService;
-import com.example.demo.roles.RoleDTO;
+import com.example.demo.roles.dto.RoleDTO;
 import com.example.demo.roles.RoleService;
 import com.example.demo.security.RoleContainer;
 import com.example.demo.security.SecurityUtility;
-import com.example.demo.threads.ThreadProjDTO;
+import com.example.demo.threads.dto.ThreadProjDTO;
 import com.example.demo.threads.ThreadService;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;

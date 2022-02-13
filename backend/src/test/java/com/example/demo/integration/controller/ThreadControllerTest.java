@@ -1,12 +1,12 @@
-package com.example.demo.integration.controller.categories;
+package com.example.demo.integration.controller;
 
-import com.example.demo.categories.CategoryDTO;
+import com.example.demo.categories.dto.CategoryDTO;
 import com.example.demo.categories.CategoryService;
 import com.example.demo.roles.RoleService;
 import com.example.demo.security.RoleContainer;
 import com.example.demo.security.SecurityUtility;
-import com.example.demo.threads.ThreadCreateDTO;
-import com.example.demo.threads.ThreadDTO;
+import com.example.demo.threads.dto.CreateThreadDTO;
+import com.example.demo.threads.dto.ThreadDTO;
 import com.example.demo.threads.ThreadService;
 import com.example.demo.users.UserService;
 import com.google.common.base.Strings;
@@ -50,7 +50,7 @@ class ThreadControllerTest {
 	@Autowired
 	private RoleService roleService;
 	
-	private ThreadCreateDTO validThread;
+	private CreateThreadDTO validThread;
 	
 	private CategoryDTO existingCategory;
 	
@@ -61,7 +61,7 @@ class ThreadControllerTest {
 	void initData() {
 		Optional<CategoryDTO> optionalCategoryDTO = categoryService.findById(3L);
 		optionalCategoryDTO.ifPresent(categoryDTO -> existingCategory = categoryDTO);
-		validThread = ThreadCreateDTO.builder().title("Title").content("Long enough content").categoryId(existingCategory.getId()).build();
+		validThread = CreateThreadDTO.builder().title("Title").content("Long enough content").categoryId(existingCategory.getId()).build();
 	}
 	
 	ImmutablePair<String, String> getCredentialsFor(String role) {
@@ -157,7 +157,7 @@ class ThreadControllerTest {
 		
 		@Test
 		void createShouldFail() {
-			ThreadCreateDTO threadCreateDTO = validThread.withCategoryId(anyCategoryId);
+			CreateThreadDTO threadCreateDTO = validThread.withCategoryId(anyCategoryId);
 			
 			//@formatter:off
 			RestAssured
@@ -250,7 +250,7 @@ class ThreadControllerTest {
 		
 		@Test
 		void createShouldSucceedIfDataIsValidAndUserHasRights() {
-			ThreadCreateDTO threadCreateDTO = validThread.withCategoryId(categoryIdWhereUserHasRights);
+			CreateThreadDTO threadCreateDTO = validThread.withCategoryId(categoryIdWhereUserHasRights);
 			
 			//@formatter:off
 			ThreadDTO result = RestAssured
@@ -268,7 +268,7 @@ class ThreadControllerTest {
 		
 		@Test
 		void createShouldFailIfCategoryIsInactive() {
-			ThreadCreateDTO threadCreateDTO = validThread.withCategoryId(inactiveCategoryId);
+			CreateThreadDTO threadCreateDTO = validThread.withCategoryId(inactiveCategoryId);
 			
 			//@formatter:off
 			RestAssured
@@ -284,7 +284,7 @@ class ThreadControllerTest {
 		
 		@Test
 		void createShouldFailIfTitleIsEmpty() {
-			ThreadCreateDTO threadCreateDTO = validThread.withTitle("");
+			CreateThreadDTO threadCreateDTO = validThread.withTitle("");
 			
 			//@formatter:off
 			RestAssured
@@ -300,7 +300,7 @@ class ThreadControllerTest {
 		
 		@Test
 		void createShouldFailIfTitleIsTooLong() {
-			ThreadCreateDTO threadCreateDTO = validThread.withTitle(Strings.repeat(" ",81));
+			CreateThreadDTO threadCreateDTO = validThread.withTitle(Strings.repeat(" ",81));
 			
 			//@formatter:off
 			RestAssured
@@ -316,7 +316,7 @@ class ThreadControllerTest {
 		
 		@Test
 		void createShouldFailIfContentIsTooShort() {
-			ThreadCreateDTO threadCreateDTO = validThread.withContent(Strings.repeat(" ",9));
+			CreateThreadDTO threadCreateDTO = validThread.withContent(Strings.repeat(" ",9));
 			
 			//@formatter:off
 			RestAssured
@@ -332,7 +332,7 @@ class ThreadControllerTest {
 		
 		@Test
 		void createShouldFailIfContentIsTooLong() {
-			ThreadCreateDTO threadCreateDTO = validThread.withContent(Strings.repeat(" ",10001));
+			CreateThreadDTO threadCreateDTO = validThread.withContent(Strings.repeat(" ",10001));
 			
 			//@formatter:off
 			RestAssured
@@ -348,7 +348,7 @@ class ThreadControllerTest {
 		
 		@Test
 		void createShouldFailIfUserDoesNotHaveRights() {
-			ThreadCreateDTO threadCreateDTO = validThread.withCategoryId(categoryIdWhereUserDoesNotHaveRights);
+			CreateThreadDTO threadCreateDTO = validThread.withCategoryId(categoryIdWhereUserDoesNotHaveRights);
 			
 			//@formatter:off
 			RestAssured
@@ -460,7 +460,7 @@ class ThreadControllerTest {
 		
 		@Test
 		void createShouldSucceedIfDataIsValidAndModeratorHasRights() {
-			ThreadCreateDTO threadCreateDTO = validThread.withCategoryId(categoryIdWhereModHasRights);
+			CreateThreadDTO threadCreateDTO = validThread.withCategoryId(categoryIdWhereModHasRights);
 			
 			//@formatter:off
 			ThreadDTO result = RestAssured
@@ -478,7 +478,7 @@ class ThreadControllerTest {
 		
 		@Test
 		void createShouldFailIfCategoryIsInactive() {
-			ThreadCreateDTO threadCreateDTO = validThread.withCategoryId(inactiveCategoryId);
+			CreateThreadDTO threadCreateDTO = validThread.withCategoryId(inactiveCategoryId);
 			
 			//@formatter:off
 			RestAssured
@@ -494,7 +494,7 @@ class ThreadControllerTest {
 		
 		@Test
 		void createShouldFailIfTitleIsEmpty() {
-			ThreadCreateDTO threadCreateDTO = validThread.withTitle("");
+			CreateThreadDTO threadCreateDTO = validThread.withTitle("");
 			
 			//@formatter:off
 			RestAssured
@@ -510,7 +510,7 @@ class ThreadControllerTest {
 		
 		@Test
 		void createShouldFailIfTitleIsTooLong() {
-			ThreadCreateDTO threadCreateDTO = validThread.withTitle(Strings.repeat(" ",81));
+			CreateThreadDTO threadCreateDTO = validThread.withTitle(Strings.repeat(" ",81));
 			
 			//@formatter:off
 			RestAssured
@@ -526,7 +526,7 @@ class ThreadControllerTest {
 		
 		@Test
 		void createShouldFailIfContentIsTooShort() {
-			ThreadCreateDTO threadCreateDTO = validThread.withContent(Strings.repeat(" ",9));
+			CreateThreadDTO threadCreateDTO = validThread.withContent(Strings.repeat(" ",9));
 			
 			//@formatter:off
 			RestAssured
@@ -542,7 +542,7 @@ class ThreadControllerTest {
 		
 		@Test
 		void createShouldFailIfContentIsTooLong() {
-			ThreadCreateDTO threadCreateDTO = validThread.withContent(Strings.repeat(" ",10001));
+			CreateThreadDTO threadCreateDTO = validThread.withContent(Strings.repeat(" ",10001));
 			
 			//@formatter:off
 			RestAssured
@@ -558,7 +558,7 @@ class ThreadControllerTest {
 		
 		@Test
 		void createShouldFailIfModeratorDoesNotHaveRights() {
-			ThreadCreateDTO threadCreateDTO = validThread.withCategoryId(categoryIdWhereModDoesNotHaveRights);
+			CreateThreadDTO threadCreateDTO = validThread.withCategoryId(categoryIdWhereModDoesNotHaveRights);
 			
 			//@formatter:off
 			RestAssured
@@ -711,19 +711,19 @@ class ThreadControllerTest {
 		}
 		
 		@Test
-		void getByIdShouldReturnAllEntities() {
+		void getByIdShouldReturnEntityIfItExists() {
 			Optional<ThreadDTO> byId = threadService.findById(1L);
 			assertThat(byId).isNotEmpty();
 			
 			//@formatter:off
 			ThreadDTO result = RestAssured
 					.given()
-					.auth().oauth2(token)
+						.auth().oauth2(token)
 					.when()
-					.get(SecurityUtility.THREADS_PATH+"/"+byId.get().getId())
+						.get(SecurityUtility.THREADS_PATH+"/"+byId.get().getId())
 					.then()
-					.statusCode(HttpStatus.OK.value())
-					.extract().as(ThreadDTO.class);
+						.statusCode(HttpStatus.OK.value())
+						.extract().as(ThreadDTO.class);
 			//@formatter:on
 			
 			assertThat(result).isEqualTo(byId.get());
@@ -731,7 +731,7 @@ class ThreadControllerTest {
 		
 		@Test
 		void createShouldSucceedIfDataIsValid() {
-			ThreadCreateDTO threadCreateDTO = validThread;
+			CreateThreadDTO threadCreateDTO = validThread;
 			
 			//@formatter:off
 			ThreadDTO result = RestAssured
@@ -749,7 +749,7 @@ class ThreadControllerTest {
 		
 		@Test
 		void createShouldSucceedIfCategoryIsInactive() {
-			ThreadCreateDTO threadCreateDTO = validThread.withCategoryId(inactiveCategoryId);
+			CreateThreadDTO threadCreateDTO = validThread.withCategoryId(inactiveCategoryId);
 			
 			//@formatter:off
 			ThreadDTO result = RestAssured
@@ -767,7 +767,7 @@ class ThreadControllerTest {
 		
 		@Test
 		void createShouldFailIfTitleIsEmpty() {
-			ThreadCreateDTO threadCreateDTO = validThread.withTitle("");
+			CreateThreadDTO threadCreateDTO = validThread.withTitle("");
 			
 			//@formatter:off
 			RestAssured
@@ -783,7 +783,7 @@ class ThreadControllerTest {
 		
 		@Test
 		void createShouldFailIfTitleIsTooLong() {
-			ThreadCreateDTO threadCreateDTO = validThread.withTitle(Strings.repeat(" ",81));
+			CreateThreadDTO threadCreateDTO = validThread.withTitle(Strings.repeat(" ",81));
 			
 			//@formatter:off
 			RestAssured
@@ -799,7 +799,7 @@ class ThreadControllerTest {
 		
 		@Test
 		void createShouldFailIfContentIsTooShort() {
-			ThreadCreateDTO threadCreateDTO = validThread.withContent(Strings.repeat(" ",9));
+			CreateThreadDTO threadCreateDTO = validThread.withContent(Strings.repeat(" ",9));
 			
 			//@formatter:off
 			RestAssured
@@ -815,7 +815,7 @@ class ThreadControllerTest {
 		
 		@Test
 		void createShouldFailIfContentIsTooLong() {
-			ThreadCreateDTO threadCreateDTO = validThread.withContent(Strings.repeat(" ",10001));
+			CreateThreadDTO threadCreateDTO = validThread.withContent(Strings.repeat(" ",10001));
 			
 			//@formatter:off
 			RestAssured

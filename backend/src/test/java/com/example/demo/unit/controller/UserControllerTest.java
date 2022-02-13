@@ -2,13 +2,13 @@
 package com.example.demo.unit.controller;
 
 import com.example.demo.controller.GlobalExceptionHandler;
-import com.example.demo.roles.RoleDTO;
+import com.example.demo.roles.dto.RoleDTO;
 import com.example.demo.security.MyUserDetails;
 import com.example.demo.security.RoleContainer;
 import com.example.demo.security.SecurityUtility;
 import com.example.demo.users.UserController;
-import com.example.demo.users.UserDTO;
-import com.example.demo.users.UserRegistrationDTO;
+import com.example.demo.users.dto.UserDTO;
+import com.example.demo.users.dto.UserRegistrationDTO;
 import com.example.demo.users.UserService;
 import io.restassured.http.ContentType;
 import io.restassured.module.mockmvc.RestAssuredMockMvc;

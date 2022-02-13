@@ -1,19 +1,18 @@
 package com.example.demo.posts;
 
+import com.example.demo.posts.dto.PostCreateDTO;
+import com.example.demo.posts.dto.PostDTO;
 import com.example.demo.threads.Thread;
 import com.example.demo.threads.ThreadRepository;
 import com.example.demo.users.User;
 import com.example.demo.users.UserRepository;
 import org.modelmapper.ModelMapper;
-import org.modelmapper.TypeToken;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.lang.reflect.Type;
 import java.time.Instant;
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -32,10 +31,9 @@ public class PostService {
 		this.modelMapper = new ModelMapper();
 	}
 	
-	public List<PostDTO> getAll() {
-		Type listType = new TypeToken<List<PostDTO>>() {
-		}.getType();
-		return modelMapper.map(postRepository.findAll(), listType);
+	public Page<PostDTO> getAll(Pageable pageable) {
+		Page<Thread> page = threadRepository.findAll(pageable);
+		return page.map(thread -> modelMapper.map(thread, PostDTO.class));
 	}
 	
 	public Page<PostDTO> findAllByContentContaining(String text, Pageable pageable) {

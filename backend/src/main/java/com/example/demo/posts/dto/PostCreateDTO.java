@@ -1,14 +1,12 @@
-package com.example.demo.posts;
+package com.example.demo.posts.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.validator.constraints.Length;
 
 import javax.validation.constraints.NotNull;
 
 @Data
+@With
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder

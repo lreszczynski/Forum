@@ -1,8 +1,8 @@
-package com.example.demo.threads;
+package com.example.demo.threads.dto;
 
-import com.example.demo.categories.CategoryDTO;
-import com.example.demo.posts.PostDTO;
-import com.example.demo.users.UserDTO;
+import com.example.demo.categories.dto.CategoryDTO;
+import com.example.demo.posts.dto.PostDTO;
+import com.example.demo.users.dto.UserDTO;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
