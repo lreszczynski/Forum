@@ -50,17 +50,17 @@
               }
             }
           },
-          "404": {
-            "description": "Not Found"
+          "403": {
+            "description": "Forbidden"
           },
           "400": {
             "description": "Bad Request"
           },
-          "403": {
-            "description": "Forbidden"
-          },
           "401": {
             "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Not Found"
           }
         }
       },
@@ -166,17 +166,17 @@
               }
             }
           },
-          "404": {
-            "description": "Not Found"
+          "403": {
+            "description": "Forbidden"
           },
           "400": {
             "description": "Bad Request"
           },
-          "403": {
-            "description": "Forbidden"
-          },
           "401": {
             "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Not Found"
           }
         }
       },
@@ -282,53 +282,17 @@
               }
             }
           },
-          "404": {
-            "description": "Not Found"
+          "403": {
+            "description": "Forbidden"
           },
           "400": {
             "description": "Bad Request"
           },
-          "403": {
-            "description": "Forbidden"
-          },
           "401": {
             "description": "Unauthorized"
-          }
-        }
-      },
-      "delete": {
-        "tags": [
-          "role-controller"
-        ],
-        "summary": "Delete a role",
-        "operationId": "delete_2",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int64"
-            }
-          }
-        ],
-        "responses": {
-          "204": {
-            "description": "No Content",
-            "content": {
-              "application/hal+json": {
-                "schema": {
-                  "type": "object"
-                }
-              }
-            }
           },
-          "403": {
-            "description": "Forbidden"
-          },
-          "401": {
-            "description": "Unauthorized"
+          "404": {
+            "description": "Not Found"
           }
         }
       }
@@ -405,17 +369,17 @@
               }
             }
           },
-          "404": {
-            "description": "Not Found"
+          "403": {
+            "description": "Forbidden"
           },
           "400": {
             "description": "Bad Request"
           },
-          "403": {
-            "description": "Forbidden"
-          },
           "401": {
             "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Not Found"
           }
         }
       },
@@ -424,7 +388,7 @@
           "post-controller"
         ],
         "summary": "Delete a post",
-        "operationId": "delete_3",
+        "operationId": "delete_2",
         "parameters": [
           {
             "name": "id",
@@ -521,17 +485,17 @@
               }
             }
           },
-          "404": {
-            "description": "Not Found"
+          "403": {
+            "description": "Forbidden"
           },
           "400": {
             "description": "Bad Request"
           },
-          "403": {
-            "description": "Forbidden"
-          },
           "401": {
             "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Not Found"
           }
         }
       },
@@ -540,7 +504,7 @@
           "category-controller"
         ],
         "summary": "Delete a category",
-        "operationId": "delete_4",
+        "operationId": "delete_3",
         "parameters": [
           {
             "name": "id",
@@ -553,6 +517,12 @@
           }
         ],
         "responses": {
+          "403": {
+            "description": "Forbidden"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
           "204": {
             "description": "No Content",
             "content": {
@@ -562,12 +532,6 @@
                 }
               }
             }
-          },
-          "403": {
-            "description": "Forbidden"
-          },
-          "401": {
-            "description": "Unauthorized"
           }
         }
       }
@@ -667,13 +631,16 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/ThreadCreateDTO"
+                "$ref": "#/components/schemas/CreateThreadDTO"
               }
             }
           },
           "required": true
         },
         "responses": {
+          "403": {
+            "description": "Forbidden"
+          },
           "201": {
             "description": "Created",
             "content": {
@@ -686,9 +653,6 @@
           },
           "400": {
             "description": "Bad Request"
-          },
-          "403": {
-            "description": "Forbidden"
           },
           "401": {
             "description": "Unauthorized"
@@ -703,16 +667,44 @@
         ],
         "summary": "Returns a list of roles",
         "operationId": "getAll_2",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Zero-based page index (0..N)",
+            "schema": {
+              "type": "integer",
+              "default": 0
+            }
+          },
+          {
+            "name": "size",
+            "in": "query",
+            "description": "The size of the page to be returned",
+            "schema": {
+              "type": "integer",
+              "default": 20
+            }
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "description": "Sorting criteria in the format: property(,asc|desc). Default sort order is ascending. Multiple sort criteria are supported.",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "OK",
             "content": {
               "application/hal+json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/RoleDTO"
-                  }
+                  "$ref": "#/components/schemas/PageRoleDTO"
                 }
               }
             }
@@ -736,6 +728,9 @@
           "required": true
         },
         "responses": {
+          "403": {
+            "description": "Forbidden"
+          },
           "201": {
             "description": "Created",
             "content": {
@@ -748,9 +743,6 @@
           },
           "400": {
             "description": "Bad Request"
-          },
-          "403": {
-            "description": "Forbidden"
           },
           "401": {
             "description": "Unauthorized"
@@ -765,16 +757,44 @@
         ],
         "summary": "Returns a list of posts",
         "operationId": "getAll_3",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Zero-based page index (0..N)",
+            "schema": {
+              "type": "integer",
+              "default": 0
+            }
+          },
+          {
+            "name": "size",
+            "in": "query",
+            "description": "The size of the page to be returned",
+            "schema": {
+              "type": "integer",
+              "default": 20
+            }
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "description": "Sorting criteria in the format: property(,asc|desc). Default sort order is ascending. Multiple sort criteria are supported.",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "OK",
             "content": {
               "application/hal+json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/PostDTO"
-                  }
+                  "$ref": "#/components/schemas/PagePostDTO"
                 }
               }
             }
@@ -798,6 +818,9 @@
           "required": true
         },
         "responses": {
+          "403": {
+            "description": "Forbidden"
+          },
           "201": {
             "description": "Created",
             "content": {
@@ -808,17 +831,14 @@
               }
             }
           },
-          "404": {
-            "description": "Not Found"
-          },
           "400": {
             "description": "Bad Request"
           },
-          "403": {
-            "description": "Forbidden"
-          },
           "401": {
             "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Not Found"
           }
         }
       }
@@ -863,6 +883,9 @@
           "required": true
         },
         "responses": {
+          "403": {
+            "description": "Forbidden"
+          },
           "201": {
             "description": "Created",
             "content": {
@@ -875,9 +898,6 @@
           },
           "400": {
             "description": "Bad Request"
-          },
-          "403": {
-            "description": "Forbidden"
           },
           "401": {
             "description": "Unauthorized"
@@ -914,14 +934,14 @@
               }
             }
           },
-          "404": {
-            "description": "Not Found"
-          },
           "403": {
             "description": "Forbidden"
           },
           "401": {
             "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Not Found"
           }
         }
       },
@@ -953,6 +973,9 @@
           "required": true
         },
         "responses": {
+          "403": {
+            "description": "Forbidden"
+          },
           "201": {
             "description": "Created",
             "content": {
@@ -963,17 +986,14 @@
               }
             }
           },
-          "404": {
-            "description": "Not Found"
-          },
           "400": {
             "description": "Bad Request"
           },
-          "403": {
-            "description": "Forbidden"
-          },
           "401": {
             "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Not Found"
           }
         }
       }
@@ -985,16 +1005,44 @@
         ],
         "summary": "Returns a list of users",
         "operationId": "getAll",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Zero-based page index (0..N)",
+            "schema": {
+              "type": "integer",
+              "default": 0
+            }
+          },
+          {
+            "name": "size",
+            "in": "query",
+            "description": "The size of the page to be returned",
+            "schema": {
+              "type": "integer",
+              "default": 20
+            }
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "description": "Sorting criteria in the format: property(,asc|desc). Default sort order is ascending. Multiple sort criteria are supported.",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "OK",
             "content": {
               "application/hal+json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/UserDTO"
-                  }
+                  "$ref": "#/components/schemas/PageUserDTO"
                 }
               }
             }
@@ -1026,7 +1074,7 @@
             "content": {
               "application/hal+json": {
                 "schema": {
-                  "$ref": "#/components/schemas/UserDTO"
+                  "$ref": "#/components/schemas/UserProfileDTO"
                 }
               }
             }
@@ -1336,6 +1384,12 @@
           }
         ],
         "responses": {
+          "403": {
+            "description": "Forbidden"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
           "204": {
             "description": "No Content",
             "content": {
@@ -1345,12 +1399,6 @@
                 }
               }
             }
-          },
-          "403": {
-            "description": "Forbidden"
-          },
-          "401": {
-            "description": "Unauthorized"
           }
         }
       }
@@ -1487,7 +1535,22 @@
             "$ref": "#/components/schemas/ThreadDTO"
           },
           "user": {
-            "$ref": "#/components/schemas/UserDTO"
+            "$ref": "#/components/schemas/UserBasicDTO"
+          }
+        }
+      },
+      "UserBasicDTO": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "username": {
+            "type": "string"
+          },
+          "banned": {
+            "type": "boolean"
           }
         }
       },
@@ -1505,7 +1568,7 @@
           }
         }
       },
-      "ThreadCreateDTO": {
+      "CreateThreadDTO": {
         "required": [
           "categoryId",
           "content",
@@ -1537,6 +1600,110 @@
           "threadId": {
             "type": "integer",
             "format": "int64"
+          }
+        }
+      },
+      "PageUserDTO": {
+        "type": "object",
+        "properties": {
+          "totalPages": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "totalElements": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "sort": {
+            "$ref": "#/components/schemas/Sort"
+          },
+          "first": {
+            "type": "boolean"
+          },
+          "last": {
+            "type": "boolean"
+          },
+          "pageable": {
+            "$ref": "#/components/schemas/PageableObject"
+          },
+          "number": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "numberOfElements": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "size": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "content": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/UserDTO"
+            }
+          },
+          "empty": {
+            "type": "boolean"
+          }
+        }
+      },
+      "PageableObject": {
+        "type": "object",
+        "properties": {
+          "sort": {
+            "$ref": "#/components/schemas/Sort"
+          },
+          "pageNumber": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "pageSize": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "paged": {
+            "type": "boolean"
+          },
+          "unpaged": {
+            "type": "boolean"
+          },
+          "offset": {
+            "type": "integer",
+            "format": "int64"
+          }
+        }
+      },
+      "Sort": {
+        "type": "object",
+        "properties": {
+          "sorted": {
+            "type": "boolean"
+          },
+          "unsorted": {
+            "type": "boolean"
+          },
+          "empty": {
+            "type": "boolean"
+          }
+        }
+      },
+      "UserProfileDTO": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "username": {
+            "type": "string"
+          },
+          "banned": {
+            "type": "boolean"
+          },
+          "role": {
+            "$ref": "#/components/schemas/RoleDTO"
           }
         }
       },
@@ -1576,13 +1743,13 @@
           "enabled": {
             "type": "boolean"
           },
-          "accountNonLocked": {
-            "type": "boolean"
-          },
           "accountNonExpired": {
             "type": "boolean"
           },
           "credentialsNonExpired": {
+            "type": "boolean"
+          },
+          "accountNonLocked": {
             "type": "boolean"
           }
         }
@@ -1598,14 +1765,14 @@
             "type": "integer",
             "format": "int64"
           },
+          "sort": {
+            "$ref": "#/components/schemas/Sort"
+          },
           "first": {
             "type": "boolean"
           },
           "last": {
             "type": "boolean"
-          },
-          "sort": {
-            "$ref": "#/components/schemas/Sort"
           },
           "pageable": {
             "$ref": "#/components/schemas/PageableObject"
@@ -1633,46 +1800,6 @@
           }
         }
       },
-      "PageableObject": {
-        "type": "object",
-        "properties": {
-          "sort": {
-            "$ref": "#/components/schemas/Sort"
-          },
-          "pageNumber": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "pageSize": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "unpaged": {
-            "type": "boolean"
-          },
-          "paged": {
-            "type": "boolean"
-          },
-          "offset": {
-            "type": "integer",
-            "format": "int64"
-          }
-        }
-      },
-      "Sort": {
-        "type": "object",
-        "properties": {
-          "sorted": {
-            "type": "boolean"
-          },
-          "unsorted": {
-            "type": "boolean"
-          },
-          "empty": {
-            "type": "boolean"
-          }
-        }
-      },
       "PagePostDTO": {
         "type": "object",
         "properties": {
@@ -1684,14 +1811,14 @@
             "type": "integer",
             "format": "int64"
           },
+          "sort": {
+            "$ref": "#/components/schemas/Sort"
+          },
           "first": {
             "type": "boolean"
           },
           "last": {
             "type": "boolean"
-          },
-          "sort": {
-            "$ref": "#/components/schemas/Sort"
           },
           "pageable": {
             "$ref": "#/components/schemas/PageableObject"
@@ -1719,6 +1846,52 @@
           }
         }
       },
+      "PageRoleDTO": {
+        "type": "object",
+        "properties": {
+          "totalPages": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "totalElements": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "sort": {
+            "$ref": "#/components/schemas/Sort"
+          },
+          "first": {
+            "type": "boolean"
+          },
+          "last": {
+            "type": "boolean"
+          },
+          "pageable": {
+            "$ref": "#/components/schemas/PageableObject"
+          },
+          "number": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "numberOfElements": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "size": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "content": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RoleDTO"
+            }
+          },
+          "empty": {
+            "type": "boolean"
+          }
+        }
+      },
       "PageThreadProjDTO": {
         "type": "object",
         "properties": {
@@ -1730,14 +1903,14 @@
             "type": "integer",
             "format": "int64"
           },
+          "sort": {
+            "$ref": "#/components/schemas/Sort"
+          },
           "first": {
             "type": "boolean"
           },
           "last": {
             "type": "boolean"
-          },
-          "sort": {
-            "$ref": "#/components/schemas/Sort"
           },
           "pageable": {
             "$ref": "#/components/schemas/PageableObject"
@@ -1777,7 +1950,7 @@
             "format": "date-time"
           },
           "user": {
-            "$ref": "#/components/schemas/UserSimpleDTO"
+            "$ref": "#/components/schemas/UserBasicDTO"
           }
         }
       },
@@ -1787,27 +1960,15 @@
           "thread": {
             "$ref": "#/components/schemas/ThreadDTO"
           },
+          "active": {
+            "type": "boolean"
+          },
           "lastPost": {
             "$ref": "#/components/schemas/PostWithoutContentDTO"
           },
           "postsCount": {
             "type": "integer",
             "format": "int32"
-          }
-        }
-      },
-      "UserSimpleDTO": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "integer",
-            "format": "int64"
-          },
-          "username": {
-            "type": "string"
-          },
-          "banned": {
-            "type": "boolean"
           }
         }
       }
