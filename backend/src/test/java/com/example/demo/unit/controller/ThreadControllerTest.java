@@ -1,12 +1,17 @@
 package com.example.demo.unit.controller;
 
-import com.example.demo.categories.CategoryController;
-import com.example.demo.categories.CategoryService;
 import com.example.demo.categories.dto.CategoryDTO;
 import com.example.demo.controller.GlobalExceptionHandler;
+import com.example.demo.posts.dto.PostDTO;
+import com.example.demo.roles.dto.RoleDTO;
 import com.example.demo.security.MyUserDetails;
 import com.example.demo.security.RoleContainer;
 import com.example.demo.security.SecurityUtility;
+import com.example.demo.threads.ThreadController;
+import com.example.demo.threads.ThreadService;
+import com.example.demo.threads.dto.CreateThreadDTO;
+import com.example.demo.threads.dto.ThreadDTO;
+import com.example.demo.users.dto.UserDTO;
 import io.restassured.http.ContentType;
 import io.restassured.module.mockmvc.RestAssuredMockMvc;
 import org.junit.jupiter.api.AfterEach;
@@ -16,6 +21,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.http.HttpStatus;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -39,18 +48,22 @@ import static org.mockito.Mockito.doNothing;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 
 @ExtendWith(MockitoExtension.class)
-class CategoryControllerTest {
+class ThreadControllerTest {
 	// turn off validation
 	@Mock
 	private Validator validator;
 	
 	@Mock
-	private CategoryService service;
+	private ThreadService service;
 	
 	@InjectMocks
-	private CategoryController categoryController;
+	private ThreadController threadController;
 	
-	private CategoryDTO category1, category2;
+	PostDTO post;
+	CategoryDTO category;
+	UserDTO user;
+	ThreadDTO threadDTO;
+	CreateThreadDTO createThreadDTO;
 	
 	private Filter mockSpringSecurityFilter = new Filter(){
 		@Override
@@ -61,7 +74,7 @@ class CategoryControllerTest {
 		@Override
 		public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
 			UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(
-					new MyUserDetails(1L, "User", "", List.of(new SimpleGrantedAuthority(RoleContainer.ADMIN)), true, false),
+					new MyUserDetails(1L, "Admin", "", List.of(new SimpleGrantedAuthority(RoleContainer.ADMIN)), true, false),
 					"", Collections.emptyList());
 			SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
 			chain.doFilter(request, response);
@@ -77,8 +90,9 @@ class CategoryControllerTest {
 	
 	@BeforeEach
 	void setUp() {
-		StandaloneMockMvcBuilder mvc = MockMvcBuilders.standaloneSetup(categoryController)
+		StandaloneMockMvcBuilder mvc = MockMvcBuilders.standaloneSetup(threadController)
 				.setControllerAdvice(new GlobalExceptionHandler())
+				.setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver())
 				.apply(springSecurity(mockSpringSecurityFilter))
 				.setValidator(validator);
 		RestAssuredMockMvc.standaloneSetup(mvc);
@@ -90,45 +104,49 @@ class CategoryControllerTest {
 	}
 	
 	void initData() {
-		category1 = CategoryDTO.builder().id(1L).name("Announcements").description("description").active(true).build();
-		category2 = CategoryDTO.builder().id(2L).name("General").description("description").active(true).build();
+		RoleDTO roleUserDTO = RoleDTO.builder().id(1L).name("User").description("description").build();
+		user = UserDTO.builder().id(1L).username("user123").email("user@gmail.com").role(roleUserDTO).banned(false).active(true).build();
+		category = CategoryDTO.builder().id(1L).name("Category").description("Description").active(true).build();
+		threadDTO = ThreadDTO.builder().id(1L).user(user).active(true).category(category).build();
+		post = PostDTO.builder().id(1L).content("Post content").thread(threadDTO).build();
+		createThreadDTO = CreateThreadDTO.builder().categoryId(category.getId()).content("Post content").title("Title").build();
 	}
 	
 	@Test
 	void getAllShouldReturnAllEntities() {
-		given(service.findAll())
-				.willReturn(List.of(category1, category2));
+		Page<ThreadDTO> threads = new PageImpl<>(List.of(threadDTO),PageRequest.of(0, 20),20);
+		given(service.getAll(any()))
+				.willReturn(threads);
 		
 		//@formatter:off
-		@SuppressWarnings("unchecked")
-		List<CategoryDTO> list = RestAssuredMockMvc
+		List<ThreadDTO> response = RestAssuredMockMvc
 				.given()
 				.when()
-					.get(SecurityUtility.CATEGORIES_PATH)
+					.get(SecurityUtility.THREADS_PATH)
 				.then()
 					.status(HttpStatus.OK)
-					.extract().as(List.class);
+					.extract().body().jsonPath().getList("content",ThreadDTO.class);
 		//@formatter:on
 		
-		assertThat(list.size()).isEqualTo(2);
+		assertThat(response).contains(threadDTO);
 	}
 	
 	@Test
 	void getByIdShouldReturnEntityIfItExists() {
-		given(service.findById(category1.getId()))
-				.willReturn(Optional.of(category1));
+		given(service.findById(threadDTO.getId()))
+				.willReturn(Optional.of(threadDTO));
 		
 		//@formatter:off
-		CategoryDTO categoryDTO = RestAssuredMockMvc
+		ThreadDTO response = RestAssuredMockMvc
 				.given()
 				.when()
-					.get(SecurityUtility.CATEGORIES_PATH + "/" + category1.getId())
+					.get(SecurityUtility.THREADS_PATH + "/" + threadDTO.getId())
 				.then()
 					.status(HttpStatus.OK)
-					.extract().as(CategoryDTO.class);
+					.extract().as(ThreadDTO.class);
 		//@formatter:on
 		
-		assertThat(categoryDTO.getName()).isEqualTo(category1.getName());
+		assertThat(response.getTitle()).isEqualTo(threadDTO.getTitle());
 	}
 	
 	@Test
@@ -141,78 +159,78 @@ class CategoryControllerTest {
 		RestAssuredMockMvc
 				.given()
 				.when()
-					.get(SecurityUtility.CATEGORIES_PATH + "/" + id)
+					.get(SecurityUtility.THREADS_PATH + "/" + id)
 				.then()
 					.status(HttpStatus.NOT_FOUND);
 		//@formatter:on
 	}
 	
 	@Test
-	void createShouldSucceedIfEntityWasSaved() {
-		given(service.create(eq(category1)))
-				.willReturn(category1);
+	void createShouldSucceedIfDataIsValid() {
+		given(service.create(eq(createThreadDTO), any()))
+				.willReturn(Optional.ofNullable(threadDTO));
 		
 		//@formatter:off
-		RestAssuredMockMvc
+		ThreadDTO response = RestAssuredMockMvc
 				.given()
-					.body(category1)
+					.body(createThreadDTO)
 					.contentType(ContentType.JSON)
 				.when()
-					.post(SecurityUtility.CATEGORIES_PATH)
+					.post(SecurityUtility.THREADS_PATH)
 				.then()
-					.status(HttpStatus.CREATED);
+					.status(HttpStatus.CREATED)
+					.extract().as(ThreadDTO.class);
 		//@formatter:on
+		
+		assertThat(response.getTitle()).isEqualTo(threadDTO.getTitle());
 	}
 	
 	@Test
 	void updateShouldSucceedIfDataIsValid() {
 		// given
-		CategoryDTO updatedCategory = CategoryDTO.builder()
+		ThreadDTO updatedThread = ThreadDTO.builder()
 				.id(1L)
-				.name("Unique")
-				.description("description")
+				.title("Updated content")
 				.build();
-		CategoryDTO savedCategory = CategoryDTO.builder()
+		ThreadDTO savedThread = ThreadDTO.builder()
 				.id(1L)
-				.name("User")
-				.description("description")
+				.title("Saved content")
 				.build();
-		given(service.update(eq(savedCategory.getId()), any(CategoryDTO.class)))
-				.willReturn(Optional.of(updatedCategory));
+		given(service.update(eq(savedThread.getId()), any(ThreadDTO.class)))
+				.willReturn(Optional.of(updatedThread));
 		
 		//@formatter:off
-		CategoryDTO categoryDTO = RestAssuredMockMvc
+		ThreadDTO result = RestAssuredMockMvc
 				.given()
-					.body(updatedCategory)
+					.body(updatedThread)
 					.contentType(ContentType.JSON)
 				.when()
-					.put(SecurityUtility.CATEGORIES_PATH + "/" + savedCategory.getId())
+					.put(SecurityUtility.THREADS_PATH + "/" + savedThread.getId())
 				.then()
 					.status(HttpStatus.OK)
-					.extract().as(CategoryDTO.class);
+					.extract().as(ThreadDTO.class);
 		//@formatter:on
 		
-		assertThat(categoryDTO.getName()).isEqualTo(updatedCategory.getName());
+		assertThat(result.getTitle()).isEqualTo(updatedThread.getTitle());
 	}
 	
 	@Test
 	void updateShouldFailIfEntityWasNotFound() {
 		// given
-		CategoryDTO updatedCategory = CategoryDTO.builder()
+		ThreadDTO updatedThread = ThreadDTO.builder()
 				.id(1L)
-				.name("User")
-				.description("description")
+				.title("Updated content")
 				.build();
-		given(service.update(eq(updatedCategory.getId()), any(CategoryDTO.class)))
+		given(service.update(eq(updatedThread.getId()), any(ThreadDTO.class)))
 				.willReturn(Optional.empty());
 		
 		//@formatter:off
 		RestAssuredMockMvc
 				.given()
-					.body(updatedCategory)
+					.body(updatedThread)
 					.contentType(ContentType.JSON)
 				.when()
-					.put(SecurityUtility.CATEGORIES_PATH + "/" + updatedCategory.getId())
+					.put(SecurityUtility.THREADS_PATH + "/" + updatedThread.getId())
 				.then()
 					.status(HttpStatus.NOT_FOUND);
 		//@formatter:on
@@ -227,7 +245,7 @@ class CategoryControllerTest {
 		RestAssuredMockMvc
 				.given()
 				.when()
-					.delete(SecurityUtility.CATEGORIES_PATH + "/" + id)
+					.delete(SecurityUtility.THREADS_PATH + "/" + id)
 				.then()
 					.status(HttpStatus.NO_CONTENT);
 		//@formatter:on

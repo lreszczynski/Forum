@@ -53,7 +53,7 @@ public class CategoryController {
 	
 	@Operation(summary = "Returns a list of categories")
 	@GetMapping
-	ResponseEntity<Collection<CategoryDTO>> getAll() {
+	public ResponseEntity<Collection<CategoryDTO>> getAll() {
 		List<CategoryDTO> categories = categoryService.findAll();
 		return ResponseEntity.ok(categories);
 	}

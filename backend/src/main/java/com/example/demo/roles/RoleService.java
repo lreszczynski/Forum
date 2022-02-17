@@ -36,9 +36,20 @@ public class RoleService {
 		return modelMapper.map(saved, RoleDTO.class);
 	}
 	
-	public void deleteById(Long id) {
-		roleRepository.deleteById(id);
-	}
+	/*public boolean deleteById(Long id) {
+		Optional<Role> roleDTO = roleRepository.findById(id);
+		if (roleDTO.isPresent()) {
+			String name = roleDTO.get().getName().toUpperCase();
+			if (Arrays.asList(RoleContainer.ADMIN, RoleContainer.MODERATOR, RoleContainer.USER).contains(name)) {
+				return false;
+			}
+			else {
+				roleRepository.deleteById(id);
+				return true;
+			}
+		}
+		return false;
+	}*/
 	
 	public Optional<RoleDTO> update(Long id, RoleDTO roleDTO) {
 		if (!roleDTO.getId().equals(id)) {

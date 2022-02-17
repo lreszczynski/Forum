@@ -40,6 +40,11 @@ public class UserService {
 		return optionalUser.map(user -> modelMapper.map(user, UserDTO.class));
 	}
 	
+	public Optional<UserDTO> getUserAccount(Long id) {
+		Optional<User> optionalUser = userRepository.findById(id);
+		return optionalUser.map(user -> modelMapper.map(user, UserDTO.class));
+	}
+	
 	public Optional<UserProfileDTO> getUserPublicProfile(Long id) {
 		Optional<User> optionalUser = userRepository.findById(id);
 		return optionalUser.map(user -> modelMapper.map(user, UserProfileDTO.class));

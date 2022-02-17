@@ -97,12 +97,16 @@ public class RoleController {
 	/*@Operation(summary = "Delete a role")
 	@ApiResponses(value = {
 			@ApiResponse(responseCode = HTTP_NO_CONTENT),
+			@ApiResponse(responseCode = HTTP_BAD_REQUEST, content = @Content),
 			@ApiResponse(responseCode = HTTP_FORBIDDEN, content = @Content),
 			@ApiResponse(responseCode = HTTP_UNAUTHORIZED, content = @Content)})
 	@DeleteMapping("/{id}")
 	@PreAuthorize("@roleContainer.isAdmin(principal)")
 	public ResponseEntity<?> delete(@PathVariable Long id) {
-		roleService.deleteById(id);
-		return ResponseEntity.noContent().build();
+		boolean status = roleService.deleteById(id);
+		if (status) {
+			return ResponseEntity.noContent().build();
+		}
+		return ResponseEntity.badRequest().build();
 	}*/
 }

@@ -1,6 +1,7 @@
 package com.example.demo.users;
 
 import com.example.demo.security.MyUserDetails;
+import com.example.demo.security.SecurityUtility;
 import com.example.demo.users.dto.UserDTO;
 import com.example.demo.users.dto.UserProfileDTO;
 import com.example.demo.users.dto.UserRegistrationDTO;
@@ -18,7 +19,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -29,7 +31,7 @@ import static com.example.demo.controller.HttpResponse.*;
 import static org.springframework.util.MimeTypeUtils.APPLICATION_JSON_VALUE;
 
 @RestController
-@RequestMapping("users")
+@RequestMapping(SecurityUtility.USERS_PATH)
 @Slf4j
 public class UserController {
 	private static final String USER_CREATED_LOG = "New user was created: {}";
@@ -57,8 +59,10 @@ public class UserController {
 			@ApiResponse(responseCode = HTTP_OK),
 			@ApiResponse(responseCode = HTTP_NOT_FOUND, content = @Content)})
 	@GetMapping("/account")
-	ResponseEntity<UserDTO> getById(@AuthenticationPrincipal MyUserDetails myUserDetails) {
-		Optional<UserDTO> userDTO = userService.getById(myUserDetails.getId());
+	ResponseEntity<UserDTO> getById() {
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		Long id = ((MyUserDetails) authentication.getPrincipal()).getId();
+		Optional<UserDTO> userDTO = userService.getUserAccount(id);
 		if (userDTO.isEmpty()) {
 			return ResponseEntity.notFound().build();
 		}

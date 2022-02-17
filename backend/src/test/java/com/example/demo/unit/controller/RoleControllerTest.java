@@ -16,6 +16,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.http.HttpStatus;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -61,7 +65,7 @@ class RoleControllerTest {
 		@Override
 		public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
 			UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(
-					new MyUserDetails(1L, "User", "", List.of(new SimpleGrantedAuthority(RoleContainer.ADMIN)), true, false),
+					new MyUserDetails(1L, "Admin", "", List.of(new SimpleGrantedAuthority(RoleContainer.ADMIN)), true, false),
 					"", Collections.emptyList());
 			SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
 			chain.doFilter(request, response);
@@ -79,6 +83,7 @@ class RoleControllerTest {
 	void setUp() {
 		StandaloneMockMvcBuilder mvc = MockMvcBuilders.standaloneSetup(roleController)
 				.setControllerAdvice(new GlobalExceptionHandler())
+				.setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver())
 				.apply(springSecurity(mockSpringSecurityFilter))
 				.setValidator(validator);
 		RestAssuredMockMvc.standaloneSetup(mvc);
@@ -94,24 +99,24 @@ class RoleControllerTest {
 		role2 = RoleDTO.builder().id(2L).name("Admin").description("description").build();
 	}
 	
-	/*@Test
+	@Test
 	void getAllShouldReturnAllEntities() {
-		Page<RoleDTO> roles = (Page<RoleDTO>) Mockito.mock(Page.class);
+		Page<RoleDTO> roles = new PageImpl<>(List.of(role1, role2),PageRequest.of(0, 20),20);
 		given(service.getAll(any()))
 				.willReturn(roles);
 		
 		//@formatter:off
-		Page<RoleDTO> response = (Page<RoleDTO>) RestAssuredMockMvc
+		List<RoleDTO> response = RestAssuredMockMvc
 				.given()
 				.when()
 					.get(SecurityUtility.ROLES_PATH)
 				.then()
 					.status(HttpStatus.OK)
-					.extract().as(Page.class);
+					.extract().body().jsonPath().getList("content",RoleDTO.class);
 		//@formatter:on
 		
-		assertThat(response).isEqualTo(roles);
-	}*/
+		assertThat(response).contains(role1, role2);
+	}
 	
 	@Test
 	void getByIdShouldReturnEntityIfItExists() {

@@ -1,16 +1,9 @@
 package com.example.demo.integration.controller;
 
-import com.example.demo.categories.CategoryRepository;
-import com.example.demo.categories.CategoryService;
-import com.example.demo.posts.PostService;
-import com.example.demo.roles.RoleRepository;
 import com.example.demo.roles.RoleService;
 import com.example.demo.roles.dto.RoleDTO;
 import com.example.demo.security.RoleContainer;
 import com.example.demo.security.SecurityUtility;
-import com.example.demo.threads.ThreadRepository;
-import com.example.demo.threads.ThreadService;
-import com.example.demo.users.UserService;
 import com.google.common.base.Strings;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
@@ -43,30 +36,18 @@ class RoleControllerTest {
 	private DataSource dataSource;
 	
 	@Autowired
-	private ThreadRepository threadRepository;
-	@Autowired
-	private CategoryRepository categoryRepository;
-	@Autowired
-	private RoleRepository roleRepository;
-	
-	@Autowired
-	private PostService postService;
-	@Autowired
-	private ThreadService threadService;
-	@Autowired
-	private CategoryService categoryService;
-	@Autowired
-	private UserService userService;
-	@Autowired
 	private RoleService roleService;
 	
-	Long roleUserId = 1L;
-	Long roleModId = 2L;
-	Long roleAdminId = 3L;
+	Long roleUserId;
+	Long roleModId;
+	Long roleAdminId;
 	
 	private String token;
 	
 	void initData() {
+		roleUserId = roleService.findByName("User").orElseThrow().getId();
+		roleModId = roleService.findByName("Moderator").orElseThrow().getId();
+		roleAdminId = roleService.findByName("Admin").orElseThrow().getId();
 	}
 	
 	ImmutablePair<String, String> getCredentialsFor(String role) {
@@ -130,9 +111,9 @@ class RoleControllerTest {
 			RestAssured
 					.given()
 					.when()
-					.get(SecurityUtility.ROLES_PATH)
+						.get(SecurityUtility.ROLES_PATH)
 					.then()
-					.statusCode(HttpStatus.UNAUTHORIZED.value());
+						.statusCode(HttpStatus.UNAUTHORIZED.value());
 			//@formatter:on
 		}
 		
@@ -144,9 +125,24 @@ class RoleControllerTest {
 			RestAssured
 					.given()
 					.when()
-					.get(SecurityUtility.ROLES_PATH+"/"+roleDTO.getId())
+						.get(SecurityUtility.ROLES_PATH+"/"+roleDTO.getId())
 					.then()
-					.statusCode(HttpStatus.UNAUTHORIZED.value());
+						.statusCode(HttpStatus.UNAUTHORIZED.value());
+			//@formatter:on
+		}
+		
+		@Test
+		void createShouldFail() {
+			RoleDTO roleDTO = RoleDTO.builder().name("New role").description("description").build();
+			
+			//@formatter:off
+			RestAssured
+					.given()
+						.body(roleDTO).contentType(ContentType.JSON)
+					.when()
+						.post(SecurityUtility.ROLES_PATH)
+					.then()
+						.statusCode(HttpStatus.UNAUTHORIZED.value());
 			//@formatter:on
 		}
 		
@@ -158,11 +154,11 @@ class RoleControllerTest {
 			//@formatter:off
 			RestAssured
 					.given()
-					.body(updated).contentType(ContentType.JSON)
+						.body(updated).contentType(ContentType.JSON)
 					.when()
-					.put(SecurityUtility.ROLES_PATH+"/"+roleDTO.getId())
+						.put(SecurityUtility.ROLES_PATH+"/"+roleDTO.getId())
 					.then()
-					.statusCode(HttpStatus.UNAUTHORIZED.value());
+						.statusCode(HttpStatus.UNAUTHORIZED.value());
 			//@formatter:on
 		}
 	}
@@ -182,12 +178,12 @@ class RoleControllerTest {
 			//@formatter:off
 			List<RoleDTO> list = RestAssured
 					.given()
-					.auth().oauth2(token)
+						.auth().oauth2(token)
 					.when()
-					.get(SecurityUtility.ROLES_PATH)
+						.get(SecurityUtility.ROLES_PATH)
 					.then()
-					.statusCode(HttpStatus.OK.value())
-					.extract().body().jsonPath().getList("content",RoleDTO.class);
+						.statusCode(HttpStatus.OK.value())
+						.extract().body().jsonPath().getList("content",RoleDTO.class);
 			//@formatter:on
 			
 			assertThat(list).isEqualTo(page.getContent());
@@ -200,15 +196,31 @@ class RoleControllerTest {
 			//@formatter:off
 			RoleDTO result = RestAssured
 					.given()
-					.auth().oauth2(token)
+						.auth().oauth2(token)
 					.when()
-					.get(SecurityUtility.ROLES_PATH+"/"+roleDTO.getId())
+						.get(SecurityUtility.ROLES_PATH+"/"+roleDTO.getId())
 					.then()
-					.statusCode(HttpStatus.OK.value())
-					.extract().as(RoleDTO.class);
+						.statusCode(HttpStatus.OK.value())
+						.extract().as(RoleDTO.class);
 			//@formatter:on
 			
 			assertThat(result).isEqualTo(roleDTO);
+		}
+		
+		@Test
+		void createShouldFail() {
+			RoleDTO roleDTO = RoleDTO.builder().name("New role").description("description").build();
+			
+			//@formatter:off
+			RestAssured
+					.given()
+						.auth().oauth2(token)
+						.body(roleDTO).contentType(ContentType.JSON)
+					.when()
+						.post(SecurityUtility.ROLES_PATH)
+					.then()
+						.statusCode(HttpStatus.FORBIDDEN.value());
+			//@formatter:on
 		}
 		
 		@Test
@@ -219,12 +231,12 @@ class RoleControllerTest {
 			//@formatter:off
 			RestAssured
 					.given()
-					.auth().oauth2(token)
-					.body(updated).contentType(ContentType.JSON)
+						.auth().oauth2(token)
+						.body(updated).contentType(ContentType.JSON)
 					.when()
-					.put(SecurityUtility.ROLES_PATH+"/"+roleDTO.getId())
+						.put(SecurityUtility.ROLES_PATH+"/"+roleDTO.getId())
 					.then()
-					.statusCode(HttpStatus.FORBIDDEN.value());
+						.statusCode(HttpStatus.FORBIDDEN.value());
 			//@formatter:on
 		}
 	}
@@ -244,12 +256,12 @@ class RoleControllerTest {
 			//@formatter:off
 			List<RoleDTO> list = RestAssured
 					.given()
-					.auth().oauth2(token)
+						.auth().oauth2(token)
 					.when()
-					.get(SecurityUtility.ROLES_PATH)
+						.get(SecurityUtility.ROLES_PATH)
 					.then()
-					.statusCode(HttpStatus.OK.value())
-					.extract().body().jsonPath().getList("content",RoleDTO.class);
+						.statusCode(HttpStatus.OK.value())
+						.extract().body().jsonPath().getList("content",RoleDTO.class);
 			//@formatter:on
 			
 			assertThat(list).isEqualTo(page.getContent());
@@ -262,15 +274,31 @@ class RoleControllerTest {
 			//@formatter:off
 			RoleDTO result = RestAssured
 					.given()
-					.auth().oauth2(token)
+						.auth().oauth2(token)
 					.when()
-					.get(SecurityUtility.ROLES_PATH+"/"+roleDTO.getId())
+						.get(SecurityUtility.ROLES_PATH+"/"+roleDTO.getId())
 					.then()
-					.statusCode(HttpStatus.OK.value())
-					.extract().as(RoleDTO.class);
+						.statusCode(HttpStatus.OK.value())
+						.extract().as(RoleDTO.class);
 			//@formatter:on
 			
 			assertThat(result).isEqualTo(roleDTO);
+		}
+		
+		@Test
+		void createShouldFail() {
+			RoleDTO roleDTO = RoleDTO.builder().name("New role").description("description").build();
+			
+			//@formatter:off
+			RestAssured
+					.given()
+						.auth().oauth2(token)
+						.body(roleDTO).contentType(ContentType.JSON)
+					.when()
+						.post(SecurityUtility.ROLES_PATH)
+					.then()
+						.statusCode(HttpStatus.FORBIDDEN.value());
+			//@formatter:on
 		}
 		
 		@Test
@@ -281,12 +309,12 @@ class RoleControllerTest {
 			//@formatter:off
 			RestAssured
 					.given()
-					.auth().oauth2(token)
-					.body(updated).contentType(ContentType.JSON)
+						.auth().oauth2(token)
+						.body(updated).contentType(ContentType.JSON)
 					.when()
-					.put(SecurityUtility.ROLES_PATH+"/"+roleDTO.getId())
+						.put(SecurityUtility.ROLES_PATH+"/"+roleDTO.getId())
 					.then()
-					.statusCode(HttpStatus.FORBIDDEN.value());
+						.statusCode(HttpStatus.FORBIDDEN.value());
 			//@formatter:on
 		}
 	}
@@ -306,7 +334,7 @@ class RoleControllerTest {
 			//@formatter:off
 			List<RoleDTO> list = RestAssured
 					.given()
-					.auth().oauth2(token)
+						.auth().oauth2(token)
 					.when()
 						.get(SecurityUtility.ROLES_PATH)
 					.then()
@@ -324,15 +352,50 @@ class RoleControllerTest {
 			//@formatter:off
 			RoleDTO result = RestAssured
 					.given()
-					.auth().oauth2(token)
+						.auth().oauth2(token)
 					.when()
-					.get(SecurityUtility.ROLES_PATH+"/"+roleDTO.getId())
+						.get(SecurityUtility.ROLES_PATH+"/"+roleDTO.getId())
 					.then()
-					.statusCode(HttpStatus.OK.value())
-					.extract().as(RoleDTO.class);
+						.statusCode(HttpStatus.OK.value())
+						.extract().as(RoleDTO.class);
 			//@formatter:on
 			
 			assertThat(result).isEqualTo(roleDTO);
+		}
+		
+		@Test
+		void createShouldSucceedIfRoleNameIsUnique() {
+			RoleDTO roleDTO = RoleDTO.builder().name("New role").description("description").build();
+			
+			//@formatter:off
+			RoleDTO result = RestAssured
+					.given()
+						.auth().oauth2(token)
+						.body(roleDTO).contentType(ContentType.JSON)
+					.when()
+						.post(SecurityUtility.ROLES_PATH)
+					.then()
+						.statusCode(HttpStatus.CREATED.value())
+						.extract().as(RoleDTO.class);
+			//@formatter:on
+			
+			assertThat(result.getName()).isEqualTo(roleDTO.getName());
+		}
+		
+		@Test
+		void createShouldFailIfRoleNameIsNotUnique() {
+			RoleDTO roleDTO = RoleDTO.builder().name("User").description("description").build();
+			
+			//@formatter:off
+			RestAssured
+					.given()
+						.auth().oauth2(token)
+						.body(roleDTO).contentType(ContentType.JSON)
+					.when()
+						.post(SecurityUtility.ROLES_PATH)
+					.then()
+						.statusCode(HttpStatus.BAD_REQUEST.value());
+			//@formatter:on
 		}
 		
 		@Test
@@ -391,7 +454,7 @@ class RoleControllerTest {
 		@Test
 		void updateShouldFailIfNameIsTooLong() {
 			RoleDTO roleDTO = roleService.getById(roleAdminId).orElseThrow();
-			RoleDTO updated = roleDTO.withName(Strings.repeat(" ",51));
+			RoleDTO updated = roleDTO.withName(Strings.repeat(" ", 51));
 			
 			//@formatter:off
 			RestAssured
