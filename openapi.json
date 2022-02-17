@@ -50,8 +50,8 @@
               }
             }
           },
-          "403": {
-            "description": "Forbidden"
+          "404": {
+            "description": "Not Found"
           },
           "400": {
             "description": "Bad Request"
@@ -59,8 +59,8 @@
           "401": {
             "description": "Unauthorized"
           },
-          "404": {
-            "description": "Not Found"
+          "403": {
+            "description": "Forbidden"
           }
         }
       },
@@ -82,14 +82,14 @@
           }
         ],
         "responses": {
+          "401": {
+            "description": "Unauthorized"
+          },
           "204": {
             "description": "No Content"
           },
           "403": {
             "description": "Forbidden"
-          },
-          "401": {
-            "description": "Unauthorized"
           }
         }
       }
@@ -166,8 +166,8 @@
               }
             }
           },
-          "403": {
-            "description": "Forbidden"
+          "404": {
+            "description": "Not Found"
           },
           "400": {
             "description": "Bad Request"
@@ -175,8 +175,8 @@
           "401": {
             "description": "Unauthorized"
           },
-          "404": {
-            "description": "Not Found"
+          "403": {
+            "description": "Forbidden"
           }
         }
       },
@@ -198,14 +198,14 @@
           }
         ],
         "responses": {
+          "401": {
+            "description": "Unauthorized"
+          },
           "204": {
             "description": "No Content"
           },
           "403": {
             "description": "Forbidden"
-          },
-          "401": {
-            "description": "Unauthorized"
           }
         }
       }
@@ -282,8 +282,8 @@
               }
             }
           },
-          "403": {
-            "description": "Forbidden"
+          "404": {
+            "description": "Not Found"
           },
           "400": {
             "description": "Bad Request"
@@ -291,8 +291,8 @@
           "401": {
             "description": "Unauthorized"
           },
-          "404": {
-            "description": "Not Found"
+          "403": {
+            "description": "Forbidden"
           }
         }
       }
@@ -369,8 +369,8 @@
               }
             }
           },
-          "403": {
-            "description": "Forbidden"
+          "404": {
+            "description": "Not Found"
           },
           "400": {
             "description": "Bad Request"
@@ -378,8 +378,8 @@
           "401": {
             "description": "Unauthorized"
           },
-          "404": {
-            "description": "Not Found"
+          "403": {
+            "description": "Forbidden"
           }
         }
       },
@@ -401,14 +401,14 @@
           }
         ],
         "responses": {
+          "401": {
+            "description": "Unauthorized"
+          },
           "204": {
             "description": "No Content"
           },
           "403": {
             "description": "Forbidden"
-          },
-          "401": {
-            "description": "Unauthorized"
           }
         }
       }
@@ -485,8 +485,8 @@
               }
             }
           },
-          "403": {
-            "description": "Forbidden"
+          "404": {
+            "description": "Not Found"
           },
           "400": {
             "description": "Bad Request"
@@ -494,8 +494,8 @@
           "401": {
             "description": "Unauthorized"
           },
-          "404": {
-            "description": "Not Found"
+          "403": {
+            "description": "Forbidden"
           }
         }
       },
@@ -517,9 +517,6 @@
           }
         ],
         "responses": {
-          "403": {
-            "description": "Forbidden"
-          },
           "401": {
             "description": "Unauthorized"
           },
@@ -532,6 +529,9 @@
                 }
               }
             }
+          },
+          "403": {
+            "description": "Forbidden"
           }
         }
       }
@@ -638,9 +638,6 @@
           "required": true
         },
         "responses": {
-          "403": {
-            "description": "Forbidden"
-          },
           "201": {
             "description": "Created",
             "content": {
@@ -656,6 +653,9 @@
           },
           "401": {
             "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
           }
         }
       }
@@ -728,9 +728,6 @@
           "required": true
         },
         "responses": {
-          "403": {
-            "description": "Forbidden"
-          },
           "201": {
             "description": "Created",
             "content": {
@@ -746,6 +743,9 @@
           },
           "401": {
             "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
           }
         }
       }
@@ -818,9 +818,6 @@
           "required": true
         },
         "responses": {
-          "403": {
-            "description": "Forbidden"
-          },
           "201": {
             "description": "Created",
             "content": {
@@ -831,14 +828,17 @@
               }
             }
           },
+          "404": {
+            "description": "Not Found"
+          },
           "400": {
             "description": "Bad Request"
           },
           "401": {
             "description": "Unauthorized"
           },
-          "404": {
-            "description": "Not Found"
+          "403": {
+            "description": "Forbidden"
           }
         }
       }
@@ -883,9 +883,6 @@
           "required": true
         },
         "responses": {
-          "403": {
-            "description": "Forbidden"
-          },
           "201": {
             "description": "Created",
             "content": {
@@ -901,6 +898,9 @@
           },
           "401": {
             "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
           }
         }
       }
@@ -934,14 +934,14 @@
               }
             }
           },
-          "403": {
-            "description": "Forbidden"
+          "404": {
+            "description": "Not Found"
           },
           "401": {
             "description": "Unauthorized"
           },
-          "404": {
-            "description": "Not Found"
+          "403": {
+            "description": "Forbidden"
           }
         }
       },
@@ -973,9 +973,6 @@
           "required": true
         },
         "responses": {
-          "403": {
-            "description": "Forbidden"
-          },
           "201": {
             "description": "Created",
             "content": {
@@ -986,14 +983,17 @@
               }
             }
           },
+          "404": {
+            "description": "Not Found"
+          },
           "400": {
             "description": "Bad Request"
           },
           "401": {
             "description": "Unauthorized"
           },
-          "404": {
-            "description": "Not Found"
+          "403": {
+            "description": "Forbidden"
           }
         }
       }
@@ -1092,16 +1092,6 @@
         ],
         "summary": "Get user account settings",
         "operationId": "getById",
-        "parameters": [
-          {
-            "name": "myUserDetails",
-            "in": "query",
-            "required": true,
-            "schema": {
-              "$ref": "#/components/schemas/MyUserDetails"
-            }
-          }
-        ],
         "responses": {
           "200": {
             "description": "OK",
@@ -1384,9 +1374,6 @@
           }
         ],
         "responses": {
-          "403": {
-            "description": "Forbidden"
-          },
           "401": {
             "description": "Unauthorized"
           },
@@ -1399,6 +1386,9 @@
                 }
               }
             }
+          },
+          "403": {
+            "description": "Forbidden"
           }
         }
       }
@@ -1551,6 +1541,9 @@
           },
           "banned": {
             "type": "boolean"
+          },
+          "role": {
+            "$ref": "#/components/schemas/RoleDTO"
           }
         }
       },
@@ -1617,12 +1610,6 @@
           "sort": {
             "$ref": "#/components/schemas/Sort"
           },
-          "first": {
-            "type": "boolean"
-          },
-          "last": {
-            "type": "boolean"
-          },
           "pageable": {
             "$ref": "#/components/schemas/PageableObject"
           },
@@ -1633,6 +1620,12 @@
           "numberOfElements": {
             "type": "integer",
             "format": "int32"
+          },
+          "first": {
+            "type": "boolean"
+          },
+          "last": {
+            "type": "boolean"
           },
           "size": {
             "type": "integer",
@@ -1663,10 +1656,10 @@
             "type": "integer",
             "format": "int32"
           },
-          "paged": {
+          "unpaged": {
             "type": "boolean"
           },
-          "unpaged": {
+          "paged": {
             "type": "boolean"
           },
           "offset": {
@@ -1707,53 +1700,6 @@
           }
         }
       },
-      "GrantedAuthority": {
-        "type": "object",
-        "properties": {
-          "authority": {
-            "type": "string"
-          }
-        }
-      },
-      "MyUserDetails": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "integer",
-            "format": "int64"
-          },
-          "username": {
-            "type": "string"
-          },
-          "password": {
-            "type": "string"
-          },
-          "authorities": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/GrantedAuthority"
-            }
-          },
-          "active": {
-            "type": "boolean"
-          },
-          "banned": {
-            "type": "boolean"
-          },
-          "enabled": {
-            "type": "boolean"
-          },
-          "accountNonExpired": {
-            "type": "boolean"
-          },
-          "credentialsNonExpired": {
-            "type": "boolean"
-          },
-          "accountNonLocked": {
-            "type": "boolean"
-          }
-        }
-      },
       "PageThreadDTO": {
         "type": "object",
         "properties": {
@@ -1768,12 +1714,6 @@
           "sort": {
             "$ref": "#/components/schemas/Sort"
           },
-          "first": {
-            "type": "boolean"
-          },
-          "last": {
-            "type": "boolean"
-          },
           "pageable": {
             "$ref": "#/components/schemas/PageableObject"
           },
@@ -1784,6 +1724,12 @@
           "numberOfElements": {
             "type": "integer",
             "format": "int32"
+          },
+          "first": {
+            "type": "boolean"
+          },
+          "last": {
+            "type": "boolean"
           },
           "size": {
             "type": "integer",
@@ -1814,12 +1760,6 @@
           "sort": {
             "$ref": "#/components/schemas/Sort"
           },
-          "first": {
-            "type": "boolean"
-          },
-          "last": {
-            "type": "boolean"
-          },
           "pageable": {
             "$ref": "#/components/schemas/PageableObject"
           },
@@ -1830,6 +1770,12 @@
           "numberOfElements": {
             "type": "integer",
             "format": "int32"
+          },
+          "first": {
+            "type": "boolean"
+          },
+          "last": {
+            "type": "boolean"
           },
           "size": {
             "type": "integer",
@@ -1860,12 +1806,6 @@
           "sort": {
             "$ref": "#/components/schemas/Sort"
           },
-          "first": {
-            "type": "boolean"
-          },
-          "last": {
-            "type": "boolean"
-          },
           "pageable": {
             "$ref": "#/components/schemas/PageableObject"
           },
@@ -1876,6 +1816,12 @@
           "numberOfElements": {
             "type": "integer",
             "format": "int32"
+          },
+          "first": {
+            "type": "boolean"
+          },
+          "last": {
+            "type": "boolean"
           },
           "size": {
             "type": "integer",
@@ -1906,12 +1852,6 @@
           "sort": {
             "$ref": "#/components/schemas/Sort"
           },
-          "first": {
-            "type": "boolean"
-          },
-          "last": {
-            "type": "boolean"
-          },
           "pageable": {
             "$ref": "#/components/schemas/PageableObject"
           },
@@ -1922,6 +1862,12 @@
           "numberOfElements": {
             "type": "integer",
             "format": "int32"
+          },
+          "first": {
+            "type": "boolean"
+          },
+          "last": {
+            "type": "boolean"
           },
           "size": {
             "type": "integer",
