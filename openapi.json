@@ -53,11 +53,11 @@
           "404": {
             "description": "Not Found"
           },
-          "400": {
-            "description": "Bad Request"
-          },
           "401": {
             "description": "Unauthorized"
+          },
+          "400": {
+            "description": "Bad Request"
           },
           "403": {
             "description": "Forbidden"
@@ -82,11 +82,11 @@
           }
         ],
         "responses": {
-          "401": {
-            "description": "Unauthorized"
-          },
           "204": {
             "description": "No Content"
+          },
+          "401": {
+            "description": "Unauthorized"
           },
           "403": {
             "description": "Forbidden"
@@ -169,11 +169,11 @@
           "404": {
             "description": "Not Found"
           },
-          "400": {
-            "description": "Bad Request"
-          },
           "401": {
             "description": "Unauthorized"
+          },
+          "400": {
+            "description": "Bad Request"
           },
           "403": {
             "description": "Forbidden"
@@ -198,11 +198,11 @@
           }
         ],
         "responses": {
-          "401": {
-            "description": "Unauthorized"
-          },
           "204": {
             "description": "No Content"
+          },
+          "401": {
+            "description": "Unauthorized"
           },
           "403": {
             "description": "Forbidden"
@@ -285,11 +285,11 @@
           "404": {
             "description": "Not Found"
           },
-          "400": {
-            "description": "Bad Request"
-          },
           "401": {
             "description": "Unauthorized"
+          },
+          "400": {
+            "description": "Bad Request"
           },
           "403": {
             "description": "Forbidden"
@@ -372,11 +372,11 @@
           "404": {
             "description": "Not Found"
           },
-          "400": {
-            "description": "Bad Request"
-          },
           "401": {
             "description": "Unauthorized"
+          },
+          "400": {
+            "description": "Bad Request"
           },
           "403": {
             "description": "Forbidden"
@@ -401,11 +401,11 @@
           }
         ],
         "responses": {
-          "401": {
-            "description": "Unauthorized"
-          },
           "204": {
             "description": "No Content"
+          },
+          "401": {
+            "description": "Unauthorized"
           },
           "403": {
             "description": "Forbidden"
@@ -488,11 +488,11 @@
           "404": {
             "description": "Not Found"
           },
-          "400": {
-            "description": "Bad Request"
-          },
           "401": {
             "description": "Unauthorized"
+          },
+          "400": {
+            "description": "Bad Request"
           },
           "403": {
             "description": "Forbidden"
@@ -517,9 +517,6 @@
           }
         ],
         "responses": {
-          "401": {
-            "description": "Unauthorized"
-          },
           "204": {
             "description": "No Content",
             "content": {
@@ -529,6 +526,9 @@
                 }
               }
             }
+          },
+          "401": {
+            "description": "Unauthorized"
           },
           "403": {
             "description": "Forbidden"
@@ -648,11 +648,11 @@
               }
             }
           },
-          "400": {
-            "description": "Bad Request"
-          },
           "401": {
             "description": "Unauthorized"
+          },
+          "400": {
+            "description": "Bad Request"
           },
           "403": {
             "description": "Forbidden"
@@ -738,11 +738,11 @@
               }
             }
           },
-          "400": {
-            "description": "Bad Request"
-          },
           "401": {
             "description": "Unauthorized"
+          },
+          "400": {
+            "description": "Bad Request"
           },
           "403": {
             "description": "Forbidden"
@@ -831,11 +831,11 @@
           "404": {
             "description": "Not Found"
           },
-          "400": {
-            "description": "Bad Request"
-          },
           "401": {
             "description": "Unauthorized"
+          },
+          "400": {
+            "description": "Bad Request"
           },
           "403": {
             "description": "Forbidden"
@@ -893,11 +893,11 @@
               }
             }
           },
-          "400": {
-            "description": "Bad Request"
-          },
           "401": {
             "description": "Unauthorized"
+          },
+          "400": {
+            "description": "Bad Request"
           },
           "403": {
             "description": "Forbidden"
@@ -986,11 +986,11 @@
           "404": {
             "description": "Not Found"
           },
-          "400": {
-            "description": "Bad Request"
-          },
           "401": {
             "description": "Unauthorized"
+          },
+          "400": {
+            "description": "Bad Request"
           },
           "403": {
             "description": "Forbidden"
@@ -1374,9 +1374,6 @@
           }
         ],
         "responses": {
-          "401": {
-            "description": "Unauthorized"
-          },
           "204": {
             "description": "No Content",
             "content": {
@@ -1386,6 +1383,9 @@
                 }
               }
             }
+          },
+          "401": {
+            "description": "Unauthorized"
           },
           "403": {
             "description": "Forbidden"
@@ -1599,33 +1599,13 @@
       "PageUserDTO": {
         "type": "object",
         "properties": {
-          "totalPages": {
-            "type": "integer",
-            "format": "int32"
-          },
           "totalElements": {
             "type": "integer",
             "format": "int64"
           },
-          "sort": {
-            "$ref": "#/components/schemas/Sort"
-          },
-          "pageable": {
-            "$ref": "#/components/schemas/PageableObject"
-          },
-          "number": {
+          "totalPages": {
             "type": "integer",
             "format": "int32"
-          },
-          "numberOfElements": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "first": {
-            "type": "boolean"
-          },
-          "last": {
-            "type": "boolean"
           },
           "size": {
             "type": "integer",
@@ -1637,6 +1617,26 @@
               "$ref": "#/components/schemas/UserDTO"
             }
           },
+          "number": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "sort": {
+            "$ref": "#/components/schemas/Sort"
+          },
+          "pageable": {
+            "$ref": "#/components/schemas/PageableObject"
+          },
+          "numberOfElements": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "first": {
+            "type": "boolean"
+          },
+          "last": {
+            "type": "boolean"
+          },
           "empty": {
             "type": "boolean"
           }
@@ -1645,6 +1645,10 @@
       "PageableObject": {
         "type": "object",
         "properties": {
+          "offset": {
+            "type": "integer",
+            "format": "int64"
+          },
           "sort": {
             "$ref": "#/components/schemas/Sort"
           },
@@ -1656,28 +1660,24 @@
             "type": "integer",
             "format": "int32"
           },
-          "unpaged": {
-            "type": "boolean"
-          },
           "paged": {
             "type": "boolean"
           },
-          "offset": {
-            "type": "integer",
-            "format": "int64"
+          "unpaged": {
+            "type": "boolean"
           }
         }
       },
       "Sort": {
         "type": "object",
         "properties": {
+          "empty": {
+            "type": "boolean"
+          },
           "sorted": {
             "type": "boolean"
           },
           "unsorted": {
-            "type": "boolean"
-          },
-          "empty": {
             "type": "boolean"
           }
         }
@@ -1703,33 +1703,13 @@
       "PageThreadDTO": {
         "type": "object",
         "properties": {
-          "totalPages": {
-            "type": "integer",
-            "format": "int32"
-          },
           "totalElements": {
             "type": "integer",
             "format": "int64"
           },
-          "sort": {
-            "$ref": "#/components/schemas/Sort"
-          },
-          "pageable": {
-            "$ref": "#/components/schemas/PageableObject"
-          },
-          "number": {
+          "totalPages": {
             "type": "integer",
             "format": "int32"
-          },
-          "numberOfElements": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "first": {
-            "type": "boolean"
-          },
-          "last": {
-            "type": "boolean"
           },
           "size": {
             "type": "integer",
@@ -1741,31 +1721,15 @@
               "$ref": "#/components/schemas/ThreadDTO"
             }
           },
-          "empty": {
-            "type": "boolean"
-          }
-        }
-      },
-      "PagePostDTO": {
-        "type": "object",
-        "properties": {
-          "totalPages": {
+          "number": {
             "type": "integer",
             "format": "int32"
-          },
-          "totalElements": {
-            "type": "integer",
-            "format": "int64"
           },
           "sort": {
             "$ref": "#/components/schemas/Sort"
           },
           "pageable": {
             "$ref": "#/components/schemas/PageableObject"
-          },
-          "number": {
-            "type": "integer",
-            "format": "int32"
           },
           "numberOfElements": {
             "type": "integer",
@@ -1776,6 +1740,22 @@
           },
           "last": {
             "type": "boolean"
+          },
+          "empty": {
+            "type": "boolean"
+          }
+        }
+      },
+      "PagePostDTO": {
+        "type": "object",
+        "properties": {
+          "totalElements": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "totalPages": {
+            "type": "integer",
+            "format": "int32"
           },
           "size": {
             "type": "integer",
@@ -1787,31 +1767,15 @@
               "$ref": "#/components/schemas/PostDTO"
             }
           },
-          "empty": {
-            "type": "boolean"
-          }
-        }
-      },
-      "PageRoleDTO": {
-        "type": "object",
-        "properties": {
-          "totalPages": {
+          "number": {
             "type": "integer",
             "format": "int32"
-          },
-          "totalElements": {
-            "type": "integer",
-            "format": "int64"
           },
           "sort": {
             "$ref": "#/components/schemas/Sort"
           },
           "pageable": {
             "$ref": "#/components/schemas/PageableObject"
-          },
-          "number": {
-            "type": "integer",
-            "format": "int32"
           },
           "numberOfElements": {
             "type": "integer",
@@ -1822,6 +1786,22 @@
           },
           "last": {
             "type": "boolean"
+          },
+          "empty": {
+            "type": "boolean"
+          }
+        }
+      },
+      "PageRoleDTO": {
+        "type": "object",
+        "properties": {
+          "totalElements": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "totalPages": {
+            "type": "integer",
+            "format": "int32"
           },
           "size": {
             "type": "integer",
@@ -1833,31 +1813,15 @@
               "$ref": "#/components/schemas/RoleDTO"
             }
           },
-          "empty": {
-            "type": "boolean"
-          }
-        }
-      },
-      "PageThreadProjDTO": {
-        "type": "object",
-        "properties": {
-          "totalPages": {
+          "number": {
             "type": "integer",
             "format": "int32"
-          },
-          "totalElements": {
-            "type": "integer",
-            "format": "int64"
           },
           "sort": {
             "$ref": "#/components/schemas/Sort"
           },
           "pageable": {
             "$ref": "#/components/schemas/PageableObject"
-          },
-          "number": {
-            "type": "integer",
-            "format": "int32"
           },
           "numberOfElements": {
             "type": "integer",
@@ -1869,6 +1833,22 @@
           "last": {
             "type": "boolean"
           },
+          "empty": {
+            "type": "boolean"
+          }
+        }
+      },
+      "PageThreadProjDTO": {
+        "type": "object",
+        "properties": {
+          "totalElements": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "totalPages": {
+            "type": "integer",
+            "format": "int32"
+          },
           "size": {
             "type": "integer",
             "format": "int32"
@@ -1878,6 +1858,26 @@
             "items": {
               "$ref": "#/components/schemas/ThreadProjDTO"
             }
+          },
+          "number": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "sort": {
+            "$ref": "#/components/schemas/Sort"
+          },
+          "pageable": {
+            "$ref": "#/components/schemas/PageableObject"
+          },
+          "numberOfElements": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "first": {
+            "type": "boolean"
+          },
+          "last": {
+            "type": "boolean"
           },
           "empty": {
             "type": "boolean"
