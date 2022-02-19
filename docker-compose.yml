@@ -1,0 +1,40 @@
+services:
+  spring:
+    image: 'spring:latest'
+    container_name: spring
+    build:
+      context: .
+    command: bash -c 'while !</dev/tcp/db/5432; do sleep 1; done'
+    depends_on:
+      - dbsetup
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/test
+      #- SPRING_DATASOURCE_USERNAME=compose-postgres
+      #- SPRING_DATASOURCE_PASSWORD=compose-postgres
+      #- SPRING_JPA_HIBERNATE_DDL_AUTO=update
+    ports:
+      - "8080:8080"
+          
+  db:
+    #image: 'postgres:13.1-alpine'
+    image: 'dbpostgres:latest'
+    container_name: db
+      #command: bash -c 'while !</dev/tcp/db/5432; do sleep 1; done; ./recreate.sh db'
+      #environment:
+      #- POSTGRES_USER=dbuser
+      #- POSTGRES_PASSWORD=dbpassword
+      #- POSTGRES_DB=test
+
+  dbsetup:
+    image: 'dbpostgres:latest'
+    container_name: dbsetup
+    depends_on:
+      - db
+    command: bash -c 'while !</dev/tcp/db/5432; do sleep 1; done; ./recreate.sh db'
+
+  react:
+    image: 'react:latest'
+    container_name: react
+    ports:
+      - "3000:3000"
+    network_mode: "host"

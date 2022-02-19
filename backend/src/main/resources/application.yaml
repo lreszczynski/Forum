@@ -10,6 +10,8 @@ spring:
       javax:
         persistence:
           validation:
+            # Disable validation on repository.save(entity) because it doesn't inject spring beans
+            # into the custom constraint validators. Use @Valid, @Validated or LocalValidatorFactoryBean instead
             mode: none
   data:
     rest:
