@@ -47,7 +47,9 @@ Go to `localhost:3000` in the web browser
 ```
 docker build database-scripts/ -f database-scripts/Dockerfile-test --tag dbpostgrestest && docker build . -f backend/Dockerfile-test --tag springtest
 
-docker-compose -f docker-compose-test.yml up
+docker-compose -f docker-compose-test.yml up \
+          --abort-on-container-exit springtest \
+          --exit-code-from springtest
 ```
 
 ## b) without Docker
@@ -63,7 +65,7 @@ docker-compose -f docker-compose-test.yml up
    `./database-scripts/recreate.sh` (modify `USER`, `PASSWORD`, `DATABASE` and `HOST` variables if needed)
 2. Change directory to `backend/`
 3. Run `./gradlew bootRun` (modify database connection values in `backend/src/main/resources/application.yaml` if needed)
-4. Change directory to `react-frontend/`
+4. Change directory to `react-frontend/` in new terminal session
 5. Run `npm start`
 6. Go to `localhost:3000` in the web browser
 
