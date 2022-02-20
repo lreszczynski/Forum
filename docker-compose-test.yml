@@ -1,0 +1,34 @@
+services:
+  springtest:
+    image: 'springtest:latest'
+    container_name: springtest
+    build:
+      context: .
+    command: ./gradlew test
+    depends_on:
+      - dbsetup
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/test
+      - SPRING_DATASOURCE_USERNAME=dbuser
+      - SPRING_DATASOURCE_PASSWORD=dbpassword
+      #- SPRING_JPA_HIBERNATE_DDL_AUTO=update
+    ports:
+      - "8080:8080"
+          
+  db:
+    #image: 'postgres:13.1-alpine'
+    image: 'dbpostgrestest:latest'
+    container_name: db
+      #command: bash -c 'while !</dev/tcp/db/5432; do sleep 1; done; ./recreate.sh db'
+      #environment:
+      #- POSTGRES_USER=dbuser
+      #- POSTGRES_PASSWORD=dbpassword
+      #- POSTGRES_DB=test
+
+  dbsetup:
+    image: 'dbpostgrestest:latest'
+    container_name: dbsetup
+    depends_on:
+      - db
+    command: bash -c 'while !</dev/tcp/db/5432; do sleep 1; done; ./recreate.sh db test'
+

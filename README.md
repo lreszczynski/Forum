@@ -6,38 +6,51 @@
 
 ## Table of Contents<!-- omit in toc -->
 
-- [Installation](#installation)
-  - [With Docker](#with-docker)
+- [Installation, building and running instructions](#installation-building-and-running-instructions)
+  - [a) with Docker](#a-with-docker)
     - [Requirements](#requirements)
-    - [Build and run](#build-and-run)
-  - [Without Docker](#without-docker)
+    - [Build images](#build-images)
+    - [Run](#run)
+    - [Tests](#tests)
+  - [b) without Docker](#b-without-docker)
     - [Requirements](#requirements-1)
-    - [Build and run](#build-and-run-1)
+    - [Build and run](#build-and-run)
+    - [Running tests](#running-tests)
 - [Sample images from the application](#sample-images-from-the-application)
 
 Api documentation: https://lreszczynski.github.io/Forum/
 
-# Installation
+# Installation, building and running instructions
 
-## With Docker
+## a) with Docker
 
 ### Requirements
 
 - `docker` and `docker-compose`
 
-### Build and run
+### Build images
 
 ```
-docker build database-scripts/ --tag dbpostgres
-docker build backend/ --tag spring
-docker build react-frontend/ --tag react
+docker build database-scripts/ --tag dbpostgres && docker build backend/ --tag spring && docker build react-frontend/ --tag react
+```
 
+### Run
+
+```
 docker-compose up
 ```
 
 Go to `localhost:3000` in the web browser
 
-## Without Docker
+### Tests
+
+```
+docker build database-scripts/ -f database-scripts/Dockerfile-test --tag dbpostgrestest && docker build . -f backend/Dockerfile-test --tag springtest
+
+docker-compose -f docker-compose-test.yml up
+```
+
+## b) without Docker
 
 ### Requirements
 
@@ -53,6 +66,11 @@ Go to `localhost:3000` in the web browser
 4. Change directory to `react-frontend/`
 5. Run `npm start`
 6. Go to `localhost:3000` in the web browser
+
+### Running tests
+
+1. Change directory to `backend/`
+2. Run `./gradlew test`
 
 # Sample images from the application
 

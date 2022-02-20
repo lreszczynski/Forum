@@ -1,11 +1,14 @@
 #!/bin/bash
 SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
+HOST='localhost'
+DATABASE='test'
 USER='dbuser'
 PASSWORD='dbpassword'
-DATABASE='test'
-HOST='localhost'
 if [ "$1" ]; then
     HOST=$1
+fi
+if [ "$2" ]; then
+    DATABASE=$2
 fi
 
 cd $SCRIPT_DIR

@@ -4,11 +4,11 @@ services:
     container_name: spring
     build:
       context: .
-    command: bash -c 'while !</dev/tcp/db/5432; do sleep 1; done'
+        #command: bash -c 'while !</dev/tcp/db/5432; do sleep 1; done'
     depends_on:
       - dbsetup
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/test
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/demo
       #- SPRING_DATASOURCE_USERNAME=compose-postgres
       #- SPRING_DATASOURCE_PASSWORD=compose-postgres
       #- SPRING_JPA_HIBERNATE_DDL_AUTO=update
@@ -30,7 +30,7 @@ services:
     container_name: dbsetup
     depends_on:
       - db
-    command: bash -c 'while !</dev/tcp/db/5432; do sleep 1; done; ./recreate.sh db'
+    command: bash -c 'while !</dev/tcp/db/5432; do sleep 1; done; ./recreate.sh db demo'
 
   react:
     image: 'react:latest'
