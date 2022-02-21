@@ -103,19 +103,14 @@ class RoleControllerTest {
 		
 		@Test
 		void getAllShouldReturnAllEntities() {
-			List<RoleDTO> roleDTOList = roleService.getAll();
-			
 			//@formatter:off
-			List<RoleDTO> roleDTOS = List.of(RestAssured
+			RestAssured
 					.given()
 					.when()
 						.get(SecurityUtility.ROLES_PATH)
 					.then()
-						.statusCode(HttpStatus.UNAUTHORIZED.value())
-						.extract().as(RoleDTO[].class));
+						.statusCode(HttpStatus.UNAUTHORIZED.value());
 			//@formatter:on
-			
-			assertThat(roleDTOS).isEqualTo(roleDTOList);
 		}
 		
 		@Test
