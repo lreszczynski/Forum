@@ -149,14 +149,15 @@ export default function SingleThread(params: ISingleThreadProps) {
         <Col flex="10px">
           <div className="verticalLine" />
         </Col>
-        <Col
-          flex="auto"
-          onClick={link}
-          style={{ cursor: 'pointer', padding: '6px' }}
-        >
+        <Col flex="auto" style={{ padding: '6px' }}>
           <Row wrap={false}>
             <Col>
-              <Title level={4} ellipsis={{ rows: 2 }}>
+              <Title
+                level={4}
+                ellipsis={{ rows: 2 }}
+                onClick={link}
+                style={{ cursor: 'pointer' }}
+              >
                 {thread.title}
               </Title>
             </Col>
@@ -193,14 +194,15 @@ export default function SingleThread(params: ISingleThreadProps) {
   }
   return (
     <Row className="thread" wrap={false}>
-      <Col
-        flex="auto"
-        onClick={link}
-        style={{ cursor: 'pointer', padding: '6px' }}
-      >
+      <Col flex="auto" style={{ padding: '6px' }}>
         <Row>
           <Col flex="auto">
-            <Title level={5} ellipsis={{ rows: 2 }}>
+            <Title
+              level={5}
+              ellipsis={{ rows: 2 }}
+              onClick={link}
+              style={{ cursor: 'pointer' }}
+            >
               {thread.title}
             </Title>
           </Col>

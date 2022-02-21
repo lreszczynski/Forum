@@ -16,9 +16,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.http.HttpStatus;
 import org.springframework.mock.web.MockHttpServletRequest;
@@ -101,18 +98,18 @@ class RoleControllerTest {
 	
 	@Test
 	void getAllShouldReturnAllEntities() {
-		Page<RoleDTO> roles = new PageImpl<>(List.of(role1, role2),PageRequest.of(0, 20),20);
-		given(service.getAll(any()))
+		List<RoleDTO> roles = List.of(role1, role2);
+		given(service.getAll())
 				.willReturn(roles);
 		
 		//@formatter:off
-		List<RoleDTO> response = RestAssuredMockMvc
+		List<RoleDTO> response = List.of(RestAssuredMockMvc
 				.given()
 				.when()
 					.get(SecurityUtility.ROLES_PATH)
 				.then()
-					.status(HttpStatus.OK)
-					.extract().body().jsonPath().getList("content",RoleDTO.class);
+					.statusCode(HttpStatus.OK.value())
+					.extract().as(RoleDTO[].class));
 		//@formatter:on
 		
 		assertThat(response).contains(role1, role2);

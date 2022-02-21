@@ -10,18 +10,20 @@ export default function Login(_props: ILoginProps) {
 
   const onFinish = async (values: any) => {
     await AuthService.login(values.username, values.password);
-    navigate('/');
+    navigate('/forum');
   };
 
   const onFinishFailed = (errorInfo: any) => {
     console.log('Failed:', errorInfo);
   };
 
+  const leftSpan = 6;
+
   return (
     <Form
       name="basic"
-      labelCol={{ span: 8 }}
-      wrapperCol={{ span: 16 }}
+      labelCol={{ span: leftSpan }}
+      wrapperCol={{ span: 24 - 2 * leftSpan }}
       initialValues={{ remember: true }}
       onFinish={onFinish}
       onFinishFailed={onFinishFailed}
@@ -46,12 +48,12 @@ export default function Login(_props: ILoginProps) {
       <Form.Item
         name="remember"
         valuePropName="checked"
-        wrapperCol={{ offset: 8, span: 16 }}
+        wrapperCol={{ sm: { offset: leftSpan } }}
       >
         <Checkbox>Remember me</Checkbox>
       </Form.Item>
 
-      <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
+      <Form.Item wrapperCol={{ sm: { offset: leftSpan } }}>
         <Button type="primary" htmlType="submit">
           Submit
         </Button>

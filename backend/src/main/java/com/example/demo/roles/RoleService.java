@@ -2,11 +2,11 @@ package com.example.demo.roles;
 
 import com.example.demo.roles.dto.RoleDTO;
 import org.modelmapper.ModelMapper;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+import org.modelmapper.TypeToken;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -20,9 +20,9 @@ public class RoleService {
 		this.modelMapper = new ModelMapper();
 	}
 	
-	public Page<RoleDTO> getAll(Pageable pageable) {
-		Page<Role> page = roleRepository.findAll(pageable);
-		return page.map(user -> modelMapper.map(user, RoleDTO.class));
+	public List<RoleDTO> getAll() {
+		return modelMapper.map(roleRepository.findAll(), new TypeToken<List<RoleDTO>>() {
+		}.getType());
 	}
 	
 	public Optional<RoleDTO> getById(Long id) {

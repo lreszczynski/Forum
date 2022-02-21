@@ -5,6 +5,7 @@ import { Role } from 'models/Role';
 import { Thread } from 'models/Thread';
 import { Tokens } from 'models/Tokens';
 import { User } from 'models/User';
+import { UserRegistration } from 'models/UserRegistration';
 import UserService from './UserService';
 
 const AuthService = {
@@ -24,6 +25,12 @@ const AuthService = {
         if (user !== undefined)
           localStorage.setItem('user', JSON.stringify(user));
       });
+  },
+
+  async register(user: UserRegistration): Promise<void> {
+    const value = await axios.post<void>(`/users/register`, user, {});
+
+    return value.data;
   },
 
   logout() {

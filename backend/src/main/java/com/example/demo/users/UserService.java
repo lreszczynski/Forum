@@ -81,10 +81,6 @@ public class UserService {
 		return userRepository.findByUsername(username).map(user -> modelMapper.map(user, UserDTO.class));
 	}
 	
-	public boolean existsUserByUsernameAndIdIsNot(String username, Long id) {
-		return userRepository.existsUserByUsernameAndIdIsNot(username, id);
-	}
-	
 	public boolean existsUserByEmail(String email) {
 		return userRepository.existsUserByEmail(email);
 	}
@@ -92,7 +88,7 @@ public class UserService {
 	public UserDTO register(UserRegistrationDTO userRegistrationDTO) {
 		User user = modelMapper.map(userRegistrationDTO, User.class);
 		user.setPassword(passwordEncoder.encode(userRegistrationDTO.getPassword()));
-		user.setActive(false);
+		user.setActive(true);
 		user.setBanned(false);
 		roleRepository.findRoleByNameIgnoreCase(RoleContainer.USER).ifPresent(user::setRole);
 		User saved = userRepository.save(user);

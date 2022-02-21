@@ -20,6 +20,7 @@ import CategoryDashboard from 'components/categories/CategoryDashboard';
 import ListOfCategories from 'components/categories/ListOfCategories';
 import NewCategory from 'components/categories/NewCategory';
 import Login from 'components/login/Login';
+import Register from 'components/login/Register';
 import Main from 'components/main/Main';
 import ListOfPosts from 'components/posts/ListOfPosts';
 import PostSearchResults from 'components/posts/PostSearchResults';
@@ -56,6 +57,7 @@ ReactDOM.render(
           <Route path="/" element={<App />}>
             <Route path="/" element={<Main longText />} />
             <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
             <Route path="/short" element={<Main longText={false} />} />
             <Route path="/forum" element={<ListOfCategories />} />
             <Route path="/forum/:id/" element={<ListOfThreads />} />

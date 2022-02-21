@@ -66,7 +66,7 @@ docker-compose -f docker-compose-test.yml up \
 2. Change directory to `backend/`
 3. Run `./gradlew bootRun` (modify database connection values in `backend/src/main/resources/application.yaml` if needed)
 4. Change directory to `react-frontend/` in new terminal session
-5. Run `npm start`
+5. Run `npm install && npm start`
 6. Go to `localhost:3000` in the web browser
 
 ### Running tests

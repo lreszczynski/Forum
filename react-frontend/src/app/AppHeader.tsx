@@ -18,8 +18,11 @@ export default function AppHeader(props: IAppHeaderProps) {
   const tokens = AuthService.getCurrentUserTokens();
 
   const menu = (
-    <Menu>
+    <Menu style={{ textAlign: 'center' }}>
       <Menu.Item key={1}>
+        <Text>Logged in as {AuthService.getCurrentUser()?.username}</Text>
+      </Menu.Item>
+      <Menu.Item key={2}>
         <Link
           to="/"
           onClick={() => {
@@ -58,17 +61,24 @@ export default function AppHeader(props: IAppHeaderProps) {
       </div>
       <div className="end">
         {tokens === undefined ? (
-          <Button
-            style={{ marginRight: '16px' }}
-            onKeyPress={() => {
-              navigate('/login');
-            }}
-            onClick={() => {
-              navigate('/login');
-            }}
-          >
-            Log in
-          </Button>
+          <>
+            <Button
+              style={{ marginRight: '16px' }}
+              onClick={() => {
+                navigate('/login');
+              }}
+            >
+              Log in
+            </Button>
+            <Button
+              style={{ marginRight: '16px' }}
+              onClick={() => {
+                navigate('/register');
+              }}
+            >
+              Register
+            </Button>
+          </>
         ) : (
           <Dropdown overlay={menu} placement="bottomCenter" arrow>
             <div className="avatarHeader" style={{ cursor: 'pointer' }}>

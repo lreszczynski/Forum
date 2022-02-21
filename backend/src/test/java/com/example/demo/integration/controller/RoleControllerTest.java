@@ -14,8 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.jdbc.datasource.init.ScriptUtils;
 
@@ -105,16 +103,19 @@ class RoleControllerTest {
 		
 		@Test
 		void getAllShouldReturnAllEntities() {
-			Page<RoleDTO> page = roleService.getAll(Pageable.ofSize(20));
+			List<RoleDTO> roleDTOList = roleService.getAll();
 			
 			//@formatter:off
-			RestAssured
+			List<RoleDTO> roleDTOS = List.of(RestAssured
 					.given()
 					.when()
 						.get(SecurityUtility.ROLES_PATH)
 					.then()
-						.statusCode(HttpStatus.UNAUTHORIZED.value());
+						.statusCode(HttpStatus.UNAUTHORIZED.value())
+						.extract().as(RoleDTO[].class));
 			//@formatter:on
+			
+			assertThat(roleDTOS).isEqualTo(roleDTOList);
 		}
 		
 		@Test
@@ -173,20 +174,20 @@ class RoleControllerTest {
 		
 		@Test
 		void getAllShouldReturnAllEntities() {
-			Page<RoleDTO> page = roleService.getAll(Pageable.ofSize(20));
+			List<RoleDTO> roleDTOList = roleService.getAll();
 			
 			//@formatter:off
-			List<RoleDTO> list = RestAssured
+			List<RoleDTO> roleDTOS = List.of(RestAssured
 					.given()
 						.auth().oauth2(token)
 					.when()
 						.get(SecurityUtility.ROLES_PATH)
 					.then()
 						.statusCode(HttpStatus.OK.value())
-						.extract().body().jsonPath().getList("content",RoleDTO.class);
+						.extract().as(RoleDTO[].class));
 			//@formatter:on
 			
-			assertThat(list).isEqualTo(page.getContent());
+			assertThat(roleDTOS).isEqualTo(roleDTOList);
 		}
 		
 		@Test
@@ -251,20 +252,20 @@ class RoleControllerTest {
 		
 		@Test
 		void getAllShouldReturnAllEntities() {
-			Page<RoleDTO> page = roleService.getAll(Pageable.ofSize(20));
+			List<RoleDTO> roleDTOList = roleService.getAll();
 			
 			//@formatter:off
-			List<RoleDTO> list = RestAssured
+			List<RoleDTO> roleDTOS = List.of(RestAssured
 					.given()
 						.auth().oauth2(token)
 					.when()
 						.get(SecurityUtility.ROLES_PATH)
 					.then()
 						.statusCode(HttpStatus.OK.value())
-						.extract().body().jsonPath().getList("content",RoleDTO.class);
+						.extract().as(RoleDTO[].class));
 			//@formatter:on
 			
-			assertThat(list).isEqualTo(page.getContent());
+			assertThat(roleDTOS).isEqualTo(roleDTOList);
 		}
 		
 		@Test
@@ -329,20 +330,20 @@ class RoleControllerTest {
 		
 		@Test
 		void getAllShouldReturnAllEntities() {
-			Page<RoleDTO> page = roleService.getAll(Pageable.ofSize(20));
+			List<RoleDTO> roleDTOList = roleService.getAll();
 			
 			//@formatter:off
-			List<RoleDTO> list = RestAssured
+			List<RoleDTO> roleDTOS = List.of(RestAssured
 					.given()
 						.auth().oauth2(token)
 					.when()
 						.get(SecurityUtility.ROLES_PATH)
 					.then()
 						.statusCode(HttpStatus.OK.value())
-						.extract().body().jsonPath().getList("content",RoleDTO.class);
+						.extract().as(RoleDTO[].class));
 			//@formatter:on
 			
-			assertThat(list).isEqualTo(page.getContent());
+			assertThat(roleDTOS).isEqualTo(roleDTOList);
 		}
 		
 		@Test

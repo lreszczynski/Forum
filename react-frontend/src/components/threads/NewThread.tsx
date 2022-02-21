@@ -85,13 +85,17 @@ export default function NewThread(_props: INewThreadProps) {
           wrapperCol={{ span: 24 - 2 * leftSpan }}
           onFinish={submit}
         >
-          <Form.Item label="Title" name="title" rules={[{ max: 80 }]}>
+          <Form.Item
+            label="Title"
+            name="title"
+            rules={[{ max: 80, required: true }]}
+          >
             <Input />
           </Form.Item>
           <Form.Item
             label="Content"
             name="content"
-            rules={[{ min: 10, max: 10000 }]}
+            rules={[{ min: 10, max: 10000, required: true }]}
           >
             <TextArea rows={10} />
           </Form.Item>

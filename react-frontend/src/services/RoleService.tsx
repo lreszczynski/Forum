@@ -1,5 +1,4 @@
 import axios from 'axios';
-import { Category } from 'models/Category';
 import { Role } from 'models/Role';
 import authHeader from './AuthHeader';
 
@@ -12,9 +11,10 @@ const RoleService = {
   },
 
   async getRoleById(id: number): Promise<Role> {
-    const value = await axios.get<Category>(`/roles/${id}`);
+    const value = await axios.get<Role>(`/roles/${id}`);
     return value.data;
   },
 };
 
 export default RoleService;
+// rules={[{ min: 10, max: 10000, required: true }]}

@@ -115,7 +115,7 @@ public class UserController {
 	
 	@Operation(summary = "Register a new user")
 	@ApiResponses(value = {
-			@ApiResponse(responseCode = HTTP_OK),
+			@ApiResponse(responseCode = HTTP_CREATED),
 			@ApiResponse(responseCode = HTTP_BAD_REQUEST, content = @Content)})
 	@PostMapping(value = "/register", consumes = APPLICATION_JSON_VALUE)
 	ResponseEntity<UserDTO> register(@Validated @RequestBody UserRegistrationDTO userRegistrationDTO) {

@@ -64,6 +64,8 @@ export default function NewCategory(_props: INewCategoryProps) {
   }
 
   if (queryRoles.isSuccess) {
+    console.log('qrd', queryRoles.data);
+
     return (
       <>
         <Title level={2} style={{ textAlign: 'center' }}>

@@ -35,6 +35,14 @@ export function notificationErrorStatusCode(error: number) {
       });
       break;
 
+    case 500:
+      notification.error({
+        duration: 3,
+        message: 'Bad Request',
+        description: '500 Bad Request.',
+      });
+      break;
+
     default:
       notification.error({
         duration: 3,
