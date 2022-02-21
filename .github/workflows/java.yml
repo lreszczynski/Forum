@@ -89,7 +89,7 @@ jobs:
             git push
           fi
       - name: Generate Springdoc-openapi
-        run: ./gradlew clean generateOpenApiDocs
+        run: SPRING_PROFILES_ACTIVE=test ./gradlew clean generateOpenApiDocs
       - name: Generate Swagger UI
         uses: Legion2/swagger-ui-action@v1
         with:
