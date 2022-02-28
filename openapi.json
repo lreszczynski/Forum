@@ -40,9 +40,6 @@
           "required": true
         },
         "responses": {
-          "403": {
-            "description": "Forbidden"
-          },
           "200": {
             "description": "OK",
             "content": {
@@ -52,6 +49,9 @@
                 }
               }
             }
+          },
+          "403": {
+            "description": "Forbidden"
           },
           "400": {
             "description": "Bad Request"
@@ -82,14 +82,14 @@
           }
         ],
         "responses": {
+          "204": {
+            "description": "No Content"
+          },
           "403": {
             "description": "Forbidden"
           },
           "401": {
             "description": "Unauthorized"
-          },
-          "204": {
-            "description": "No Content"
           }
         }
       }
@@ -156,9 +156,6 @@
           "required": true
         },
         "responses": {
-          "403": {
-            "description": "Forbidden"
-          },
           "200": {
             "description": "OK",
             "content": {
@@ -168,6 +165,9 @@
                 }
               }
             }
+          },
+          "403": {
+            "description": "Forbidden"
           },
           "400": {
             "description": "Bad Request"
@@ -198,14 +198,14 @@
           }
         ],
         "responses": {
+          "204": {
+            "description": "No Content"
+          },
           "403": {
             "description": "Forbidden"
           },
           "401": {
             "description": "Unauthorized"
-          },
-          "204": {
-            "description": "No Content"
           }
         }
       }
@@ -272,9 +272,6 @@
           "required": true
         },
         "responses": {
-          "403": {
-            "description": "Forbidden"
-          },
           "200": {
             "description": "OK",
             "content": {
@@ -284,6 +281,9 @@
                 }
               }
             }
+          },
+          "403": {
+            "description": "Forbidden"
           },
           "400": {
             "description": "Bad Request"
@@ -359,9 +359,6 @@
           "required": true
         },
         "responses": {
-          "403": {
-            "description": "Forbidden"
-          },
           "200": {
             "description": "OK",
             "content": {
@@ -371,6 +368,9 @@
                 }
               }
             }
+          },
+          "403": {
+            "description": "Forbidden"
           },
           "400": {
             "description": "Bad Request"
@@ -401,14 +401,14 @@
           }
         ],
         "responses": {
+          "204": {
+            "description": "No Content"
+          },
           "403": {
             "description": "Forbidden"
           },
           "401": {
             "description": "Unauthorized"
-          },
-          "204": {
-            "description": "No Content"
           }
         }
       }
@@ -475,9 +475,6 @@
           "required": true
         },
         "responses": {
-          "403": {
-            "description": "Forbidden"
-          },
           "200": {
             "description": "OK",
             "content": {
@@ -487,6 +484,9 @@
                 }
               }
             }
+          },
+          "403": {
+            "description": "Forbidden"
           },
           "400": {
             "description": "Bad Request"
@@ -554,9 +554,6 @@
           "required": true
         },
         "responses": {
-          "400": {
-            "description": "Bad Request"
-          },
           "201": {
             "description": "Created",
             "content": {
@@ -566,6 +563,9 @@
                 }
               }
             }
+          },
+          "400": {
+            "description": "Bad Request"
           }
         }
       }
@@ -638,12 +638,6 @@
           "required": true
         },
         "responses": {
-          "403": {
-            "description": "Forbidden"
-          },
-          "400": {
-            "description": "Bad Request"
-          },
           "201": {
             "description": "Created",
             "content": {
@@ -653,6 +647,12 @@
                 }
               }
             }
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "400": {
+            "description": "Bad Request"
           },
           "401": {
             "description": "Unauthorized"
@@ -700,12 +700,6 @@
           "required": true
         },
         "responses": {
-          "403": {
-            "description": "Forbidden"
-          },
-          "400": {
-            "description": "Bad Request"
-          },
           "201": {
             "description": "Created",
             "content": {
@@ -715,6 +709,12 @@
                 }
               }
             }
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "400": {
+            "description": "Bad Request"
           },
           "401": {
             "description": "Unauthorized"
@@ -790,12 +790,6 @@
           "required": true
         },
         "responses": {
-          "403": {
-            "description": "Forbidden"
-          },
-          "400": {
-            "description": "Bad Request"
-          },
           "201": {
             "description": "Created",
             "content": {
@@ -805,6 +799,12 @@
                 }
               }
             }
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "400": {
+            "description": "Bad Request"
           },
           "401": {
             "description": "Unauthorized"
@@ -855,12 +855,6 @@
           "required": true
         },
         "responses": {
-          "403": {
-            "description": "Forbidden"
-          },
-          "400": {
-            "description": "Bad Request"
-          },
           "201": {
             "description": "Created",
             "content": {
@@ -870,6 +864,12 @@
                 }
               }
             }
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "400": {
+            "description": "Bad Request"
           },
           "401": {
             "description": "Unauthorized"
@@ -896,9 +896,6 @@
           }
         ],
         "responses": {
-          "403": {
-            "description": "Forbidden"
-          },
           "200": {
             "description": "OK",
             "content": {
@@ -908,6 +905,9 @@
                 }
               }
             }
+          },
+          "403": {
+            "description": "Forbidden"
           },
           "401": {
             "description": "Unauthorized"
@@ -945,12 +945,6 @@
           "required": true
         },
         "responses": {
-          "403": {
-            "description": "Forbidden"
-          },
-          "400": {
-            "description": "Bad Request"
-          },
           "201": {
             "description": "Created",
             "content": {
@@ -960,6 +954,12 @@
                 }
               }
             }
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "400": {
+            "description": "Bad Request"
           },
           "401": {
             "description": "Unauthorized"
