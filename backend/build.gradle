@@ -63,6 +63,8 @@ dependencies {
     implementation 'org.springdoc:springdoc-openapi-ui:1.6.5'
     implementation 'org.springdoc:springdoc-openapi-data-rest:1.6.5'
 
+    implementation 'com.yannbriancon:spring-hibernate-query-utils:2.0.0'
+
     compileOnly 'org.projectlombok:lombok'
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
     runtimeOnly 'org.postgresql:postgresql'

@@ -1,13 +1,7 @@
 package com.example.demo.threads;
 
-import com.example.demo.posts.Post;
-
-public interface TestSimpleProj {
+public interface TestPurposesProj {
 	Thread getThread();
-	
-	Post getLastPost();
-	
-	Long getPostsCount();
 	
 	/*private boolean active;
 	

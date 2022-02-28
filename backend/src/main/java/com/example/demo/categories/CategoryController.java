@@ -68,7 +68,12 @@ public class CategoryController {
 	@PageableAsQueryParam
 	@GetMapping("/{id}/threads")
 	ResponseEntity<Page<ThreadProjDTO>> getAllByCategoryId(@PathVariable Long id, @Parameter(hidden = true) Pageable pageable) {
-		return ResponseEntity.ok(threadService.getAllByCategoryId(id, pageable));
+		long start = System.currentTimeMillis();
+		Page<ThreadProjDTO> allByCategoryId = threadService.getAllByCategoryId(id, pageable);
+		long finish = System.currentTimeMillis();
+		long timeElapsed = finish - start;
+		System.out.println(">>>>> "+timeElapsed);
+		return ResponseEntity.ok(allByCategoryId);
 	}
 	
 	@Operation(summary = "Get a category by its id")

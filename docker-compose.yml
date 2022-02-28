@@ -3,7 +3,7 @@ services:
     image: 'spring:latest'
     container_name: spring
     build:
-      context: .
+      context: ./backend/
         #command: bash -c 'while !</dev/tcp/db/5432; do sleep 1; done'
     depends_on:
       - dbsetup
@@ -17,6 +17,8 @@ services:
           
   db:
     #image: 'postgres:13.1-alpine'
+    build:
+      context: ./database-scripts/
     image: 'dbpostgres:latest'
     container_name: db
       #command: bash -c 'while !</dev/tcp/db/5432; do sleep 1; done; ./recreate.sh db'
@@ -28,6 +30,8 @@ services:
   dbsetup:
     image: 'dbpostgres:latest'
     container_name: dbsetup
+    build:
+      context: ./database-scripts/
     depends_on:
       - db
     command: bash -c 'while !</dev/tcp/db/5432; do sleep 1; done; ./recreate.sh db demo'
@@ -35,6 +39,8 @@ services:
   react:
     image: 'react:latest'
     container_name: react
+    build:
+      context: ./react-frontend/
     ports:
       - "3000:3000"
     network_mode: "host"

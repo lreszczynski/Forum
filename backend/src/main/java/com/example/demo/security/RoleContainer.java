@@ -1,12 +1,12 @@
 package com.example.demo.security;
 
-import com.example.demo.categories.dto.CategoryDTO;
 import com.example.demo.categories.CategoryService;
-import com.example.demo.posts.dto.PostDTO;
+import com.example.demo.categories.dto.CategoryDTO;
 import com.example.demo.posts.PostService;
+import com.example.demo.posts.dto.PostDTO;
 import com.example.demo.roles.dto.RoleDTO;
-import com.example.demo.threads.dto.ThreadDTO;
 import com.example.demo.threads.ThreadService;
+import com.example.demo.threads.dto.ThreadDTO;
 import com.example.demo.users.UserService;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Service;

@@ -31,7 +31,7 @@ Api documentation: https://lreszczynski.github.io/Forum/
 ### Build images
 
 ```
-docker build database-scripts/ --tag dbpostgres && docker build backend/ --tag spring && docker build react-frontend/ --tag react
+docker-compose build
 ```
 
 ### Run
@@ -45,7 +45,7 @@ Go to `localhost:3000` in the web browser
 ### Tests
 
 ```
-docker build database-scripts/ -f database-scripts/Dockerfile-test --tag dbpostgrestest && docker build . -f backend/Dockerfile-test --tag springtest
+docker-compose -f docker-compose-test.yml build
 
 docker-compose -f docker-compose-test.yml up \
           --abort-on-container-exit springtest \

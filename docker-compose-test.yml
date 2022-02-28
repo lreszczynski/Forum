@@ -3,7 +3,7 @@ services:
     image: 'springtest:latest'
     container_name: springtest
     build:
-      context: .
+      context: ./backend/
     # TODO add --no-daemon when https://github.com/gradle/gradle/issues/18508 gets fixed
     command: ./gradlew test
     depends_on:
@@ -20,6 +20,8 @@ services:
     #image: 'postgres:13.1-alpine'
     image: 'dbpostgrestest:latest'
     container_name: dbtest
+    build:
+      context: ./database-scripts/
       #command: bash -c 'while !</dev/tcp/db/5432; do sleep 1; done; ./recreate.sh db'
       #environment:
       #- POSTGRES_USER=dbuser
@@ -29,6 +31,8 @@ services:
   dbsetuptest:
     image: 'dbpostgrestest:latest'
     container_name: dbsetuptest
+    build:
+      context: ./database-scripts/
     depends_on:
       - dbtest
     command: bash -c 'while !</dev/tcp/dbtest/5432; do sleep 1; done; ./recreate.sh dbtest test'

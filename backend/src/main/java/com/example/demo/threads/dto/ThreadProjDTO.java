@@ -10,7 +10,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class ThreadProjDTO {
 	private ThreadDTO thread;
-	private boolean active;
 	private PostWithoutContentDTO lastPost;
 	private int postsCount;
 }

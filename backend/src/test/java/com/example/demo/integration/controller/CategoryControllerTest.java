@@ -128,19 +128,18 @@ class CategoryControllerTest {
 			long id = 3;
 			List<ThreadProjDTO> threadProjDTOList = threadService.getAllPinnedByCategoryId(id);
 			
-			ThreadProjDTO[] as = RestAssured
+			//@formatter:off
+			List<ThreadProjDTO> result = List.of(RestAssured
 					.given()
 					.when()
-					.get(SecurityUtility.CATEGORIES_PATH + "/" + id + "/pinned-threads")
+						.get(SecurityUtility.CATEGORIES_PATH + "/" + id + "/pinned-threads")
 					.then()
-					.statusCode(HttpStatus.OK.value())
-					.extract().as(ThreadProjDTO[].class);
-			
-			//@formatter:off
-			List<ThreadProjDTO> threadProjDTOS = List.of(as);
+						.statusCode(HttpStatus.OK.value())
+						.extract().as(ThreadProjDTO[].class));
 			//@formatter:on
 			
-			assertThat(threadProjDTOS).isEqualTo(threadProjDTOList);
+			assertThat(result).isEqualTo(threadProjDTOList);
+			assertThat(result).allMatch(threadProjDTO -> threadProjDTO.getThread().isPinned());
 		}
 		
 		@Test
@@ -317,19 +316,18 @@ class CategoryControllerTest {
 			long id = 3;
 			List<ThreadProjDTO> threadProjDTOList = threadService.getAllPinnedByCategoryId(id);
 			
-			ThreadProjDTO[] as = RestAssured
+			//@formatter:off
+			List<ThreadProjDTO> result = List.of(RestAssured
 					.given()
 					.when()
-					.get(SecurityUtility.CATEGORIES_PATH + "/" + id + "/pinned-threads")
+						.get(SecurityUtility.CATEGORIES_PATH + "/" + id + "/pinned-threads")
 					.then()
-					.statusCode(HttpStatus.OK.value())
-					.extract().as(ThreadProjDTO[].class);
-			
-			//@formatter:off
-			List<ThreadProjDTO> threadProjDTOS = List.of(as);
+						.statusCode(HttpStatus.OK.value())
+						.extract().as(ThreadProjDTO[].class));
 			//@formatter:on
 			
-			assertThat(threadProjDTOS).isEqualTo(threadProjDTOList);
+			assertThat(result).isEqualTo(threadProjDTOList);
+			assertThat(result).allMatch(threadProjDTO -> threadProjDTO.getThread().isPinned());
 		}
 		
 		@Test
@@ -518,19 +516,18 @@ class CategoryControllerTest {
 			long id = 3;
 			List<ThreadProjDTO> threadProjDTOList = threadService.getAllPinnedByCategoryId(id);
 			
-			ThreadProjDTO[] as = RestAssured
+			//@formatter:off
+			List<ThreadProjDTO> result = List.of(RestAssured
 					.given()
 					.when()
-					.get(SecurityUtility.CATEGORIES_PATH + "/" + id + "/pinned-threads")
+						.get(SecurityUtility.CATEGORIES_PATH + "/" + id + "/pinned-threads")
 					.then()
-					.statusCode(HttpStatus.OK.value())
-					.extract().as(ThreadProjDTO[].class);
-			
-			//@formatter:off
-			List<ThreadProjDTO> threadProjDTOS = List.of(as);
+						.statusCode(HttpStatus.OK.value())
+						.extract().as(ThreadProjDTO[].class));
 			//@formatter:on
 			
-			assertThat(threadProjDTOS).isEqualTo(threadProjDTOList);
+			assertThat(result).isEqualTo(threadProjDTOList);
+			assertThat(result).allMatch(threadProjDTO -> threadProjDTO.getThread().isPinned());
 		}
 		
 		@Test
@@ -1136,19 +1133,18 @@ class CategoryControllerTest {
 			long id = 3;
 			List<ThreadProjDTO> threadProjDTOList = threadService.getAllPinnedByCategoryId(id);
 			
-			ThreadProjDTO[] as = RestAssured
+			//@formatter:off
+			List<ThreadProjDTO> result = List.of(RestAssured
 					.given()
 					.when()
 					.get(SecurityUtility.CATEGORIES_PATH + "/" + id + "/pinned-threads")
 					.then()
 					.statusCode(HttpStatus.OK.value())
-					.extract().as(ThreadProjDTO[].class);
-			
-			//@formatter:off
-			List<ThreadProjDTO> threadProjDTOS = List.of(as);
+					.extract().as(ThreadProjDTO[].class));
 			//@formatter:on
 			
-			assertThat(threadProjDTOS).isEqualTo(threadProjDTOList);
+			assertThat(result).isEqualTo(threadProjDTOList);
+			assertThat(result).allMatch(threadProjDTO -> threadProjDTO.getThread().isPinned());
 		}
 		
 		@Test

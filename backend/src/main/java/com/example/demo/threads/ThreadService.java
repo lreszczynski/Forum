@@ -54,22 +54,16 @@ public class ThreadService {
 	public List<ThreadProjDTO> getAllPinnedByCategoryId(Long id) {
 		List<ThreadProjDTO> list = threadRepository.findAllByCategoryIdAndPinnedIsTrue(id)
 				.stream().map(thread -> modelMapper.map(thread, ThreadProjDTO.class)).collect(Collectors.toList());
-		list.forEach(threadWithLastPostDTO -> {
-			threadWithLastPostDTO.setPostsCount(Math.toIntExact(postRepository.countAllByThreadId(threadWithLastPostDTO.getThread().getId())));
-		});
 		return list;
 	}
 	
 	public Page<ThreadProjDTO> getAllByCategoryId(Long id, Pageable pageable) {
 		Type type = new TypeToken<Page<ThreadProjDTO>>() {
 		}.getType();
-		Page<ThreadProjDTO> list = threadRepository.findAllByCategoryIdAndPinnedIsFalse(id, pageable)
+		Page<TestSimpleProj> allByCategoryIdAndPinnedIsFalse =
+				threadRepository.findAllByCategoryIdAndPinnedIsFalse(id, pageable);
+		return allByCategoryIdAndPinnedIsFalse
 				.map(thread -> modelMapper.map(thread, ThreadProjDTO.class));
-		
-		list.forEach(threadWithLastPostDTO -> {
-			threadWithLastPostDTO.setPostsCount(Math.toIntExact(postRepository.countAllByThreadId(threadWithLastPostDTO.getThread().getId())));
-		});
-		return list;
 	}
 	
 	public Optional<ThreadDTO> findById(Long id) {
