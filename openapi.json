@@ -53,11 +53,11 @@
           "403": {
             "description": "Forbidden"
           },
-          "400": {
-            "description": "Bad Request"
-          },
           "401": {
             "description": "Unauthorized"
+          },
+          "400": {
+            "description": "Bad Request"
           },
           "404": {
             "description": "Not Found"
@@ -82,11 +82,11 @@
           }
         ],
         "responses": {
-          "204": {
-            "description": "No Content"
-          },
           "403": {
             "description": "Forbidden"
+          },
+          "204": {
+            "description": "No Content"
           },
           "401": {
             "description": "Unauthorized"
@@ -169,11 +169,11 @@
           "403": {
             "description": "Forbidden"
           },
-          "400": {
-            "description": "Bad Request"
-          },
           "401": {
             "description": "Unauthorized"
+          },
+          "400": {
+            "description": "Bad Request"
           },
           "404": {
             "description": "Not Found"
@@ -198,11 +198,11 @@
           }
         ],
         "responses": {
-          "204": {
-            "description": "No Content"
-          },
           "403": {
             "description": "Forbidden"
+          },
+          "204": {
+            "description": "No Content"
           },
           "401": {
             "description": "Unauthorized"
@@ -285,11 +285,11 @@
           "403": {
             "description": "Forbidden"
           },
-          "400": {
-            "description": "Bad Request"
-          },
           "401": {
             "description": "Unauthorized"
+          },
+          "400": {
+            "description": "Bad Request"
           },
           "404": {
             "description": "Not Found"
@@ -372,11 +372,11 @@
           "403": {
             "description": "Forbidden"
           },
-          "400": {
-            "description": "Bad Request"
-          },
           "401": {
             "description": "Unauthorized"
+          },
+          "400": {
+            "description": "Bad Request"
           },
           "404": {
             "description": "Not Found"
@@ -401,11 +401,11 @@
           }
         ],
         "responses": {
-          "204": {
-            "description": "No Content"
-          },
           "403": {
             "description": "Forbidden"
+          },
+          "204": {
+            "description": "No Content"
           },
           "401": {
             "description": "Unauthorized"
@@ -488,11 +488,11 @@
           "403": {
             "description": "Forbidden"
           },
-          "400": {
-            "description": "Bad Request"
-          },
           "401": {
             "description": "Unauthorized"
+          },
+          "400": {
+            "description": "Bad Request"
           },
           "404": {
             "description": "Not Found"
@@ -651,11 +651,11 @@
           "403": {
             "description": "Forbidden"
           },
-          "400": {
-            "description": "Bad Request"
-          },
           "401": {
             "description": "Unauthorized"
+          },
+          "400": {
+            "description": "Bad Request"
           }
         }
       }
@@ -713,11 +713,11 @@
           "403": {
             "description": "Forbidden"
           },
-          "400": {
-            "description": "Bad Request"
-          },
           "401": {
             "description": "Unauthorized"
+          },
+          "400": {
+            "description": "Bad Request"
           }
         }
       }
@@ -803,11 +803,11 @@
           "403": {
             "description": "Forbidden"
           },
-          "400": {
-            "description": "Bad Request"
-          },
           "401": {
             "description": "Unauthorized"
+          },
+          "400": {
+            "description": "Bad Request"
           },
           "404": {
             "description": "Not Found"
@@ -868,11 +868,11 @@
           "403": {
             "description": "Forbidden"
           },
-          "400": {
-            "description": "Bad Request"
-          },
           "401": {
             "description": "Unauthorized"
+          },
+          "400": {
+            "description": "Bad Request"
           }
         }
       }
@@ -958,11 +958,11 @@
           "403": {
             "description": "Forbidden"
           },
-          "400": {
-            "description": "Bad Request"
-          },
           "401": {
             "description": "Unauthorized"
+          },
+          "400": {
+            "description": "Bad Request"
           },
           "404": {
             "description": "Not Found"
