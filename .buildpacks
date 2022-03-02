@@ -1,2 +1,0 @@
-backend=https://github.com/heroku/heroku-buildpack-docker.git
-react-frontend=https://github.com/heroku/heroku-buildpack-nodejs.git
