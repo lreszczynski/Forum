@@ -8,7 +8,6 @@ import {
   faReply,
   faTrash,
 } from '@fortawesome/free-solid-svg-icons';
-import axios from 'axios';
 import moment from 'moment';
 import React from 'react';
 import ReactDOM from 'react-dom';
@@ -30,8 +29,6 @@ import NewThread from 'components/threads/NewThread';
 import ThreadDashboard from 'components/threads/ThreadDashboard';
 import { store } from 'store/store';
 import reportWebVitals from './reportWebVitals';
-
-axios.defaults.baseURL = process.env.REACT_APP_API_URL;
 
 const queryClientConfig = {
   defaultOptions: {

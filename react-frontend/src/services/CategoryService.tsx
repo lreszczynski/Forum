@@ -1,12 +1,11 @@
-import axios from 'axios';
 import { Category } from 'models/Category';
 import { Page } from 'models/Page';
 import { ThreadAndPostStats } from 'models/ThreadAndPostStats';
-import authHeader from './AuthHeader';
+import api from './Api';
 
 const CategoryService = {
   async getAllCategories(): Promise<Category[]> {
-    const value = await axios.get<Category[]>('/categories');
+    const value = await api.get<Category[]>('/categories');
     return value.data;
   },
 
@@ -14,7 +13,7 @@ const CategoryService = {
     categoryId: number,
     page: number,
   ): Promise<Page<ThreadAndPostStats>> {
-    const value = await axios.get<Page<ThreadAndPostStats>>(
+    const value = await api.get<Page<ThreadAndPostStats>>(
       `/categories/${categoryId}/threads?page=${page}`,
     );
     return value.data;
@@ -23,23 +22,23 @@ const CategoryService = {
   async getPinnedThreadsByCategoryId(
     categoryId: number,
   ): Promise<ThreadAndPostStats[]> {
-    const value = await axios.get<ThreadAndPostStats[]>(
+    const value = await api.get<ThreadAndPostStats[]>(
       `/categories/${categoryId}/pinned-threads`,
     );
     return value.data;
   },
 
   async getCategoryById(id: number): Promise<Category> {
-    const value = await axios.get<Category>(`/categories/${id}`);
+    const value = await api.get<Category>(`/categories/${id}`);
     return value.data;
   },
 
   async updateCategory(category: Category): Promise<Category> {
-    const value = await axios.put<Category>(
+    const value = await api.put<Category>(
       `/categories/${category.id}`,
       category,
       {
-        headers: authHeader(),
+        // headers: authHeader(),
       },
     );
 
@@ -47,16 +46,16 @@ const CategoryService = {
   },
 
   async createCategory(category: Category): Promise<Category> {
-    const value = await axios.post<Category>(`/categories`, category, {
-      headers: authHeader(),
+    const value = await api.post<Category>(`/categories`, category, {
+      // headers: authHeader(),
     });
 
     return value.data;
   },
 
   async deleteCategory(id: number): Promise<void> {
-    await axios.delete(`/categories/${id}`, {
-      headers: authHeader(),
+    await api.delete(`/categories/${id}`, {
+      // headers: authHeader(),
     });
   },
 };

@@ -20,7 +20,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.example.demo.utility.JWTUtility.getTokenFromRequest;
 import static com.example.demo.utility.JWTUtility.parseToken;
 import static org.springframework.util.MimeTypeUtils.APPLICATION_JSON_VALUE;
 
@@ -34,7 +33,7 @@ public class TokenController {
 	})
 	@GetMapping(value = "/refresh", produces = APPLICATION_JSON_VALUE)
 	ResponseEntity<Object> generateAccessToken(HttpServletRequest request, HttpServletResponse response) {
-		String refreshToken = getTokenFromRequest(request);
+		String refreshToken = JWTUtility.getTokenFromRequest(request);
 		
 		Jws<Claims> jws = parseToken(request, response);
 		if (jws != null) {

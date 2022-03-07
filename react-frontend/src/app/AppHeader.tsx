@@ -6,6 +6,7 @@ import Text from 'antd/lib/typography/Text';
 import * as React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import AuthService from 'services/AuthService';
+import LocalStorage from 'services/LocalStorage';
 
 export interface IAppHeaderProps {
   isCollapsed: boolean;
@@ -15,12 +16,12 @@ export interface IAppHeaderProps {
 export default function AppHeader(props: IAppHeaderProps) {
   const { isCollapsed, collapse } = props;
   const navigate = useNavigate();
-  const tokens = AuthService.getCurrentUserTokens();
+  const tokens = LocalStorage.getCurrentUserTokens();
 
   const menu = (
     <Menu style={{ textAlign: 'center' }}>
       <Menu.Item key={1}>
-        <Text>Logged in as {AuthService.getCurrentUser()?.username}</Text>
+        <Text>Logged in as {LocalStorage.getCurrentUser()?.username}</Text>
       </Menu.Item>
       <Menu.Item key={2}>
         <Link
@@ -83,7 +84,7 @@ export default function AppHeader(props: IAppHeaderProps) {
           <Dropdown overlay={menu} placement="bottomCenter" arrow>
             <div className="avatarHeader" style={{ cursor: 'pointer' }}>
               <Text>
-                {AuthService.getCurrentUser()?.username.at(0)?.toUpperCase()}
+                {LocalStorage.getCurrentUser()?.username.at(0)?.toUpperCase()}
               </Text>
             </div>
           </Dropdown>

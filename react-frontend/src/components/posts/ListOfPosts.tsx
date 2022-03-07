@@ -114,7 +114,7 @@ export default function ListOfPosts(_props: IListOfPostsProps) {
             <NewPost thread={queryThread.data} />
           </div>
         )}
-        {pagination}
+        <div style={{ marginTop: '16px' }}>{pagination}</div>
       </>
     );
   }

@@ -6,6 +6,7 @@
 
 ## Table of Contents<!-- omit in toc -->
 
+- [Live demo](#live-demo)
 - [Installation, building and running instructions](#installation-building-and-running-instructions)
   - [a) with Docker](#a-with-docker)
     - [Requirements](#requirements)
@@ -18,9 +19,28 @@
     - [Running tests](#running-tests)
 - [Sample images from the application](#sample-images-from-the-application)
 
-Api documentation: https://lreszczynski.github.io/Forum/
+Api documentation: https://lreszczynski.github.io/forum/
+
+Jacoco report: https://github.com/lreszczynski/forum/actions/workflows/java.yml (located in build artifacts)
+
+<figure>
+  <img src="./database-scripts/database.png" width="400" caption="e"/>
+  <figcaption>Database ERD</figcaption>
+</figure>
+
+# Live demo
+
+They may take ~30 seconds to load each due to Heroku limitations
+
+- Frontend: https://forum-app-2-react.herokuapp.com/forum
+- Backend: https://forum-app-2.herokuapp.com/swagger-ui/index.html
 
 # Installation, building and running instructions
+
+```
+git clone https://github.com/lreszczynski/forum
+cd forum/
+```
 
 ## a) with Docker
 
@@ -60,14 +80,14 @@ docker-compose -f docker-compose-test.yml up \
 
 ### Build and run
 
-0. Prepare a new Postgres database
-1. Create tables with initial data: run
+1. Prepare a new Postgres database
+2. Create tables with initial data: run
    `./database-scripts/recreate.sh` (modify `USER`, `PASSWORD`, `DATABASE` and `HOST` variables if needed)
-2. Change directory to `backend/`
-3. Run `./gradlew bootRun` (modify database connection values in `backend/src/main/resources/application.yaml` if needed)
-4. Change directory to `react-frontend/` in new terminal session
-5. Run `npm install && npm start`
-6. Go to `localhost:3000` in the web browser
+3. Change directory to `backend/`
+4. Run `./gradlew bootRun` (modify database connection values in `backend/src/main/resources/application.yaml` if needed)
+5. Change directory to `react-frontend/` in new terminal session
+6. Run `npm install && npm start`
+7. Go to `localhost:3000` in the web browser
 
 ### Running tests
 

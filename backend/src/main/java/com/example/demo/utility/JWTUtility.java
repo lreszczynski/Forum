@@ -15,6 +15,7 @@ import java.util.Collection;
 import java.util.Date;
 
 import static org.apache.commons.lang3.time.DateUtils.MILLIS_PER_DAY;
+import static org.apache.commons.lang3.time.DateUtils.MILLIS_PER_SECOND;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
 @Slf4j
@@ -31,7 +32,7 @@ public class JWTUtility {
 				break;
 			case ACCESS:
 			default:
-				expirationDate = new Date(System.currentTimeMillis() + MILLIS_PER_DAY);
+				expirationDate = new Date(System.currentTimeMillis() + MILLIS_PER_SECOND * 20);
 		}
 		return Jwts.builder()
 				.setIssuer(uri)

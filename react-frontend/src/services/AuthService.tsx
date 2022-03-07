@@ -1,26 +1,29 @@
-import axios from 'axios';
 import { Category } from 'models/Category';
 import { Post } from 'models/Post';
-import { Role } from 'models/Role';
 import { Thread } from 'models/Thread';
 import { Tokens } from 'models/Tokens';
 import { User } from 'models/User';
 import { UserRegistration } from 'models/UserRegistration';
-import UserService from './UserService';
+import api from './Api';
+import LocalStorage from './LocalStorage';
 
 const AuthService = {
   async login(username: string, password: string): Promise<void> {
     const bodyFormData = new FormData();
     bodyFormData.append('username', username);
     bodyFormData.append('password', password);
-    return axios
+    return api
       .post<Tokens>('/login', bodyFormData)
       .then(response => {
         localStorage.setItem('tokens', JSON.stringify(response.data));
         return response.data;
       })
       .then(async _data => {
-        const user = await UserService.getUserAccount();
+        const user = await api
+          .get<User>('/users/account', {
+            // headers: authHeader(),
+          })
+          .then(res => res.data);
 
         if (user !== undefined)
           localStorage.setItem('user', JSON.stringify(user));
@@ -28,7 +31,7 @@ const AuthService = {
   },
 
   async register(user: UserRegistration): Promise<void> {
-    const value = await axios.post<void>(`/users/register`, user, {});
+    const value = await api.post<void>(`/users/register`, user, {});
 
     return value.data;
   },
@@ -38,38 +41,13 @@ const AuthService = {
     localStorage.removeItem('user');
   },
 
-  getCurrentUserTokens(): Tokens | undefined {
-    const tokens = localStorage.getItem('tokens');
-    if (tokens !== null) {
-      return JSON.parse(tokens);
-    }
-    return undefined;
-  },
-
-  getCurrentUser(): User | undefined {
-    const user = localStorage.getItem('user');
-    if (user !== null && user !== undefined) {
-      return JSON.parse(user);
-    }
-    return undefined;
-  },
-
-  getCurrentUserRole(): Role | undefined {
-    const user = localStorage.getItem('user');
-    if (user !== null && user !== undefined) {
-      const u: User = JSON.parse(user);
-      return u.role;
-    }
-    return undefined;
-  },
-
   isCurrentUserAtLeastModerator(): boolean {
-    const role = this.getCurrentUserRole();
+    const role = LocalStorage.getCurrentUserRole();
     return role?.name === 'Moderator' || role?.name === 'Admin';
   },
 
   isCurrentUserAdmin(): boolean {
-    const role = this.getCurrentUserRole();
+    const role = LocalStorage.getCurrentUserRole();
     return role?.name === 'Admin';
   },
 
@@ -81,7 +59,9 @@ const AuthService = {
     return (
       this.isCurrentUserAdmin() ||
       (this.isCurrentUserAtLeastModerator() &&
-        category.roles.some(r => r.id === this.getCurrentUserRole()?.id))
+        category.roles.some(
+          r => r.id === LocalStorage.getCurrentUserRole()?.id,
+        ))
     );
   },
 
@@ -93,7 +73,9 @@ const AuthService = {
     return (
       this.isCurrentUserAdmin() ||
       (category.active &&
-        category.roles.some(r => r.id === this.getCurrentUserRole()?.id))
+        category.roles.some(
+          r => r.id === LocalStorage.getCurrentUserRole()?.id,
+        ))
     );
   },
 
@@ -101,7 +83,9 @@ const AuthService = {
     return (
       this.isCurrentUserAdmin() ||
       (this.isCurrentUserAtLeastModerator() &&
-        thread.category.roles.some(r => r.id === this.getCurrentUserRole()?.id))
+        thread.category.roles.some(
+          r => r.id === LocalStorage.getCurrentUserRole()?.id,
+        ))
     );
   },
 
@@ -109,7 +93,9 @@ const AuthService = {
     return (
       this.isCurrentUserAdmin() ||
       (this.isCurrentUserAtLeastModerator() &&
-        thread.category.roles.some(r => r.id === this.getCurrentUserRole()?.id))
+        thread.category.roles.some(
+          r => r.id === LocalStorage.getCurrentUserRole()?.id,
+        ))
     );
   },
 
@@ -119,17 +105,17 @@ const AuthService = {
     return (
       this.isCurrentUserAdmin() ||
       (isThreadActive &&
-        allowedRoles.some(r => r.id === this.getCurrentUserRole()?.id))
+        allowedRoles.some(r => r.id === LocalStorage.getCurrentUserRole()?.id))
     );
   },
 
   canUserEditPost(post: Post): boolean {
-    const user = this.getCurrentUser();
+    const user = LocalStorage.getCurrentUser();
     return (
       this.isCurrentUserAdmin() ||
       (this.isCurrentUserAtLeastModerator() &&
         post.thread.category.roles.some(
-          r => r.id === this.getCurrentUserRole()?.id,
+          r => r.id === LocalStorage.getCurrentUserRole()?.id,
         )) ||
       user?.id === post.user.id
     );
@@ -140,7 +126,7 @@ const AuthService = {
       this.isCurrentUserAdmin() ||
       (this.isCurrentUserAtLeastModerator() &&
         post.thread.category.roles.some(
-          r => r.id === this.getCurrentUserRole()?.id,
+          r => r.id === LocalStorage.getCurrentUserRole()?.id,
         ))
     );
   },
